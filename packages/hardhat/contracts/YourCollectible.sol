@@ -3,16 +3,19 @@ pragma solidity >=0.6.0 <0.7.0;
 
 //import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/security/PullPayment.sol";
+import "@openzeppelin/contracts/finance/PaymentSplitter.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-//import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 //learn more: https://docs.openzeppelin.com/contracts/3.x/erc721
 
 // GET LISTED ON OPENSEA: https://testnets.opensea.io/get-listed/step-two
 
-contract YourCollectible is ERC721 {
+contract YourCollectible is ERC721, Ownable {
 
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
+
 
   constructor(bytes32[] memory assetsForSale) public ERC721("YourCollectible", "YCB") {
     _setBaseURI("https://ipfs.io/ipfs/");
@@ -26,9 +29,7 @@ contract YourCollectible is ERC721 {
   //this lets you look up a token by the uri (assuming there is only one of each uri for now)
   mapping (bytes32 => uint256) public uriToTokenId;
 
-  function mintItem(string memory tokenURI)
-      public
-      returns (uint256)
+  function mintItem(string memory tokenURI) public returns (uint256)
   {
       bytes32 uriHash = keccak256(abi.encodePacked(tokenURI));
 
@@ -46,4 +47,10 @@ contract YourCollectible is ERC721 {
 
       return id;
   }
+
+  function _baseURI() internal view virtual returns (string memory) {
+      return "https://cryptopixels.org/";
+  }
+
+ 
 }
