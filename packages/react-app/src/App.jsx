@@ -319,7 +319,8 @@ function App(props) {
         <div>
           <Button onClick={()=>{
             console.log("gasPrice,",gasPrice)
-            tx( writeContracts.CryptoPixels.buyPixel(loadedAssets[a].id,{gasPrice:gasPrice, itemPrice: gasPrice}) )
+            console.log(loadedAssets[a])
+            //tx( writeContracts.CryptoPixels.buyPixels(loadedAssets[a], {gasPrice:gasPrice, itemPrice: gasPrice}) )
           }}>
             Buy
           </Button>

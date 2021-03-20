@@ -32,7 +32,9 @@ build
 # misc
 .DS_Store
 .env*
-/pixels
+
+# Pixel related
+packages/react-app/public/pixels
 
 # debug
 npm-debug.log*

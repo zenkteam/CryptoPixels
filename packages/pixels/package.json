@@ -1,0 +1,10 @@
+{
+  "name": "CryptoPixels",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "pureimage": "^0.2.7"
+  }
+}

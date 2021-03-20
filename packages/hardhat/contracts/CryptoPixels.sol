@@ -4,6 +4,8 @@ pragma solidity >=0.6.0 <0.7.0;
 //import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/payment/PullPayment.sol"; // ToDo Upgrade to OpenZeppelin 3.4 and change path
+import "@openzeppelin/contracts/payment/escrow/Escrow.sol"; // ToDo Upgrade to OpenZeppelin 3.4 and change path
+import "@openzeppelin/contracts/utils/Context.sol"; // ToDo Upgrade to OpenZeppelin 3.4 and change path
 import "@openzeppelin/contracts/access/Ownable.sol";
 //learn more: https://docs.openzeppelin.com/contracts/3.x/erc721
 
@@ -11,10 +13,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // Payments: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.2.0/contracts/payment/PullPayment.sol
 // Contract ERC271: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol
 
-contract CryptoPixels is ERC721, Ownable, PullPayment {
+contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
 
   // Reserved: [x from, x to, y from, y to]
-  uint8[4][4] private reserved = [ [200, 400, 200, 400], [600, 800, 200, 400], [200, 400, 600, 800], [600, 800, 600, 800], [400, 600, 400, 600] ];
+  uint16[4][] private reserved = [ [200, 400, 200, 400], [600, 800, 200, 400], [200, 400, 600, 800], [600, 800, 600, 800], [400, 600, 400, 600] ];
 
 
   constructor() public ERC721("CryptoPixels", "CPX") payable {
@@ -42,14 +44,14 @@ contract CryptoPixels is ERC721, Ownable, PullPayment {
 
         for (uint r = 0; r < 5; i++) {
           // TODO: Check if X and Y are defined correctly
-          x = _pixels[i][0];
-          y = _pixels[i][1];
+          uint x = _pixels[i][0];
+          uint y = _pixels[i][1];
           require(x >= reserved[r][0] && x < reserved[r][1] && y >= reserved[r][2] && y < reserved[r][3], "RESERVED");
         }
       }
 
       // Make purchase
-      _asyncTransfer(_owner, msg.value);
+      _asyncTransfer(owner(), msg.value);
 
       // Mint
       for (uint i = 0; i < _pixels.length; i++) {
@@ -63,7 +65,7 @@ contract CryptoPixels is ERC721, Ownable, PullPayment {
         notForSale[tokenId] = true;
 
         // Build token-specific URI which points to metadata
-        _setTokenURI(tokenId, tokenURI);
+        _setTokenURI(tokenId, tokenURI(tokenId));
       }   
   }
 
@@ -73,14 +75,14 @@ contract CryptoPixels is ERC721, Ownable, PullPayment {
   */
   function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
       require(tokenId > 0 && tokenId < 10001, "ERC721Metadata: URI query for nonexistent token");
-      return string(abi.encodePacked(_baseURI(), tokenId.toString()));
+      return string(abi.encodePacked(baseURI(), tokenId.toString()));
   }
 
   /**
-  Withdraw funds
-   */
-  function withdrawPayments(address payable payee) public onlyOwner {
-    _escrow.withdraw(_owner);
-  }
+   * Withdraw funds
+   
+  function withdrawPayments(address payable payee) public onlyOwner override {
+    _escrow.withdraw(owner());
+  }*/
  
 }

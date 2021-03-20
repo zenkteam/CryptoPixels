@@ -11,15 +11,16 @@ const main = async () => {
 
   let allAssets = {}
 
-  console.log("\n\n Loading artwork.json...\n");
-  const artwork = JSON.parse(fs.readFileSync("../../artwork.json").toString())
+  console.log("\n\n Loading pixels.json...\n");
+  const pixels = JSON.parse(fs.readFileSync("../pixels/pixels.json").toString())
 
-  for(let a in artwork){
-    console.log("  Uploading "+artwork[a].name+"...")
-    const stringJSON = JSON.stringify(artwork[a])
+  // Uploading meta data to IPFS
+  for(let a in pixels){
+    console.log("  Uploading "+pixels[a].name+"...")
+    const stringJSON = JSON.stringify(pixels[a])
     const uploaded = await ipfs.add(stringJSON)
-    console.log("   "+artwork[a].name+" ipfs:",uploaded.path)
-    allAssets[uploaded.path] = artwork[a]
+    console.log("   "+pixels[a].name+" ipfs:",uploaded.path)
+    allAssets[uploaded.path] = pixels[a]
   }
 
   console.log("\n Injecting assets into the frontend...")

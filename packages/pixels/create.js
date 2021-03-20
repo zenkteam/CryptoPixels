@@ -9,8 +9,9 @@ var column = 0
 
 let hexCode = "0123456789ABCDEF";
 let Color = '#'
+let counter = amount + 1
 
-for(let i = 0; i < amount; ++i){
+for(let i = 1; i < counter; ++i){
 
     // Create color
     for (let i = 0; i < 6; i++)
@@ -34,8 +35,8 @@ for(let i = 0; i < amount; ++i){
     let token = {
         "name": "CryptoPixel#" + i,
         "description": "This CryptoPixel lives " + x + "px to the right and " + y + "px down south.",
-        "external_url": "https://cryptopixels.org/#" + i,
-        "image": "https://cryptopixels.org/" + i + ".jpg",
+        "external_url": "https://cryptopixels.org/#CryptoPixel" + i,
+        "image": "https://cryptopixels.org/pixels/" + i + ".jpg",
         "attributes": [
             {
                 "trait_type": "serial",
@@ -99,7 +100,7 @@ function createImage(name, x, y, sizeX, sizeY){
     ctx.fillRect(0,0,1000,1000);
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(x,y, sizeX, sizeY);
-    PImage.encodePNGToStream(img, fs.createWriteStream('./pixels/'+name+'.png'))
+    PImage.encodePNGToStream(img, fs.createWriteStream('../react-app/public/pixels/'+name+'.png'))
 }
 
 
