@@ -112,6 +112,7 @@ contract YourCollectible is ERC721, Ownable, PullPayment, PaymentSplitter {
       _asyncTransfer(payee, msg.value);
 
       // Mint Item
+      mintPixel();
   }
 
   function _baseURI() internal view virtual returns (string memory) {
