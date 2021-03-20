@@ -65,6 +65,7 @@ export default function Pixels(props) {
 
         let priceInDollar = selection.length * pricePerPixelBlockInDollar
         let priceInEther = priceInDollar / (typeof props.price == "undefined" ? 0 : props.price.toFixed(2))
+        console.log("price:", props.price)
         setPriceToBuyInDollar(priceInDollar)
         setPriceToBuyInEther(priceInEther)
     }
@@ -162,6 +163,7 @@ export default function Pixels(props) {
             let gasPrice = typeof props.gasPrice == "undefined" ? 0 : props.gasPrice.toFixed(2)
             console.log("gasPrice,", gasPrice)
             console.log(props.loadedAssets)
+            console.log("all props", props)
             //tx( writeContracts.CryptoPixels.buyPixels(loadedAssets[a], {gasPrice:gasPrice, itemPrice: gasPrice}) )
             }}>
             Buy

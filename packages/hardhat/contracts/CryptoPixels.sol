@@ -31,7 +31,7 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
   //this lets you look up a token by the uri (assuming there is only one of each uri for now)
   mapping (bytes32 => uint256) public uriToTokenId;
 
-  constructor(bytes32[] memory assetsForSale) public ERC721("CryptoPixels", "CPX") payable {
+  constructor(bytes32[] memory assetsForSale) ERC721("CryptoPixels", "CPX") payable {
     _setBaseURI("https://ipfs.io/ipfs/"); // "https://api.cryptopixels.org/" ?
     for(uint256 i=0;i<assetsForSale.length;i++){
       forSale[assetsForSale[i]] = true;
@@ -45,10 +45,11 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
   // event GetArray(address sender, string[4][] pixels);
   // string[4][] public pixels = [[1,2,3,4]];
 
-  function buyPixels(string[4][] memory _pixels, uint256 amount) payable public returns (uint256) {
+  function buyPixels(CryptoPixel[3][] memory _pixels, uint256 amount) payable public returns (uint256) {
       require(_pixels.length > 0, 'You need at least buy one pixel');
       require(amount > 0, 'Not enough');
       require(amount <= 100, 'Only 100 pixels at a time');
+      require(_pixels[0].id == 4, 'Did not work ');
       //pixels = _pixels;
       //emit GetArray(msg.sender, pixels);
       /*
