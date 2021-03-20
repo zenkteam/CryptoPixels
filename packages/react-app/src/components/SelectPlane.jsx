@@ -212,8 +212,8 @@ export default function SelectPlane(props) {
   }, []);
 
   return (
-    <div class="scroller zoom">
-      <section class="boxes">
+    <div className="scroller zoom">
+      <section className="boxes">
         {items}
       </section>
     </div>

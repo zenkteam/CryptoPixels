@@ -20,6 +20,8 @@ const main = async () => {
     const stringJSON = JSON.stringify(pixels[a])
     const uploaded = await ipfs.add(stringJSON)
     console.log("   "+pixels[a].name+" ipfs:",uploaded.path)
+    pixels[a].ipfsId = uploaded.path
+    pixels[a].pixelId = pixels[a].attributes[0].value
     allAssets[uploaded.path] = pixels[a]
   }
 

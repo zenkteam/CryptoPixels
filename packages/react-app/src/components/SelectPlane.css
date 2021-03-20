@@ -50,3 +50,27 @@
     padding: 1em;
     border-radius: 1em;
 }
+.priceUSD {
+    position: absolute;
+    top: 180px;
+    left: 40px;
+    background: white;
+    padding: 1em;
+    border-radius: 1em;
+}
+.priceETH {
+    position: absolute;
+    top: 220px;
+    left: 40px;
+    background: white;
+    padding: 1em;
+    border-radius: 1em;
+}
+.selectedPixels {
+    position: absolute;
+    top: 280px;
+    left: 40px;
+    background: white;
+    padding: 1em;
+    border-radius: 1em;
+}

@@ -14,8 +14,7 @@ import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
 import { utils } from "ethers";
 //import Hints from "./Hints";
-import { Hints, ExampleUI, Subgraph } from "./views"
-import { useThemeSwitcher } from "react-css-theme-switcher";
+import { Pixels } from "./views"
 import { INFURA_ID, DAI_ADDRESS, DAI_ABI, NETWORK, NETWORKS } from "./constants";
 import StackGrid from "react-stack-grid";
 import ReactJson from 'react-json-view'
@@ -30,18 +29,8 @@ console.log("📦 Assets: ",assets)
 
 const NFT_CONTRACT = "CryptoPixels"
 /*
-    Welcome to 🏗 scaffold-eth !
-
-    Code:
-    https://github.com/austintgriffith/scaffold-eth
-
-    Support:
-    https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA
-    or DM @austingriffith on twitter or telegram
-
     You should get your own Infura.io ID and put it in `constants.js`
     (this is your connection to the main Ethereum network for ENS etc.)
-
 
     🌏 EXTERNAL CONTRACTS:
     You can also bring in contract artifacts in `constants.js`
@@ -53,7 +42,7 @@ const NFT_CONTRACT = "CryptoPixels"
 const targetNetwork = NETWORKS['localhost']; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
-const DEBUG = true
+const DEBUG = false
 
 //EXAMPLE STARTING JSON:
 const STARTING_JSON = {
@@ -159,20 +148,20 @@ function App(props) {
   //
   // If you want to bring in the mainnet DAI contract it would look like:
   const mainnetDAIContract = useExternalContractLoader(mainnetProvider, DAI_ADDRESS, DAI_ABI)
-  console.log("🌍 DAI contract on mainnet:",mainnetDAIContract)
+  if(DEBUG) console.log("🌍 DAI contract on mainnet:",mainnetDAIContract)
   //
   // Then read your DAI balance like:
   const myMainnetDAIBalance = useContractReader({DAI: mainnetDAIContract},"DAI", "balanceOf",["0x34aA3F359A9D614239015126635CE7732c18fDF3"])
-  console.log("🥇 myMainnetDAIBalance:",myMainnetDAIBalance)
+  if(DEBUG) console.log("🥇 myMainnetDAIBalance:",myMainnetDAIBalance)
 
 
   // keep track of a variable from the contract in the local React state:
   const balance = useContractReader(readContracts,NFT_CONTRACT, "balanceOf", [ address ])
-  console.log("🤗 balance:",balance)
+  if(DEBUG) console.log("🤗 balance:",balance)
 
   //📟 Listen for broadcast events
   const transferEvents = useEventListener(readContracts, NFT_CONTRACT, "Transfer", localProvider, 1);
-  console.log("📟 Transfer events:",transferEvents)
+  if(DEBUG) console.log("📟 Transfer events:",transferEvents)
 
 
 
@@ -180,7 +169,7 @@ function App(props) {
   // 🧠 This effect will update CryptoPixels by polling when your balance changes
   //
   const yourBalance = balance && balance.toNumber && balance.toNumber()
-  const [ yourPixels, setCryptoPixels ] = useState()
+  const [ CryptoPixels, setCryptoPixels ] = useState()
 
   useEffect(()=>{
     const updateCryptoPixels = async () => {
@@ -289,29 +278,36 @@ function App(props) {
   const [ transferToAddresses, setTransferToAddresses ] = useState({})
 
   const [ loadedAssets, setLoadedAssets ] = useState()
+  const [ soldPixels, setSoldPixels ] = useState()
   useEffect(()=>{
     const updateCryptoPixels = async () => {
+      
       let assetUpdate = []
+      let soldPixels = []
       for(let a in assets){
+        console.log(a)
         try{
+          // Check if pixel is for sale
           const forSale = await readContracts.CryptoPixels.forSale(utils.id(a))
           let owner
+          // If pixel is not for sale, get me the owner
           if(!forSale){
+            soldPixels.push(a.pixelId)
             const tokenId = await readContracts.CryptoPixels.uriToTokenId(utils.id(a))
             owner = await readContracts.CryptoPixels.ownerOf(tokenId)
           }
           assetUpdate.push({id:a,...assets[a],forSale:forSale,owner:owner})
         }catch(e){console.log(e)}
       }
+
       setLoadedAssets(assetUpdate)
+      setSoldPixels(soldPixels)
     }
     if(readContracts && readContracts.CryptoPixels) updateCryptoPixels()
   }, [ assets, readContracts, transferEvents ]);
 
   let galleryList = []
   for(let a in loadedAssets){
-    console.log("loadedAssets",a,loadedAssets[a])
-
     let cardActions = []
     if(loadedAssets[a].forSale){
   
@@ -558,9 +554,9 @@ function App(props) {
 
           <Route path="/pixels">
             <Pixels
-            tx={tx}
-            writeContracts={writeContracts}
-            mainnetProvider={mainnetProvider}
+              soldPixels={soldPixels}
+              price={price}
+              gasPrice={gasPrice}
             />
           </Route>
         </Switch>
