@@ -2182,6 +2182,11 @@
   resolved "https://registry.yarnpkg.com/@sheerun/mutationobserver-shim/-/mutationobserver-shim-0.3.3.tgz#5405ee8e444ed212db44e79351f0c70a582aae25"
   integrity sha512-DetpxZw1fzPD5xUBrIAoplLChO2VB8DlL5Gg+I1IR9b2wPqYIca2WSUxL5g1vLeR4MsQq1NeWriXAVffV+U1Fw==
 
+"@simonwep/selection-js@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@simonwep/selection-js/-/selection-js-2.0.2.tgz#404cf7884560c9879216eb3efefe5112492a948d"
+  integrity sha512-DEm7bkatCsPEwO192A0ocMZy5f5egxRoNYiRyTDxRHU3ZlZcx+LQpxXqWvolLzYNtGMBP3uiz3Lwyys6WAuWcg==
+
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"

@@ -28,6 +28,7 @@ const ipfs = ipfsAPI({host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
 
 console.log("📦 Assets: ",assets)
 
+const NFT_CONTRACT = "CryptoPixels"
 /*
     Welcome to 🏗 scaffold-eth !
 
@@ -72,7 +73,7 @@ const STARTING_JSON = {
   ]
 }
 
-//helper function to "Get" from IPFS
+// helper function to "Get" from IPFS
 // you usually go content.toString() after this...
 const getFromIPFS = async hashToGet => {
   for await (const file of ipfs.get(hashToGet)) {
@@ -104,10 +105,8 @@ const localProviderUrlFromEnv = process.env.REACT_APP_PROVIDER ? process.env.REA
 if(DEBUG) console.log("🏠 Connecting to provider:", localProviderUrlFromEnv);
 const localProvider = new JsonRpcProvider(localProviderUrlFromEnv);
 
-
 // 🔭 block explorer URL
 const blockExplorer = targetNetwork.blockExplorer;
-
 
 function App(props) {
 
@@ -168,30 +167,30 @@ function App(props) {
 
 
   // keep track of a variable from the contract in the local React state:
-  const balance = useContractReader(readContracts,"YourCollectible", "balanceOf", [ address ])
+  const balance = useContractReader(readContracts,NFT_CONTRACT, "balanceOf", [ address ])
   console.log("🤗 balance:",balance)
 
   //📟 Listen for broadcast events
-  const transferEvents = useEventListener(readContracts, "YourCollectible", "Transfer", localProvider, 1);
+  const transferEvents = useEventListener(readContracts, NFT_CONTRACT, "Transfer", localProvider, 1);
   console.log("📟 Transfer events:",transferEvents)
 
 
 
   //
-  // 🧠 This effect will update yourCollectibles by polling when your balance changes
+  // 🧠 This effect will update CryptoPixels by polling when your balance changes
   //
   const yourBalance = balance && balance.toNumber && balance.toNumber()
-  const [ yourCollectibles, setYourCollectibles ] = useState()
+  const [ yourPixels, setCryptoPixels ] = useState()
 
   useEffect(()=>{
-    const updateYourCollectibles = async () => {
+    const updateCryptoPixels = async () => {
       let collectibleUpdate = []
       for(let tokenIndex=0;tokenIndex<balance;tokenIndex++){
         try{
           console.log("GEtting token index",tokenIndex)
-          const tokenId = await readContracts.YourCollectible.tokenOfOwnerByIndex(address, tokenIndex)
+          const tokenId = await readContracts.CryptoPixels.tokenOfOwnerByIndex(address, tokenIndex)
           console.log("tokenId",tokenId)
-          const tokenURI = await readContracts.YourCollectible.tokenURI(tokenId)
+          const tokenURI = await readContracts.CryptoPixels.tokenURI(tokenId)
           console.log("tokenURI",tokenURI)
 
           const ipfsHash =  tokenURI.replace("https://ipfs.io/ipfs/","")
@@ -207,9 +206,9 @@ function App(props) {
 
         }catch(e){console.log(e)}
       }
-      setYourCollectibles(collectibleUpdate)
+      setCryptoPixels(collectibleUpdate)
     }
-    updateYourCollectibles()
+    updateCryptoPixels()
   },[ address, yourBalance ])
 
   /*
@@ -291,22 +290,22 @@ function App(props) {
 
   const [ loadedAssets, setLoadedAssets ] = useState()
   useEffect(()=>{
-    const updateYourCollectibles = async () => {
+    const updateCryptoPixels = async () => {
       let assetUpdate = []
       for(let a in assets){
         try{
-          const forSale = await readContracts.YourCollectible.forSale(utils.id(a))
+          const forSale = await readContracts.CryptoPixels.forSale(utils.id(a))
           let owner
           if(!forSale){
-            const tokenId = await readContracts.YourCollectible.uriToTokenId(utils.id(a))
-            owner = await readContracts.YourCollectible.ownerOf(tokenId)
+            const tokenId = await readContracts.CryptoPixels.uriToTokenId(utils.id(a))
+            owner = await readContracts.CryptoPixels.ownerOf(tokenId)
           }
           assetUpdate.push({id:a,...assets[a],forSale:forSale,owner:owner})
         }catch(e){console.log(e)}
       }
       setLoadedAssets(assetUpdate)
     }
-    if(readContracts && readContracts.YourCollectible) updateYourCollectibles()
+    if(readContracts && readContracts.CryptoPixels) updateCryptoPixels()
   }, [ assets, readContracts, transferEvents ]);
 
   let galleryList = []
@@ -315,22 +314,12 @@ function App(props) {
 
     let cardActions = []
     if(loadedAssets[a].forSale){
+  
       cardActions.push(
         <div>
           <Button onClick={()=>{
             console.log("gasPrice,",gasPrice)
-            tx( writeContracts.YourCollectible.mintItem(loadedAssets[a].id,{gasPrice:gasPrice}) )
-          }}>
-            Mint
-          </Button>
-        </div>
-      )
-
-      cardActions.push(
-        <div>
-          <Button onClick={()=>{
-            console.log("gasPrice,",gasPrice)
-            tx( writeContracts.YourCollectible.buyPixel(loadedAssets[a].id,{gasPrice:gasPrice, itemPrice: gasPrice}) )
+            tx( writeContracts.CryptoPixels.buyPixel(loadedAssets[a].id,{gasPrice:gasPrice, itemPrice: gasPrice}) )
           }}>
             Buy
           </Button>
@@ -376,11 +365,14 @@ function App(props) {
       <BrowserRouter>
 
         <Menu style={{ textAlign:"center" }} selectedKeys={[route]} mode="horizontal">
+          <Menu.Item key="/pixels">
+            <Link onClick={()=>{setRoute("/pixels")}} to="/pixels">Pixels</Link>
+          </Menu.Item>
           <Menu.Item key="/">
             <Link onClick={()=>{setRoute("/")}} to="/">Gallery</Link>
           </Menu.Item>
-          <Menu.Item key="/yourcollectibles">
-            <Link onClick={()=>{setRoute("/yourcollectibles")}} to="/yourcollectibles">YourCollectibles</Link>
+          <Menu.Item key="/cryptopixels">
+            <Link onClick={()=>{setRoute("/cryptopixels")}} to="/cryptopixels">CryptoPixels</Link>
           </Menu.Item>
           <Menu.Item key="/transfers">
             <Link onClick={()=>{setRoute("/transfers")}} to="/transfers">Transfers</Link>
@@ -416,11 +408,11 @@ function App(props) {
 
           </Route>
 
-          <Route path="/yourcollectibles">
+          <Route path="/cryptopixels">
             <div style={{ width:640, margin: "auto", marginTop:32, paddingBottom:32 }}>
               <List
                 bordered
-                dataSource={yourCollectibles}
+                dataSource={CryptoPixels}
                 renderItem={(item) => {
                   const id = item.id.toNumber()
                   return (
@@ -453,7 +445,7 @@ function App(props) {
                         />
                         <Button onClick={()=>{
                           console.log("writeContracts",writeContracts)
-                          tx( writeContracts.YourCollectible.transferFrom(address, transferToAddresses[id], id) )
+                          tx( writeContracts.CryptoPixels.transferFrom(address, transferToAddresses[id], id) )
                         }}>
                           Transfer
                         </Button>
@@ -552,14 +544,23 @@ function App(props) {
                 {ipfsContent}
               </pre>
           </Route>
+
           <Route path="/debugcontracts">
               <Contract
-                name="YourCollectible"
+                name="CryptoPixels"
                 signer={userProvider.getSigner()}
                 provider={localProvider}
                 address={address}
                 blockExplorer={blockExplorer}
               />
+          </Route>
+
+          <Route path="/pixels">
+            <Pixels
+            tx={tx}
+            writeContracts={writeContracts}
+            mainnetProvider={mainnetProvider}
+            />
           </Route>
         </Switch>
       </BrowserRouter>

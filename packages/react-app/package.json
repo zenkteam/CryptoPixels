@@ -25,6 +25,7 @@
     "@ethersproject/solidity": "^5.0.9",
     "@ethersproject/units": "^5.0.6",
     "@ramp-network/ramp-instant-sdk": "^2.2.0",
+    "@simonwep/selection-js": "^2.0.2",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.8",
