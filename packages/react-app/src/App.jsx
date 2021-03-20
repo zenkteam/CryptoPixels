@@ -325,6 +325,17 @@ function App(props) {
           </Button>
         </div>
       )
+
+      cardActions.push(
+        <div>
+          <Button onClick={()=>{
+            console.log("gasPrice,",gasPrice)
+            tx( writeContracts.YourCollectible.buyPixel(loadedAssets[a].id,{gasPrice:gasPrice, itemPrice: gasPrice}) )
+          }}>
+            Buy
+          </Button>
+        </div>
+      )
     }else{
       cardActions.push(
         <div>
