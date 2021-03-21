@@ -310,9 +310,13 @@ function App(props) {
       cardActions.push(
         <div>
           <Button onClick={()=>{
-            console.log("gasPrice,",gasPrice)
-            console.log(loadedAssets[a])
-            tx( writeContracts.CryptoPixels.buyPixels([{id:4, x:3, y:3}], 234, {gasPrice:gasPrice}) )
+
+            let pixelId = loadedAssets[a].pixelId
+            let x = pixelId > 1000 ? parseInt(pixelId[1]+pixelId[2]+pixelId[3]) : 1
+            let y = pixelId > 1000 ? parseInt(pixelId[0]) : 1
+            let buy = {id: loadedAssets[a].pixelId, tokenId: loadedAssets[a].tokenId, x: x, y: y }
+
+            tx( writeContracts.CryptoPixels.buyPixels([buy], 1, {gasPrice:gasPrice}) )
           }}>
             Buy
           </Button>

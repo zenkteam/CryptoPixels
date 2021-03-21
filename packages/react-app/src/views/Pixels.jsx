@@ -35,13 +35,15 @@ export default function Pixels(props) {
                 <div key={selection[n]}>CryptoPixel# {selection[n]}</div> 
             )
         }
+
         setSelectedPixels(selectedPixels)
+        initiateSales(selection)
     }
 
-    function initiateSales(){
-        console.log("all props 3", props)
+    function initiateSales(selection){
+        let price = typeof props.price == "undefined" ? 0 : parseInt(props.price)
         let priceInDollar = selection.length * pricePerPixelBlockInDollar
-        let priceInEther = priceInDollar / (typeof props.price == "undefined" ? 0 : props.price.toFixed(2))
+        let priceInEther = price ? (priceInDollar / price).toFixed(2) : '-' 
         
         setPriceToBuyInDollar(priceInDollar)
         setPriceToBuyInEther(priceInEther)
@@ -49,9 +51,9 @@ export default function Pixels(props) {
 
     function buyPixel(){
         let gasPrice = typeof props.gasPrice == "undefined" ? 0 : parseInt(props.gasPrice)
-        console.log("gasPrice,", gasPrice)
-        console.log("loaded assets", props.loadedAssets)
-        console.log("all props", props)
+        //console.log("gasPrice,", gasPrice)
+        //console.log("loaded assets", props.loadedAssets)
+        //console.log("all props", props)
 
         // Loop through all assets and pull the ones that were selected
         var selectedAssets = []
@@ -160,36 +162,48 @@ export default function Pixels(props) {
    
     return (
         <div>
-        {/* Only render pixels if they have already been generated */}
-        {pixels &&
-            <SelectPlane
-            pixels={pixels}
-            selection={selection}
-            zoom={zoom}
-            onSelected={value => {
-                onSelected(value);
-            }}
-            onZoomUpdate={value => {
-                onZoomUpdate(value);
-            }}
-            ></SelectPlane>
-        }
-        <div className="reset-button" onClick={resetSelection}>Reset</div>
-        <div className="priceUSD">
-            Price $ {priceToBuyInDollar}
-        </div>
-        <div className="priceETH">
-            Price ETH {priceToBuyInEther}
-        </div>
-        <div className="buyPixels">
-            <Button onClick={buyPixel}>
-            Buy
-            </Button>
-        </div>
-        <div className="selectedPixels">
-            Selected Pixels 
-            {selectedPixels}
-        </div>
+            {/* Only render pixels if they have already been generated */}
+            {pixels &&
+                <SelectPlane
+                    pixels={pixels}
+                    selection={selection}
+                    zoom={zoom}
+                    onSelected={value => {
+                        onSelected(value);
+                    }}
+                    onZoomUpdate={value => {
+                        onZoomUpdate(value);
+                    }}
+                ></SelectPlane>
+            }
+            <div className="reset-button" onClick={resetSelection}>Reset</div>
+            
+            {selectedPixels.length > 0 && 
+            <div>
+                <div className="priceUSD">
+                    Price $ {priceToBuyInDollar}
+                </div>
+                <div className="priceETH">
+                    Price ETH {priceToBuyInEther}
+                </div>
+                <div className="buyPixels">
+                    <Button onClick={buyPixel}>
+                    Buy
+                    </Button>
+                </div>
+                <div className="selectedPixels">
+                    <p><b>Selected Pixels</b></p>
+                    {selectedPixels}
+                </div>
+            </div>
+            
+            }
+            
+
+            
+            <div className="imageUpload">
+                
+            </div>
         </div>
     );
 }

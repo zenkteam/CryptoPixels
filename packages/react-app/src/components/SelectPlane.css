@@ -44,7 +44,7 @@
 /* Other */
 .reset-button {
     position: absolute;
-    top: 150px;
+    top: 140px;
     left: 40px;
     background: white;
     padding: 1em;
@@ -52,7 +52,7 @@
 }
 .priceUSD {
     position: absolute;
-    top: 180px;
+    top: 200px;
     left: 40px;
     background: white;
     padding: 1em;
@@ -60,7 +60,15 @@
 }
 .priceETH {
     position: absolute;
-    top: 220px;
+    top: 260px;
+    left: 40px;
+    background: white;
+    padding: 1em;
+    border-radius: 1em;
+}
+.buyPixels {
+    position: absolute;
+    top: 320px;
     left: 40px;
     background: white;
     padding: 1em;
@@ -68,9 +76,13 @@
 }
 .selectedPixels {
     position: absolute;
-    top: 280px;
+    top: 390px;
     left: 40px;
     background: white;
     padding: 1em;
     border-radius: 1em;
+}
+
+.ant-menu{
+    display:none !important;
 }
