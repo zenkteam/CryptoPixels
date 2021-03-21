@@ -59,6 +59,9 @@ export default function Pixels(props) {
             for(let j = 0; j < selection.length; j++){
                 if(props.loadedAssets[asset].pixelId === selection[j].p){
                     selectedAssets.push(props.loadedAssets[asset])
+                    if(selectedAssets.length === selection.length){
+                        break;
+                    }
                 }       
             }
         }
@@ -112,10 +115,11 @@ export default function Pixels(props) {
         for (var b of specialBoundaries) {
             for(let i = b.x.from; i <= b.x.to; ++i){
                 for(let j = b.y.from; j <= b.y.to; ++j){
-                    reserved.push(j[0]+i)
+                    reserved.push(j.toString()[0]+j)
                 }
             }
         }
+        //console.log('reserverd', reserved)
 
         return reserved;
     }
