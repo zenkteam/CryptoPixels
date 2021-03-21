@@ -40,7 +40,7 @@ export default function SelectPlane(props) {
 
   const items = [];
   for (const [index, pixel] of props.pixels.entries()) {
-    items.push(<div key={pixel.id} data-id={pixel.id} className={pixel.status}></div>)
+    items.push(<div key={pixel.p} data-id={pixel.p} className={pixel.s}></div>)
   }
 
   compareSelection();
@@ -119,7 +119,7 @@ export default function SelectPlane(props) {
       return;
     }
 
-    const propIds = props.selection.map(pixel => pixel.id);
+    const propIds = props.selection.map(pixel => pixel.p);
     const localIds = selectedIds();
 
     const toAdd = [];

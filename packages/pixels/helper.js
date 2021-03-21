@@ -6,12 +6,12 @@ function generatePixelMatrix(){
       matrix.push([]);
       for (var c = 0; c < 100; c++) {
         matrix[r].push({
-          id: i++,
-          status: STATI.AVAILABLE,
+          p: i++,
+          s: STATI.AVAILABLE,
 
           // upper left corner of pixel area
-          x: c * 10,
-          y: r * 10,
+          //x: c * 10,
+          //y: r * 10,
         });
       }
     }
@@ -35,4 +35,17 @@ function componentToHex(c) {
 
 function rgbToHex(r, g, b) {
     return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+
+
+
+function matrixToArray(matrix) {
+    const pixels = [];
+    for (var r = 0; r < matrix.length; r++) {
+    for (var c = 0; c < matrix[r].length; c++) {
+        pixels.push(matrix[r][c]);
+    }
+    }
+    return pixels;
 }

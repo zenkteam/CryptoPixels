@@ -18,9 +18,11 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
 
   // Reserved: [x from, x to, y from, y to]
   uint16[4][] private reserved = [ [200, 400, 200, 400], [600, 800, 200, 400], [200, 400, 600, 800], [600, 800, 600, 800], [400, 600, 400, 600] ];
+  uint256[] private ids;
 
   struct CryptoPixel {
         uint id;
+        string tokenId;
         uint x;
         uint y;
     }
@@ -39,33 +41,22 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
   }
 
   /**
-    Provide a flexible array of 3 integers (tokenid, column, row)
+    Allow to buy pixels in bulk
    */
-
-  // event GetArray(address sender, string[4][] pixels);
-  // string[4][] public pixels = [[1,2,3,4]];
-
-  function buyPixels(CryptoPixel[3][] memory _pixels, uint256 amount) payable public returns (uint256) {
+  function buyPixels(CryptoPixel[] memory _pixels, uint amount) payable public returns (uint256[] memory){
       require(_pixels.length > 0, 'You need at least buy one pixel');
       require(amount > 0, 'Not enough');
       require(amount <= 100, 'Only 100 pixels at a time');
-      require(_pixels[0].id == 4, 'Did not work ');
-      //pixels = _pixels;
-      //emit GetArray(msg.sender, pixels);
-      /*
+
       // CHECK IF: NOT RESERVED, VALID TOKEN RANGE, SET FOR SALE
       for (uint i = 0; i < _pixels.length; i++) {
-        bytes32 tokenId = keccak256(abi.encodePacked(_pixels[i]));
-        _pixels[i]['tokenId'] = tokenId;
+        bytes32 uriHash = keccak256(abi.encodePacked(_pixels[i].tokenId));
 
-        require(tokenId > 0 && tokenId < 10001, "TOKEN ID DOES NOT EXISt");
-        require(forSale[tokenId], "NOT FOR SALE");
+        //require(_pixels[i].id > 0 && _pixels[i].id < 10001, "PIXEL ID DOES NOT EXISt");
+        require(forSale[uriHash], "NOT FOR SALE");
 
         for (uint r = 0; r < 5; i++) {
-          // TODO: Check if X and Y are defined correctly
-          uint x = _pixels[i][0];
-          uint y = _pixels[i][1];
-          require(x >= reserved[r][0] && x < reserved[r][1] && y >= reserved[r][2] && y < reserved[r][3], "RESERVED");
+          require(_pixels[i].x >= reserved[r][0] && _pixels[i].x < reserved[r][1] && _pixels[i].y >= reserved[r][2] && _pixels[i].y < reserved[r][3], "RESERVED");
         }
       }
 
@@ -74,18 +65,23 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
 
       // Mint
       for (uint i = 0; i < _pixels.length; i++) {
-        
-        uint tokenId = _pixels[i]['tokenId'];
+        bytes32 uriHash = keccak256(abi.encodePacked(_pixels[i].tokenId));
 
         // Mint the NFT and attach the token with the current ID to the message sender
-        _mint(msg.sender, tokenId);
+        _mint(msg.sender, _pixels[i].id);
 
         // Set to notForSale
-        forSale[tokenId] = false;
+        forSale[uriHash] = false;
 
         // Build token-specific URI which points to metadata
-        _setTokenURI(tokenId, tokenURI(tokenId));
-      }   */
+        _setTokenURI(_pixels[i].id, _pixels[i].tokenId);
+
+        uriToTokenId[uriHash] = _pixels[i].id;
+
+        ids.push(_pixels[i].id);
+      } 
+
+      return ids;
   }
 
   /**

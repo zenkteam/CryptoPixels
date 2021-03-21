@@ -266,26 +266,22 @@ function App(props) {
     )
   }
 
-
   const [ yourJSON, setYourJSON ] = useState( STARTING_JSON );
   const [ sending, setSending ] = useState()
   const [ ipfsHash, setIpfsHash ] = useState()
   const [ ipfsDownHash, setIpfsDownHash ] = useState()
-
   const [ downloading, setDownloading ] = useState()
   const [ ipfsContent, setIpfsContent ] = useState()
-
   const [ transferToAddresses, setTransferToAddresses ] = useState({})
-
   const [ loadedAssets, setLoadedAssets ] = useState()
   const [ soldPixels, setSoldPixels ] = useState()
+
   useEffect(()=>{
     const updateCryptoPixels = async () => {
       
       let assetUpdate = []
       let soldPixels = []
       for(let a in assets){
-        console.log(a)
         try{
           // Check if pixel is for sale
           const forSale = await readContracts.CryptoPixels.forSale(utils.id(a))
@@ -299,7 +295,7 @@ function App(props) {
           assetUpdate.push({id:a,...assets[a],forSale:forSale,owner:owner})
         }catch(e){console.log(e)}
       }
-
+      console.log("SOLD: ", soldPixels)
       setLoadedAssets(assetUpdate)
       setSoldPixels(soldPixels)
     }
@@ -316,7 +312,7 @@ function App(props) {
           <Button onClick={()=>{
             console.log("gasPrice,",gasPrice)
             console.log(loadedAssets[a])
-            tx( writeContracts.CryptoPixels.buyPixels([{id:4, x:3, y:3}], {gasPrice:gasPrice, itemPrice: gasPrice}) )
+            tx( writeContracts.CryptoPixels.buyPixels([{id:4, x:3, y:3}], 234, {gasPrice:gasPrice}) )
           }}>
             Buy
           </Button>
@@ -557,6 +553,9 @@ function App(props) {
               soldPixels={soldPixels}
               price={price}
               gasPrice={gasPrice}
+              userProvider={userProvider}
+              writeContracts={writeContracts}
+              loadedAssets={loadedAssets}
             />
           </Route>
         </Switch>
