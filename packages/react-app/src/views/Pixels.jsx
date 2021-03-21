@@ -16,13 +16,16 @@ export default function Pixels(props) {
     function getPixelsByIds(ids) {
         const list = [];
         for (var id of ids) {
-        list.push(pixels[id - 1]);
+            list.push(pixels[id - 1]);
         }
         return list;
     }
 
     function onSelected(selection) {
 
+        selection = selection.filter((x) => {
+            return reserved.indexOf(x) === -1
+        })
         const selected = getPixelsByIds(selection);
         setSelection(selected);
         // all selected, no matter which status they have
@@ -41,6 +44,7 @@ export default function Pixels(props) {
     }
 
     function initiateSales(selection){
+        console.log(props.price)
         let price = typeof props.price == "undefined" ? 0 : parseInt(props.price)
         let priceInDollar = selection.length * pricePerPixelBlockInDollar
         let priceInEther = price ? (priceInDollar / price).toFixed(2) : '-' 
@@ -94,34 +98,18 @@ export default function Pixels(props) {
         setZoom(zoom);
     }
 
-    function getSpecialPieces() { // pixelId
-        //let x = pixelId > 1000 ? parseInt(pixelId[1]+pixelId[2]+pixelId[3]) : 1
-        //let y = pixelId > 1000 ? parseInt(pixelId[0]) : 1
-
-        const specialBoundaries = [
-        { name: 'centerpiece', x: { from: 400, to: 600 }, y: { from: 400, to: 600 } },
-        { name: 'upperLeftGuard', x: { from: 200, to: 400 }, y: { from: 200, to: 400 } },
-        { name: 'upperRightGuard', x: { from: 600, to: 800 }, y: { from: 200, to: 400 } },
-        { name: 'lowerLeftGuard', x: { from: 200, to: 400 }, y: { from: 600, to: 800 } },
-        { name: 'lowerRightGuard', x: { from: 600, to: 800 }, y: { from: 600, to: 800 } },
-        ];
-
-        /*for (var boundary of specialBoundaries) {
-            if (x >= boundary.x.from && x < boundary.x.to && y >= boundary.y.from && y < boundary.y.to) {
-                return boundary.name;
-            }
-        }*/
-
+    function getSpecialPieces() {
         // Get from coordinates to Id
         let reserved = []
-        for (var b of specialBoundaries) {
-            for(let i = b.x.from; i <= b.x.to; ++i){
-                for(let j = b.y.from; j <= b.y.to; ++j){
-                    reserved.push(j.toString()[0]+j)
+        let starts = [2021, 2061, 4041, 6021, 6061]
+        let size = 20
+        for(let i = 0; i < starts.length; ++i){
+            for(let j = 0; j < size; ++j){
+                for(let k = 0; k < size; ++k){
+                    reserved.push(starts[i] + j + k*100)
                 }
             }
         }
-        //console.log('reserverd', reserved)
 
         return reserved;
     }
@@ -151,7 +139,7 @@ export default function Pixels(props) {
             }
         }
         
-        for(var i = 0; i < reserved; ++i){
+        for(var i = 0; i < reserved.length; ++i){
             pixels[reserved[i]-1].s = STATI.RESERVED
         }
 
