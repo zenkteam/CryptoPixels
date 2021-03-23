@@ -37,10 +37,10 @@ export default function SelectPlane(props) {
   const initialSize = 1000;
 
   let container = null;
-
-  const items = [];
-  for (const [index, pixel] of props.pixels.entries()) {
-    items.push(<div key={pixel.p} data-id={pixel.p} className={pixel.s}></div>)
+  
+  const items = new Array(props.pixels.length);
+  for (let i = 0; i < props.pixels.length; ++i) {
+    items.push(<div key={props.pixels[i].p} data-id={props.pixels[i].p} className={props.pixels[i].s}></div>);
   }
 
   compareSelection();
@@ -72,13 +72,13 @@ export default function SelectPlane(props) {
 
       // Add a custom class to the elements that where selected.
       for (const el of added) {
-        el.classList.add('selected');
+        el.className += 'selected'; // Faster than classList manipulation
       }
 
       // Remove the class from elements that where removed
       // since the last selection (toggle pixel)
       for (const el of removed) {
-        el.classList.remove('selected');
+        el.classList.remove('selected'); // Here we use classList for safe removal
       }
 
     }).on('stop', () => {
@@ -89,15 +89,11 @@ export default function SelectPlane(props) {
     }); 
   }
 
-  function selectId(id) {
-    window.plane.select(`[data-id="${id}"]`);
-    window.plane.keepSelection();
-  }
-
   function selectIds(ids) {
     for (const id of ids) {
-      selectId(id);
+      window.plane.select(`[id="${id}"]`);
     }
+    window.plane.keepSelection();
   }
 
   function deselectId(id) {
@@ -119,21 +115,30 @@ export default function SelectPlane(props) {
       return;
     }
 
-    const propIds = props.selection.map(pixel => pixel.p);
+    // Newly selected
+    const propIds = new Array(props.selection.length);
+    for(let i = 0; i < props.selection.length; ++i){
+      propIds[i] = props.selection[i].p
+    }
+
+    // Already selected
     const localIds = selectedIds();
 
     const toAdd = [];
     const toRemove = [];
 
-    for (let propId of propIds) {
-      if (localIds.indexOf(propId) === -1) {
-        toAdd.push(propId);
+    // Check which 
+    for (let i = 0, j = 0; i < propIds.length; ++i){
+      if (localIds.indexOf(propIds[i]) === -1) {
+        toAdd[j] = propIds[i];
+        ++j;
       }
     }
-
-    for (let localId of localIds) {
-      if (propIds.indexOf(localId) === -1) {
-        toRemove.push(localId);
+    
+    for (let i = 0,j=0; i < localIds.length; ++i) {
+      if (propIds.indexOf(localIds[i]) === -1) {
+        toRemove[j] =localIds[i];
+        ++j;
       }
     }
 
@@ -142,10 +147,10 @@ export default function SelectPlane(props) {
   }
 
   function selectedIds() {
-    const ids = [];
     const selected = window.plane.getSelection();
-    for (const el of selected) {
-      ids.push(parseInt(el.dataset.id));
+    const ids = new Array(selected.length);
+    for (let i = 0; i < selected.length; ++i) {
+      ids[i] = parseInt(selected[i].dataset.id);
     }
     return ids;
   }

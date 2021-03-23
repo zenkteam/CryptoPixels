@@ -26,17 +26,18 @@
     width: 10px;
 }
 
-.boxes div.selected.a {
-    background: green;
+.boxes div.selected{
     opacity: 0.7;
 }
-.boxes div.reserved {
+
+.boxes div.selected {
+    background: green;
+}
+.boxes div.selected.reserved {
     background: black;
-    opacity: 0.7;
 }
 .boxes div.selected.sold {
     background: red;
-    opacity: 0.7;
 }
 
 

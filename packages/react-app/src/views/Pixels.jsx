@@ -4,8 +4,6 @@ import React, { useEffect, useState } from "react";
 import { SelectPlane } from "../components";
 import { Button } from "antd";
 import { Transactor } from "../helpers";
-import  m from '../matrix.js'
-
 
 export default function Pixels(props) {
     
@@ -14,25 +12,25 @@ export default function Pixels(props) {
     const tx = Transactor(props.userProvider, props.gasPrice)
 
     function getPixelsByIds(ids) {
-        const list = [];
-        for (var id of ids) {
-            list.push(pixels[id - 1]);
+        const list = new Array(ids.length);
+        for (let i = 0; i < ids.length; ++i) {
+            list[i] = pixels[ids[i] - 1]
         }
         return list;
     }
 
     function onSelected(selection) {
 
-        selection = selection.filter((x) => {
-            return reserved.indexOf(x) === -1
-        })
         const selected = getPixelsByIds(selection);
         setSelection(selected);
         // all selected, no matter which status they have
         //console.log('onSelectedSelection', selection);
         //console.log('onSelected', selected);
-        
-        let selectedPixels = []
+       
+        //selection = selection.filter((x) => {
+        //    return reserved.indexOf(x) === -1
+        //})
+        let selectedPixels = new Array(selection.length)
         for(let n in selection){
             selectedPixels.push(
                 <div key={selection[n]}>CryptoPixel# {selection[n]}</div> 
@@ -60,11 +58,12 @@ export default function Pixels(props) {
         //console.log("all props", props)
 
         // Loop through all assets and pull the ones that were selected
-        var selectedAssets = []
+        var selectedAssets = [], i = 0
         for(let asset in props.loadedAssets){
             for(let j = 0; j < selection.length; j++){
                 if(props.loadedAssets[asset].pixelId === selection[j].p){
-                    selectedAssets.push(props.loadedAssets[asset])
+                    selectedAssets[i] = props.loadedAssets[asset]
+                    ++i
                     if(selectedAssets.length === selection.length){
                         break;
                     }
@@ -79,9 +78,9 @@ export default function Pixels(props) {
 
         var buy = []
         for(let i = 0; i < selectedAssets.length; ++i){
-            let pixelId = selectedAssets[i].pixelId
-            let x = pixelId > 1000 ? parseInt(pixelId[1]+pixelId[2]+pixelId[3]) : 1
-            let y = pixelId > 1000 ? parseInt(pixelId[0]) : 1
+            const pixelId = selectedAssets[i].pixelId
+            const x = pixelId > 1000 ? parseInt(pixelId[1]+pixelId[2]+pixelId[3]) : 1
+            const y = pixelId > 1000 ? parseInt(pixelId[0]) : 1
             buy.push({id: selectedAssets[i].pixelId, tokenId: selectedAssets[i].tokenId, x: x, y: y })
         }
         //initiateSales()
@@ -99,18 +98,19 @@ export default function Pixels(props) {
     }
 
     function getSpecialPieces() {
-        // Get from coordinates to Id
-        let reserved = []
-        let starts = [2021, 2061, 4041, 6021, 6061]
-        let size = 20
-        for(let i = 0; i < starts.length; ++i){
-            for(let j = 0; j < size; ++j){
-                for(let k = 0; k < size; ++k){
-                    reserved.push(starts[i] + j + k*100)
+        let upperLeftPointOfEachPiece = [2021, 2061, 4041, 6021, 6061]
+        let sizeOfEachPiece = 20
+        let reserved = new Array(upperLeftPointOfEachPiece.length * sizeOfEachPiece * sizeOfEachPiece)
+        reserved.length = upperLeftPointOfEachPiece.length * sizeOfEachPiece * sizeOfEachPiece
+        let c = 0
+        for(let i = 0; i < upperLeftPointOfEachPiece.length; ++i){
+            for(let j = 0; j < sizeOfEachPiece; ++j){
+                for(let k = 0; k < sizeOfEachPiece; ++k){
+                    reserved[c] = upperLeftPointOfEachPiece[i] + j + k*100
+                    ++c
                 }
             }
         }
-
         return reserved;
     }
 
@@ -119,21 +119,30 @@ export default function Pixels(props) {
     const [selectedPixels, setSelectedPixels] = useState([]);
     const [zoom, setZoom] = useState('auto');
     const [selection, setSelection] = useState([]);
-    const [priceToBuyInDollar, setPriceToBuyInDollar] = useState([]);
-    const [priceToBuyInEther, setPriceToBuyInEther] = useState([]);
+    const [priceToBuyInDollar, setPriceToBuyInDollar] = useState(0);
+    const [priceToBuyInEther, setPriceToBuyInEther] = useState(0);
 
     const STATI = {
-        AVAILABLE: 'a',
+        AVAILABLE: '',
         RESERVED: 'reserved',
         SOLD: 'sold',
     }
 
+    function getPixels(){
+        const pixels = new Array(10000)
+        for (let r = 0; r < 10000; r++) {
+            pixels[r] = {p:r+1,s:''}
+        }
+        return pixels;
+    }
+
     useEffect(() => {
         // generate Data only once
-        const pixels = m.pixel
+        const pixels = getPixels()
         const reserved = getSpecialPieces()
 
         if(props.soldPixels){
+            console.log("SOLD 2: "+props.soldPixels)
             for(var i = 0; i < props.soldPixels.length; ++i){
                 pixels[props.soldPixels[i]-1].s = STATI.SOLD
             }
@@ -142,10 +151,9 @@ export default function Pixels(props) {
         for(var i = 0; i < reserved.length; ++i){
             pixels[reserved[i]-1].s = STATI.RESERVED
         }
-
+        
         setPixels(pixels)
         setReserved(reserved)
-        //setSelection([pixels[22, 23, 24]]);
     }, []);
    
     return (
@@ -186,8 +194,7 @@ export default function Pixels(props) {
             </div>
             
             }
-            
-
+        
             
             <div className="imageUpload">
                 
