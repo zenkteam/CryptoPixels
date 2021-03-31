@@ -89,13 +89,12 @@ export default function Pixels(props) {
               y = selectedAssets[i].attributes[j].value
             }
           }
-          const pixelId = selectedAssets[i].pixelId
-          buy.push({id: selectedAssets[i].pixelId, tokenId: selectedAssets[i].ipfsId, x: x, y: y })
+          buy.push({id: selectedAssets[i].pixelId, ipfs: selectedAssets[i].ipfsId, x: x, y: y })
         }
         //initiateSales()
         //tx( writeContracts.CryptoPixels.buyPixels(loadedAssets[a], ) )
         //console.log()
-        tx( props.writeContracts.CryptoPixels.buyPixels(buy, 1, {gasPrice:gasPrice}) )
+        tx( props.writeContracts.CryptoPixels.buyPixels(buy) ) //,  {gasPrice:gasPrice}
     }
 
     function resetSelection() {

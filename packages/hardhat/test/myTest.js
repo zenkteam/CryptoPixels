@@ -11,7 +11,8 @@ describe("CryptoPixels.org", function () {
   let cryptoPixels;
   let uploadedAssets = fs.readFileSync("./uploaded.json");
   let uploadedAssetsParsed = JSON.parse(uploadedAssets);
-  let [user1, user2, user3] = await ethers.getSigners()
+  let costPerPixel = 0.055066079;
+  
 
   describe("CryptoPixels", function () {
     it("Should deploy CryptoPixels", async function () {
@@ -20,22 +21,27 @@ describe("CryptoPixels.org", function () {
         let bytes32 = utils.id(a)
         bytes32Array.push(bytes32)
       }*/
-
+      
       const CryptoPixels = await ethers.getContractFactory("CryptoPixels");
-      cryptoPixels = await CryptoPixels.deploy(bytes32Array);
+      cryptoPixels = await CryptoPixels.deploy();
     });
 
     describe("buyPixels()", function () {
       it("Should be able to buy multiple pixels", async function () {
 
+        var [user1, user2, user3] = await ethers.getSigners()
+
         // Select 2 random pixels
         let tokenURIs = Object.values(uploadedAssetsParsed)
-        let randomTokenURI_1, randomTokenURI_2, pixelsToBuy
-        do {
-         randomTokenURI_1 = tokenURIs[parseInt(Math.random() * tokenURIs.length)]
-         randomTokenURI_2 = tokenURIs[parseInt(Math.random() * tokenURIs.length)]
-         pixelsToBuy = [randomTokenURI_1, randomTokenURI_2];
-        } while (randomTokenURI_1 === randomTokenURI_2)
+        let pixelsToBuy = [], used = []
+        let amount = 3
+        while(pixelsToBuy.length < amount){
+          let r = parseInt(Math.random() * tokenURIs.length)
+          if(used.indexOf(r) === -1){
+            pixelsToBuy.push(tokenURIs[r])
+            used.push(r)
+          }
+        }
 
         // Put together required data
         var buy = []
@@ -52,21 +58,26 @@ describe("CryptoPixels.org", function () {
           buy.push({id: pixelsToBuy[i].pixelId, ipfs: pixelsToBuy[i].ipfsId, x: x, y: y })
         }
 
-        console.log(buy)
+        console.log('Buying', buy)
         
         // Buy 2 NFTs (lazy mint)
-        let boughtPixelsTx = await cryptoPixels.buyPixels(buy)
-        let boughtPixels = await boughtPixelsTx.wait()
+        let price = costPerPixel * buy.length
+        let boughtPixelsTx = await cryptoPixels.connect(user2).buyPixels(buy, {value: utils.parseEther(price.toString())})
+        expect('buyPixels').to.be.calledOnContract(cryptoPixels)
+        //let boughtPixels = await boughtPixelsTx.wait()
 
-        console.log(boughtPixels)
+        // Try to re-buy the same NFTs (shouldn't work) 
+       await expect(cryptoPixels.connect(user3).buyPixels(buy, {value: utils.parseEther(price.toString())})).to.be.revertedWith('NOT FOR SALE ANYMORE');
 
-        expect(boughtPixels).to.equal(buy);
+        //console.log('Bought Blocks', boughtPixels)
+
+        //expect(boughtPixels).to.equal(buy.length);
 
         // See that the lazy minting runs through
 
         // Check that wallet actually holds those NFTs
 
-        // Try to re-buy the same NFTs (shouldn't work) 
+        
 
         // Buy other NFTs
 

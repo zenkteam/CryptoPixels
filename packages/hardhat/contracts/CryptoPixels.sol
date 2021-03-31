@@ -30,7 +30,7 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
   uint256 private pricePerPixel = 0.055066079 ether;
 
   // For Sale (maps a token id to its availability)
-  mapping (uint16 => string) public notForSale;
+  mapping (uint16 => bool) public notForSale;
 
   //this lets you look up a token by the uri (assuming there is only one of each uri for now)
   mapping (string => uint16) public ipfsToId;
@@ -46,8 +46,8 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
       require(_pixels.length > 0, 'You need at least buy one pixel');
       require(_pixels.length <= 1000, 'You can only buy 1000 pixels at a time');
       
-      uint256 minPrice = pricePerPixel * 0.8 * _pixels.length;
-      require(msg.value == pricePerPixel * _pixels.length && msg.value > minPrice, 'NOT PAYED ENOUGH');
+      uint256 minPrice = (pricePerPixel / 10 * 8) * _pixels.length;
+      require(msg.value >= minPrice, 'NOT PAYED ENOUGH');
 
       // CHECK IF: NOT RESERVED, VALID TOKEN RANGE, SET FOR SALE
       for (uint8 i = 0; i < _pixels.length; i++) {
@@ -71,7 +71,7 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
         _mint(msg.sender, _pixels[i].id);
 
         // Set to notForSale
-        notForSale[_pixels[i].id] = _pixels[i].ipfs;
+        notForSale[_pixels[i].id] = true;
 
         // Build token-specific URI which points to metadata
         _setTokenURI(_pixels[i].id, _pixels[i].ipfs);
