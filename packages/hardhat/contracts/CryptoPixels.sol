@@ -26,43 +26,43 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
       uint y;
   }
 
-  // For Sale
+  // For Sale (maps a token id to its availability)
   mapping (bytes32 => bool) public forSale;
 
   //this lets you look up a token by the uri (assuming there is only one of each uri for now)
   mapping (bytes32 => uint256) public uriToTokenId;
 
-  constructor(bytes32[] memory assetsForSale) ERC721("CryptoPixels", "CPX") payable {
+  constructor(bytes32[] memory pixelsForSale) ERC721("CryptoPixels", "CPX") payable {
+    
     _setBaseURI("https://ipfs.io/ipfs/"); // "https://api.cryptopixels.org/" ?
-    for(uint256 i=0;i<assetsForSale.length;i++){
-      forSale[assetsForSale[i]] = true;
+    
+    for(uint256 i=0; i < pixelsForSale.length ;i++){
+      forSale[pixelsForSale[i]] = true;
     }
   }
 
   /**
     Allow to buy pixels in bulk
    */
-  function buyPixels(CryptoPixel[] memory _pixels, uint amount) payable public {
+  function buyPixels(CryptoPixel[] memory _pixels) payable public returns (CryptoPixel[] memory){
       require(_pixels.length > 0, 'You need at least buy one pixel');
-      require(amount > 0, 'Not enough');
-      require(amount <= 100, 'Only 100 pixels at a time');
+      require(_pixels.length <= 1000, 'You can only buy 1000 pixels at a time');
 
       // CHECK IF: NOT RESERVED, VALID TOKEN RANGE, SET FOR SALE
       for (uint i = 0; i < _pixels.length; i++) {
+
         bytes32 uriHash = keccak256(abi.encodePacked(_pixels[i].tokenId));
 
         //require(_pixels[i].id > 0 && _pixels[i].id < 10001, "PIXEL ID DOES NOT EXISt");
         require(forSale[uriHash], "NOT FOR SALE");
 
-        for (uint r = 0; r < 5; i++) {
-          require(_pixels[i].x >= reserved[r][0] && _pixels[i].x < reserved[r][1] && _pixels[i].y >= reserved[r][2] && _pixels[i].y < reserved[r][3], "RESERVED");
-        }
+        /*for (uint r = 0; r < 5; i++) {
+          require((_pixels[i].x <= reserved[r][0] || _pixels[i].x > reserved[r][1]) && (_pixels[i].y <= reserved[r][2] || _pixels[i].y > reserved[r][3]), "RESERVED");
+        }*/
       }
 
       // Make purchase
       _asyncTransfer(owner(), msg.value);
-
-
 
       // Mint
       for (uint i = 0; i < _pixels.length; i++) {
@@ -78,10 +78,9 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
         _setTokenURI(_pixels[i].id, _pixels[i].tokenId);
 
         uriToTokenId[uriHash] = _pixels[i].id;
-
-        //ids.push(_pixels[i].id);
       } 
 
+      return (_pixels);
   }
 
   /**

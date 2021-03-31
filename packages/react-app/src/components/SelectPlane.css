@@ -7,7 +7,7 @@
     overflow: scroll;
     position: fixed;
 }
-.boxes {
+#boxes {
     background-image: url(background@10x.png);
     background-size: 1000px 1000px;
     height: 1000px;
@@ -21,22 +21,22 @@
     transform: scale(1);
     transform-origin: left top;
 }
-.boxes div {
+#boxes div {
     height: 10px;
     width: 10px;
 }
 
-.boxes div.selected{
+#boxes div.selected{
     opacity: 0.7;
 }
 
-.boxes div.selected {
+#boxes div.selected {
     background: green;
 }
-.boxes div.selected.reserved {
+#boxes div.selected.reserved {
     background: black;
 }
-.boxes div.selected.sold {
+#boxes div.selected.sold {
     background: red;
 }
 

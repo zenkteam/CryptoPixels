@@ -1,6 +1,7 @@
 import "./SelectPlane.css";
 import React, { useEffect, useState } from "react";
 import SelectionArea from "@simonwep/selection-js";
+import { ConsoleSqlOutlined } from "@ant-design/icons";
 
 // provides plane which allows to select pixels
 
@@ -40,7 +41,7 @@ export default function SelectPlane(props) {
   
   const items = new Array(props.pixels.length);
   for (let i = 0; i < props.pixels.length; ++i) {
-    items.push(<div key={props.pixels[i].p} data-id={props.pixels[i].p} className={props.pixels[i].s}></div>);
+    items.push(<div key={props.pixels[i].p} id={props.pixels[i].p} className={props.pixels[i].s}></div>);
   }
 
   compareSelection();
@@ -49,11 +50,11 @@ export default function SelectPlane(props) {
     window.plane = new SelectionArea({
 
       // All elements in this container can be selected
-      selectables: ['.boxes > div'],
+      selectables: ['#boxes > div'],
       overlap: 'keep',
 
       // The container is also the boundary in this case
-      boundaries: ['.boxes']
+      boundaries: ['#boxes']
     }).on('start', ({ store, event }) => {
 
       // Remove class if the user isn't pressing the control key or ⌘ key
@@ -71,14 +72,15 @@ export default function SelectPlane(props) {
     }).on('move', ({ store: { changed: { added, removed } } }) => {
 
       // Add a custom class to the elements that where selected.
-      for (const el of added) {
-        el.className += 'selected'; // Faster than classList manipulation
+      for (let i = 0; i < added.length; ++i) {
+        added[i].className += 'selected'; // Faster than classList manipulation
       }
 
       // Remove the class from elements that where removed
       // since the last selection (toggle pixel)
-      for (const el of removed) {
-        el.classList.remove('selected'); // Here we use classList for safe removal
+      for (let i = 0; i < removed.length; ++i) {
+        removed[i].classList.remove('selected'); // Here we use classList for safe removal
+        //removed[i].className = removed[i].className.replace('selected', '');
       }
 
     }).on('stop', () => {
@@ -86,27 +88,24 @@ export default function SelectPlane(props) {
       if (typeof props.onSelected === "function") {
         props.onSelected(selectedIds());
       }
+
     }); 
   }
 
   function selectIds(ids) {
-    for (const id of ids) {
-      window.plane.select(`[id="${id}"]`);
+    for (let i = 0; i < ids.length; ++i) {
+      window.plane.select(document.getElementById(ids[ids]));
     }
     window.plane.keepSelection();
   }
 
-  function deselectId(id) {
-    const el = document.querySelector(`[data-id="${id}"]`);
-    if (el) {
-      window.plane.deselect(el);
-      el.classList.remove('selected');
-    }
-  }
-
   function deselectIds(ids) {
-    for (const id of ids) {
-      deselectId(id);
+    for (let i = 0; i < ids.length; ++i) {
+      const el = document.getElementById(ids[ids]);
+      if (el) {
+        window.plane.deselect(el);
+        el.classList.remove('selected');
+      }
     }
   }
 
@@ -141,6 +140,7 @@ export default function SelectPlane(props) {
         ++j;
       }
     }
+    
 
     selectIds(toAdd);
     deselectIds(toRemove);
@@ -150,7 +150,7 @@ export default function SelectPlane(props) {
     const selected = window.plane.getSelection();
     const ids = new Array(selected.length);
     for (let i = 0; i < selected.length; ++i) {
-      ids[i] = parseInt(selected[i].dataset.id);
+      ids[i] = selected[i].id;
     }
     return ids;
   }
@@ -198,7 +198,7 @@ export default function SelectPlane(props) {
 
   useEffect(() => {
     // run
-    container = document.querySelector('.boxes');
+    container = document.getElementById('boxes');
     // window.selectIds = selectIds;
     // console.info('Tired of manually selecting pixels? Use the `selectIds([])` function in your console to programatically select what you want.');
     if (!props.zoom || props.zoom === 'auto') {
@@ -218,7 +218,7 @@ export default function SelectPlane(props) {
 
   return (
     <div className="scroller zoom">
-      <section className="boxes">
+      <section id="boxes">
         {items}
       </section>
     </div>

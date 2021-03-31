@@ -21,15 +21,18 @@ export default function Pixels(props) {
 
     function onSelected(selection) {
 
+        
+
         const selected = getPixelsByIds(selection);
         setSelection(selected);
         // all selected, no matter which status they have
         //console.log('onSelectedSelection', selection);
         //console.log('onSelected', selected);
        
-        //selection = selection.filter((x) => {
-        //    return reserved.indexOf(x) === -1
-        //})
+        selection = selection.filter((x) => {
+           return reserved.indexOf(x) === -1
+        })
+
         let selectedPixels = new Array(selection.length)
         for(let n in selection){
             selectedPixels.push(
@@ -78,10 +81,16 @@ export default function Pixels(props) {
 
         var buy = []
         for(let i = 0; i < selectedAssets.length; ++i){
-            const pixelId = selectedAssets[i].pixelId
-            const x = pixelId > 1000 ? parseInt(pixelId[1]+pixelId[2]+pixelId[3]) : 1
-            const y = pixelId > 1000 ? parseInt(pixelId[0]) : 1
-            buy.push({id: selectedAssets[i].pixelId, tokenId: selectedAssets[i].tokenId, x: x, y: y })
+          let x, y;
+          for(let j = 0; j < selectedAssets[i].attributes.length; ++j){
+            if(selectedAssets[i].attributes[j].trait_type === 'column'){
+              x = selectedAssets[i].attributes[j].value
+            } else if(selectedAssets[i].attributes[j].trait_type === 'row'){
+              y = selectedAssets[i].attributes[j].value
+            }
+          }
+          const pixelId = selectedAssets[i].pixelId
+          buy.push({id: selectedAssets[i].pixelId, tokenId: selectedAssets[i].ipfsId, x: x, y: y })
         }
         //initiateSales()
         //tx( writeContracts.CryptoPixels.buyPixels(loadedAssets[a], ) )
