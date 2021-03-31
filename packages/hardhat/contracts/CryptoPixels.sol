@@ -16,29 +16,27 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
 
-  // Reserved: [x from, x to, y from, y to]
-  uint16[4][] private reserved = [ [200, 400, 200, 400], [600, 800, 200, 400], [200, 400, 600, 800], [600, 800, 600, 800], [400, 600, 400, 600] ];
-
   struct CryptoPixel {
-      uint id;
-      string tokenId;
-      uint x;
-      uint y;
+      uint16 id;
+      string ipfs;
+      uint16 x;
+      uint16 y;
   }
 
+
+  // Reserved: [x from, x to, y from, y to]
+  uint16[4][] private reserved = [ [200, 400, 200, 400], [600, 800, 200, 400], [200, 400, 600, 800], [600, 800, 600, 800], [400, 600, 400, 600] ];
+  
+  uint256 private pricePerPixel = 0.055066079 ether;
+
   // For Sale (maps a token id to its availability)
-  mapping (bytes32 => bool) public forSale;
+  mapping (uint16 => string) public notForSale;
 
   //this lets you look up a token by the uri (assuming there is only one of each uri for now)
-  mapping (bytes32 => uint256) public uriToTokenId;
+  mapping (string => uint16) public ipfsToId;
 
-  constructor(bytes32[] memory pixelsForSale) ERC721("CryptoPixels", "CPX") payable {
-    
+  constructor() ERC721("CryptoPixels", "CPX") payable {
     _setBaseURI("https://ipfs.io/ipfs/"); // "https://api.cryptopixels.org/" ?
-    
-    for(uint256 i=0; i < pixelsForSale.length ;i++){
-      forSale[pixelsForSale[i]] = true;
-    }
   }
 
   /**
@@ -47,14 +45,16 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
   function buyPixels(CryptoPixel[] memory _pixels) payable public returns (CryptoPixel[] memory){
       require(_pixels.length > 0, 'You need at least buy one pixel');
       require(_pixels.length <= 1000, 'You can only buy 1000 pixels at a time');
+      
+      uint256 minPrice = pricePerPixel * 0.8 * _pixels.length;
+      require(msg.value == pricePerPixel * _pixels.length && msg.value > minPrice, 'NOT PAYED ENOUGH');
 
       // CHECK IF: NOT RESERVED, VALID TOKEN RANGE, SET FOR SALE
-      for (uint i = 0; i < _pixels.length; i++) {
+      for (uint8 i = 0; i < _pixels.length; i++) {
 
-        bytes32 uriHash = keccak256(abi.encodePacked(_pixels[i].tokenId));
-
-        //require(_pixels[i].id > 0 && _pixels[i].id < 10001, "PIXEL ID DOES NOT EXISt");
-        require(forSale[uriHash], "NOT FOR SALE");
+        require(_pixels[i].id > 0 && _pixels[i].id < 10001, "PIXEL ID DOES NOT EXIST");
+        
+        require(!notForSale[_pixels[i].id], "NOT FOR SALE ANYMORE");
 
         /*for (uint r = 0; r < 5; i++) {
           require((_pixels[i].x <= reserved[r][0] || _pixels[i].x > reserved[r][1]) && (_pixels[i].y <= reserved[r][2] || _pixels[i].y > reserved[r][3]), "RESERVED");
@@ -65,19 +65,18 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
       _asyncTransfer(owner(), msg.value);
 
       // Mint
-      for (uint i = 0; i < _pixels.length; i++) {
-        bytes32 uriHash = keccak256(abi.encodePacked(_pixels[i].tokenId));
+      for (uint8 i = 0; i < _pixels.length; i++) {
 
         // Mint the NFT and attach the token with the current ID to the message sender
         _mint(msg.sender, _pixels[i].id);
 
         // Set to notForSale
-        forSale[uriHash] = false;
+        notForSale[_pixels[i].id] = _pixels[i].ipfs;
 
         // Build token-specific URI which points to metadata
-        _setTokenURI(_pixels[i].id, _pixels[i].tokenId);
+        _setTokenURI(_pixels[i].id, _pixels[i].ipfs);
 
-        uriToTokenId[uriHash] = _pixels[i].id;
+        ipfsToId[_pixels[i].ipfs] = _pixels[i].id;
       } 
 
       return (_pixels);
