@@ -11,7 +11,7 @@ describe("CryptoPixels.org", function () {
    
   let cryptoPixels, owner, wallet2, wallet3, provider; 
   let costPerPixel = 0.055066079;
-  let buy = getRandomPixelsToBuy(2)
+  let buy = getRandomPixelsToBuy(3)
   let price = utils.parseEther((costPerPixel * buy.length).toString());
   
 
@@ -31,11 +31,19 @@ describe("CryptoPixels.org", function () {
     it("Should lazy mint pixels", async function(){
     
       let moneyBefore = await provider.getBalance(wallet2.address)
+      
       console.log('cash left:',utils.formatEther(moneyBefore))
-      expect(await cryptoPixels.connect(wallet2).buyPixels(buy, {value: price}))
+
+      expect(await cryptoPixels.connect(wallet2).buyPixels([buy[0], buy[1]], {value: price}))
                 .to.emit(cryptoPixels, 'Transfer')
+
+      await expect(cryptoPixels.connect(wallet2).buyPixels([buy[2]], {value: price}))
                 .to.emit(cryptoPixels, 'Deposited')
-      let moneyAfter = await provider.getBalance(wallet2.address)
+
+      expect(await cryptoPixels.payments(owner.address)).to.equal(price);
+
+      let moneyAfter = await provider.getBalance(wallet2.address);
+      
       console.log('cash left:',utils.formatEther(moneyAfter))
         
       // Wallet should have less money
@@ -43,27 +51,27 @@ describe("CryptoPixels.org", function () {
       
       // Try to re-buy the same NFTs (shouldn't work) 
       await expect(cryptoPixels.connect(wallet3).buyPixels(buy, {value: price})).to.be.revertedWith('NOT FOR SALE ANYMORE');
-
-      expect(await cryptoPixels.payments(owner.address)).to.be.bignumber.equal(price);
       
       // TokenURI should be available
       expect(await cryptoPixels.tokenURI(buy[0].id)).to.equal('https://ipfs.io/ipfs/' + buy[0].ipfs);
       expect(await cryptoPixels.tokenURI(buy[1].id)).to.equal('https://ipfs.io/ipfs/' + buy[1].ipfs);
-      expect(await cryptoPixels.tokenURI('999')).to.equal('https://ipfs.io/ipfs/');
+      await expect(cryptoPixels.tokenURI('999')).to.be.revertedWith('This pixel has not been minted yet - 1');
 
       
       
-      // Get contract return value
+      // TODO: Get contract return value
 
 
-      // Check for Reserved
+      // TODO: Check for Reserved
 
 
-      // Adjust pixel price
+      // TODO: Adjust pixel price
 
 
       // Try to withdraw money
-      expect(await cryptoPixels.withdrawPayments(owner.address)).to.emit(cryptoPixels, 'Withdrawn');
+      console.log('Owner status:', utils.formatEther(await provider.getBalance(owner.address)))
+      await expect(cryptoPixels.withdrawPayments(owner.address)).to.emit(cryptoPixels, 'Withdrawn');
+      console.log('Owner status:', utils.formatEther(await provider.getBalance(owner.address)))
 
     }); 
   });

@@ -1,11 +1,11 @@
-pragma solidity >=0.7.0 <0.8.0;
+pragma solidity >= 0.8.0;
 pragma abicoder v2;
 //SPDX-License-Identifier: MIT
 
-import "hardhat/console.sol";
+//import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/payment/PullPayment.sol"; // ToDo Upgrade to OpenZeppelin 3.4 and change path
-import "@openzeppelin/contracts/payment/escrow/Escrow.sol"; // ToDo Upgrade to OpenZeppelin 3.4 and change path
+import "@openzeppelin/contracts/security/PullPayment.sol"; // ToDo Upgrade to OpenZeppelin 3.4 and change path
+import "@openzeppelin/contracts/utils/escrow/Escrow.sol"; // ToDo Upgrade to OpenZeppelin 3.4 and change path
 import "@openzeppelin/contracts/utils/Context.sol"; // ToDo Upgrade to OpenZeppelin 3.4 and change path
 import "@openzeppelin/contracts/access/Ownable.sol";
 //learn more: https://docs.openzeppelin.com/contracts/3.x/erc721
@@ -37,10 +37,9 @@ contract CryptoPixels is Context, Ownable, Escrow, PullPayment, ERC721 {
   mapping (uint256 => bool) public notForSale;
 
   //this lets you look up a token by the uri (assuming there is only one of each uri for now)
-  mapping (uint256 => string) public idToIpfs;
+  mapping (uint256 => string) private _tokenURIs;
 
   constructor() ERC721("CryptoPixels", "CPX") payable {
-    _setBaseURI("https://ipfs.io/ipfs/"); // "https://api.cryptopixels.org/" ?
     pixelsRemaining = 10000;
   }
 
@@ -75,11 +74,10 @@ contract CryptoPixels is Context, Ownable, Escrow, PullPayment, ERC721 {
 
         // Set to notForSale
         notForSale[_pixels[i].id] = true;
-        idToIpfs[_pixels[i].id] = _pixels[i].ipfs;
         --pixelsRemaining;
 
         // Build token-specific URI which points to metadata
-        _setTokenURI(_pixels[i].id, _pixels[i].ipfs);
+        _tokenURIs[_pixels[i].id] = _pixels[i].ipfs;
       } 
 
       return _pixels;
@@ -92,7 +90,15 @@ contract CryptoPixels is Context, Ownable, Escrow, PullPayment, ERC721 {
   function tokenURI(uint256 pixelId) public view virtual override returns (string memory) {
       require(pixelId > 0 && pixelId < 10001, "ERC721Metadata: URI query for nonexistent token");
       require(notForSale[pixelId], 'This pixel has not been minted yet - 1');
-      return string(abi.encodePacked(baseURI(), idToIpfs[pixelId]));
+      return string(abi.encodePacked(_baseURI(), _tokenURIs[pixelId]));
   }
+
+    /**
+     * @dev Base URI for computing {tokenURI}. Empty by default, can be overriden
+     * in child contracts.
+     */
+    function _baseURI() override internal view virtual returns (string memory) {
+        return "https://ipfs.io/ipfs/"; //"https://api.cryptopixels.org/"
+    }
   
 }
