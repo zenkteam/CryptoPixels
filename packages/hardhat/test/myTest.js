@@ -1,19 +1,26 @@
-const { ethers } = require("hardhat");
+const { ethers, network } = require("hardhat");
 const { use, expect } = require("chai");
 const { solidity } = require("ethereum-waffle");
-const { utils } = require("ethers");
+const { utils, BigNumber } = require("ethers");
 const fs = require("fs");
 const { doesNotMatch } = require("assert");
 
 use(solidity);
+
+
 
 describe("CryptoPixels.org", function () {
    
   let cryptoPixels, wallet1, wallet2, wallet3, provider; 
   let costPerPixel = 0.055066079;
   let buy = [], price;
+  
 
   beforeEach(async () => {
+    /*await network.provider.request({
+      method: "hardhat_reset",
+      params: []
+    })  */
     const CryptoPixels = await ethers.getContractFactory("CryptoPixels");
     cryptoPixels = await CryptoPixels.deploy();
     [wallet1, wallet2, wallet3] = await ethers.getSigners()
@@ -32,22 +39,19 @@ describe("CryptoPixels.org", function () {
       expect(await cryptoPixels.connect(wallet2).buyPixels(buy, {value: price})).to.emit(cryptoPixels, 'Transfer')
         
       // Try to re-buy the same NFTs (shouldn't work) 
-      let moneyBefore = provider.getBalance(wallet3.address)
-      expect(await cryptoPixels.connect(wallet3).buyPixels(buy, {value: price})).to.be.revertedWith('NOT FOR SALE ANYMORE');
+      let moneyBefore = await provider.getBalance(wallet3.address)
+      console.log('cash',utils.formatEther(moneyBefore))
+      expect(cryptoPixels.connect(wallet3).buyPixels(buy, {value: price})).to.be.revertedWith('NOT FOR SALE ANYMORE');
       
       // TokenURI should be available
-      expect(await cryptoPixels.tokenURI(buy[0].id)).to.equal('https://ipfs.io/ipfs/' + buy[1].ipfs);
+      expect(await cryptoPixels.tokenURI(buy[0].id)).to.equal('https://ipfs.io/ipfs/' + buy[0].ipfs);
 
       // Wallet should have less money
-      expect(provider.getBalance(wallet3.address)).to.equal(moneyBefore-price)  
-
-      expect(await cryptoPixels.tokenURI(buy[0].id)).to.equal('https://ipfs.io/ipfs/' + buy[1].ipfs);
+      //expect(await provider.getBalance(wallet3.address)).to.equal(moneyBefore.sub(price))  
     
     });
   });
 });
-
-
 
 function getRandomPixelsToBuy(amount){
   amount = amount || 3
