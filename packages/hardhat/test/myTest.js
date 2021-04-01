@@ -8,82 +8,75 @@ const { doesNotMatch } = require("assert");
 use(solidity);
 
 describe("CryptoPixels.org", function () {
-  let cryptoPixels;
-  let uploadedAssets = fs.readFileSync("./uploaded.json");
-  let uploadedAssetsParsed = JSON.parse(uploadedAssets);
+   
+  let cryptoPixels, wallet1, wallet2, wallet3, provider; 
   let costPerPixel = 0.055066079;
-  
+  let buy = [], price;
 
-  describe("CryptoPixels", function () {
-    it("Should deploy CryptoPixels", async function () {
-      /*let bytes32Array = []
-      for(let a in uploadedAssetsParsed){
-        let bytes32 = utils.id(a)
-        bytes32Array.push(bytes32)
-      }*/
+  beforeEach(async () => {
+    const CryptoPixels = await ethers.getContractFactory("CryptoPixels");
+    cryptoPixels = await CryptoPixels.deploy();
+    [wallet1, wallet2, wallet3] = await ethers.getSigners()
+    provider = ethers.getDefaultProvider()
+  });
+
+  it("Should prepare pixels to buy", async function () {
+    buy = getRandomPixelsToBuy(2)
+    price = utils.parseEther((costPerPixel * buy.length).toString())
+  })
+
+  describe("buyPixels()", function () {
+
+    it("Should Buy Pixels", async function(){
+    
+      expect(await cryptoPixels.connect(wallet2).buyPixels(buy, {value: price})).to.emit(cryptoPixels, 'Transfer')
+        
+      // Try to re-buy the same NFTs (shouldn't work) 
+      let moneyBefore = provider.getBalance(wallet3.address)
+      expect(await cryptoPixels.connect(wallet3).buyPixels(buy, {value: price})).to.be.revertedWith('NOT FOR SALE ANYMORE');
       
-      const CryptoPixels = await ethers.getContractFactory("CryptoPixels");
-      cryptoPixels = await CryptoPixels.deploy();
+      // TokenURI should be available
+      expect(await cryptoPixels.tokenURI(buy[0].id)).to.equal('https://ipfs.io/ipfs/' + buy[1].ipfs);
+
+      // Wallet should have less money
+      expect(provider.getBalance(wallet3.address)).to.equal(moneyBefore-price)  
+
+      expect(await cryptoPixels.tokenURI(buy[0].id)).to.equal('https://ipfs.io/ipfs/' + buy[1].ipfs);
+    
     });
-
-    describe("buyPixels()", function () {
-      it("Should be able to buy multiple pixels", async function () {
-
-        var [user1, user2, user3] = await ethers.getSigners()
-
-        // Select 2 random pixels
-        let tokenURIs = Object.values(uploadedAssetsParsed)
-        let pixelsToBuy = [], used = []
-        let amount = 3
-        while(pixelsToBuy.length < amount){
-          let r = parseInt(Math.random() * tokenURIs.length)
-          if(used.indexOf(r) === -1){
-            pixelsToBuy.push(tokenURIs[r])
-            used.push(r)
-          }
-        }
-
-        // Put together required data
-        var buy = []
-        for(let i = 0; i < pixelsToBuy.length; ++i){
-          let x, y;
-          for(let j = 0; j < pixelsToBuy[i].attributes.length; ++j){
-            if(pixelsToBuy[i].attributes[j].trait_type === 'column'){
-              x = pixelsToBuy[i].attributes[j].value
-            } else if(pixelsToBuy[i].attributes[j].trait_type === 'row'){
-              y = pixelsToBuy[i].attributes[j].value
-            }
-          }
-          const pixelId = pixelsToBuy[i].pixelId
-          buy.push({id: pixelsToBuy[i].pixelId, ipfs: pixelsToBuy[i].ipfsId, x: x, y: y })
-        }
-
-        console.log('Buying', buy)
-        
-        // Buy 2 NFTs (lazy mint)
-        let price = costPerPixel * buy.length
-        let boughtPixelsTx = await cryptoPixels.connect(user2).buyPixels(buy, {value: utils.parseEther(price.toString())})
-        expect('buyPixels').to.be.calledOnContract(cryptoPixels)
-        //let boughtPixels = await boughtPixelsTx.wait()
-
-        // Try to re-buy the same NFTs (shouldn't work) 
-       await expect(cryptoPixels.connect(user3).buyPixels(buy, {value: utils.parseEther(price.toString())})).to.be.revertedWith('NOT FOR SALE ANYMORE');
-
-        //console.log('Bought Blocks', boughtPixels)
-
-        //expect(boughtPixels).to.equal(buy.length);
-
-        // See that the lazy minting runs through
-
-        // Check that wallet actually holds those NFTs
-
-        
-
-        // Buy other NFTs
-
-        
-      });
-    });
-
   });
 });
+
+
+
+function getRandomPixelsToBuy(amount){
+  amount = amount || 3
+  let uploadedAssetsParsed = JSON.parse(fs.readFileSync("./uploaded.json"));
+
+  // Select 2 random pixels
+  let tokenURIs = Object.values(uploadedAssetsParsed)
+  let pixelsToBuy = [], used = []
+  while(pixelsToBuy.length < amount){
+    let r = parseInt(Math.random() * tokenURIs.length)
+    if(used.indexOf(r) === -1){
+      pixelsToBuy.push(tokenURIs[r])
+      used.push(r)
+    }
+  }
+
+  // Put together required data
+  buy = []
+  for(let i = 0; i < pixelsToBuy.length; ++i){
+    let x, y;
+    for(let j = 0; j < pixelsToBuy[i].attributes.length; ++j){
+      if(pixelsToBuy[i].attributes[j].trait_type === 'column'){
+        x = pixelsToBuy[i].attributes[j].value
+      } else if(pixelsToBuy[i].attributes[j].trait_type === 'row'){
+        y = pixelsToBuy[i].attributes[j].value
+      }
+    }
+    buy.push({id: pixelsToBuy[i].pixelId, ipfs: pixelsToBuy[i].ipfsId, x: x, y: y })
+  }
+
+  return buy;
+}

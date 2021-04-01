@@ -17,7 +17,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
 
   struct CryptoPixel {
-      uint16 id;
+      uint256 id;
       string ipfs;
       uint16 x;
       uint16 y;
@@ -27,16 +27,19 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
   // Reserved: [x from, x to, y from, y to]
   uint16[4][] private reserved = [ [200, 400, 200, 400], [600, 800, 200, 400], [200, 400, 600, 800], [600, 800, 600, 800], [400, 600, 400, 600] ];
   
+  uint16 public pixelsRemaining;
+
   uint256 private pricePerPixel = 0.055066079 ether;
 
   // For Sale (maps a token id to its availability)
-  mapping (uint16 => bool) public notForSale;
+  mapping (uint256 => bool) public notForSale;
 
   //this lets you look up a token by the uri (assuming there is only one of each uri for now)
-  mapping (string => uint16) public ipfsToId;
+  mapping (uint256 => string) public idToIpfs;
 
   constructor() ERC721("CryptoPixels", "CPX") payable {
     _setBaseURI("https://ipfs.io/ipfs/"); // "https://api.cryptopixels.org/" ?
+    pixelsRemaining = 10000;
   }
 
   /**
@@ -45,6 +48,7 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
   function buyPixels(CryptoPixel[] memory _pixels) payable public returns (CryptoPixel[] memory){
       require(_pixels.length > 0, 'You need at least buy one pixel');
       require(_pixels.length <= 1000, 'You can only buy 1000 pixels at a time');
+      require(pixelsRemaining > 0, 'No pixels left');
       
       uint256 minPrice = (pricePerPixel / 10 * 8) * _pixels.length;
       require(msg.value >= minPrice, 'NOT PAYED ENOUGH');
@@ -72,24 +76,26 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
 
         // Set to notForSale
         notForSale[_pixels[i].id] = true;
+        idToIpfs[_pixels[i].id] = _pixels[i].ipfs;
+        --pixelsRemaining;
 
         // Build token-specific URI which points to metadata
         _setTokenURI(_pixels[i].id, _pixels[i].ipfs);
-
-        ipfsToId[_pixels[i].ipfs] = _pixels[i].id;
       } 
 
-      return (_pixels);
+      return _pixels;
   }
 
   /**
   * We're overwriting this function as we can do it cheaper than the contract we're inherting from
   * @dev See {IERC721Metadata-tokenURI}.
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        require(tokenId > 0 && tokenId < 10001, "ERC721Metadata: URI query for nonexistent token");
-        return string(abi.encodePacked(baseURI(), tokenId.toString()));
-    }
   */
+  function tokenURI(uint256 pixelId) public view virtual override returns (string memory) {
+      require(pixelId > 0 && pixelId < 10001, "ERC721Metadata: URI query for nonexistent token");
+      require(notForSale[pixelId], 'This pixel has not been minted yet - 1');
+      return string(abi.encodePacked(baseURI(), idToIpfs[pixelId]));
+  }
+  
 
   /**
    * Withdraw funds
