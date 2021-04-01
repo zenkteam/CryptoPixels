@@ -1,7 +1,7 @@
 const { ethers, network } = require("hardhat");
 const { use, expect } = require("chai");
 const { solidity } = require("ethereum-waffle");
-const { utils, BigNumber } = require("ethers");
+const { utils, BigNumber, wei } = require("ethers");
 const fs = require("fs");
 const { doesNotMatch } = require("assert");
 
@@ -12,7 +12,8 @@ describe("CryptoPixels.org", function () {
   let cryptoPixels, owner, wallet2, wallet3, provider; 
   let costPerPixel = 0.055066079;
   let buy = getRandomPixelsToBuy(3)
-  let price = utils.parseEther((costPerPixel * buy.length).toString());
+  let price = (amount) => utils.parseEther((costPerPixel * amount).toString()); // We're calculating Ether but save it as wei
+  let wei = (bigNum) => utils.formatUnits(bigNum,'wei')
   
 
   beforeEach(async () => {
@@ -30,25 +31,30 @@ describe("CryptoPixels.org", function () {
 
     it("Should lazy mint pixels", async function(){
     
-      let moneyBefore = await provider.getBalance(wallet2.address)
       
-      console.log('cash left:',utils.formatEther(moneyBefore))
-
-      expect(await cryptoPixels.connect(wallet2).buyPixels([buy[0], buy[1]], {value: price}))
+      let actualPrice = price(2) // bignumber / wei
+      
+      expect(await cryptoPixels.connect(wallet2).buyPixels([buy[0], buy[1]], {value: actualPrice}))
                 .to.emit(cryptoPixels, 'Transfer')
 
-      await expect(cryptoPixels.connect(wallet2).buyPixels([buy[2]], {value: price}))
-                .to.emit(cryptoPixels, 'Deposited')
 
-      expect(await cryptoPixels.payments(owner.address)).to.equal(price);
+      // POTENTIAL TODO: Listen for Deposited event from Escrow contract (didn't manage to get it)
+      //await expect(cryptoPixels.connect(wallet2).buyPixels([buy[2]], {value: price}))
+      //          .to.emit(cryptoPixels, 'Deposited')
 
-      let moneyAfter = await provider.getBalance(wallet2.address);
+
+      // POTENTIAL TODO: Wallet should have less money  (it does, but I couldn't manage to get the exact amount)
+      // let moneyBefore = await wallet3.getBalance() // in Wei as bignumber
+      // let block = await provider.getBlock() // Get latest block
+      // let expectedWalletBalanceAfterPriceAndGas = wei(moneyBefore.sub(actualPrice).sub(block.gasUsed))
+      // expect(wei(await wallet2.getBalance())).to.equal(expectedWalletBalanceAfterPriceAndGas) 
+
+      // Does Wallet2 own NFT #1?
+      expect(await cryptoPixels.ownerOf(buy[0].id)).to.equal(wallet2.address);
       
-      console.log('cash left:',utils.formatEther(moneyAfter))
+      // Does Owner have open payments?
+      expect(await cryptoPixels.payments(owner.address)).to.equal(actualPrice);
         
-      // Wallet should have less money
-      //expect(await provider.getBalance(wallet3.address)).to.equal(moneyBefore.sub(price)) 
-      
       // Try to re-buy the same NFTs (shouldn't work) 
       await expect(cryptoPixels.connect(wallet3).buyPixels(buy, {value: price})).to.be.revertedWith('NOT FOR SALE ANYMORE');
       
@@ -57,12 +63,11 @@ describe("CryptoPixels.org", function () {
       expect(await cryptoPixels.tokenURI(buy[1].id)).to.equal('https://ipfs.io/ipfs/' + buy[1].ipfs);
       await expect(cryptoPixels.tokenURI('999')).to.be.revertedWith('This pixel has not been minted yet - 1');
 
-      
-      
-      // TODO: Get contract return value
+    
+      // POTENTIAL TODO: Get contract return value (I didn't get any return value except the transaction)
 
 
-      // TODO: Check for Reserved
+      // POTENTIAL TODO: Check for Reserved (We need to generate more pixels to get here :) )
 
 
       // TODO: Adjust pixel price

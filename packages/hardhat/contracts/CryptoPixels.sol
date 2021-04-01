@@ -4,9 +4,7 @@ pragma abicoder v2;
 
 //import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/security/PullPayment.sol"; // ToDo Upgrade to OpenZeppelin 3.4 and change path
-import "@openzeppelin/contracts/utils/escrow/Escrow.sol"; // ToDo Upgrade to OpenZeppelin 3.4 and change path
-import "@openzeppelin/contracts/utils/Context.sol"; // ToDo Upgrade to OpenZeppelin 3.4 and change path
+import "@openzeppelin/contracts/security/PullPayment.sol"; 
 import "@openzeppelin/contracts/access/Ownable.sol";
 //learn more: https://docs.openzeppelin.com/contracts/3.x/erc721
 
@@ -14,7 +12,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // Payments: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.2.0/contracts/payment/PullPayment.sol
 // Contract ERC271: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol
 
-contract CryptoPixels is Context, Ownable, Escrow, PullPayment, ERC721 {
+contract CryptoPixels is Ownable, PullPayment, ERC721 {
 
   struct CryptoPixel {
       uint256 id;
