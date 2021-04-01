@@ -14,7 +14,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // Payments: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.2.0/contracts/payment/PullPayment.sol
 // Contract ERC271: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol
 
-contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
+contract CryptoPixels is Context, Ownable, Escrow, PullPayment, ERC721 {
 
   struct CryptoPixel {
       uint256 id;
@@ -25,7 +25,9 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
 
 
   // Reserved: [x from, x to, y from, y to]
-  uint16[4][] private reserved = [ [200, 400, 200, 400], [600, 800, 200, 400], [200, 400, 600, 800], [600, 800, 600, 800], [400, 600, 400, 600] ];
+  // [200, 400, 200, 400], [600, 800, 200, 400], [200, 400, 600, 800], [600, 800, 600, 800],
+  // 
+  uint16[4] private reserved = [400, 600, 400, 600];
   
   uint16 public pixelsRemaining;
 
@@ -53,16 +55,13 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
       uint256 minPrice = (pricePerPixel / 10 * 8) * _pixels.length;
       require(msg.value >= minPrice, 'NOT PAYED ENOUGH');
 
-      // CHECK IF: NOT RESERVED, VALID TOKEN RANGE, SET FOR SALE
       for (uint8 i = 0; i < _pixels.length; i++) {
-
         require(_pixels[i].id > 0 && _pixels[i].id < 10001, "PIXEL ID DOES NOT EXIST");
         
         require(!notForSale[_pixels[i].id], "NOT FOR SALE ANYMORE");
 
-        /*for (uint r = 0; r < 5; i++) {
-          require((_pixels[i].x <= reserved[r][0] || _pixels[i].x > reserved[r][1]) && (_pixels[i].y <= reserved[r][2] || _pixels[i].y > reserved[r][3]), "RESERVED");
-        }*/
+        // Require that we're NOT in the reserved row-range and simulatiously in the reserved column-range
+        require(!(_pixels[i].y >= reserved[2] && _pixels[i].y <= reserved[3] && _pixels[i].x >= reserved[0] && _pixels[i].x <= reserved[1]), "RESERVED");
       }
 
       // Make purchase
@@ -96,12 +95,4 @@ contract CryptoPixels is  Context, Ownable, PullPayment, ERC721 {
       return string(abi.encodePacked(baseURI(), idToIpfs[pixelId]));
   }
   
-
-  /**
-   * Withdraw funds
-   
-  function withdrawPayments(address payable payee) public onlyOwner override {
-    _escrow.withdraw(owner());
-  }*/
- 
 }
