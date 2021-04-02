@@ -1,6 +1,6 @@
 var fs = require('fs')
 var PImage = require('pureimage')
-const amount = 5;
+const amount = 10000;
 
 var tokens = []
 
@@ -39,15 +39,15 @@ for(let i = 1; i < counter; ++i){
         "image": "https://cryptopixels.org/pixels/" + i + ".jpg",
         "attributes": [
             {
-                "trait_type": "serial",
+                "trait_type": "nr",
                 "value": i
             },
             {
-                "trait_type": "column",
+                "trait_type": "x",
                 "value": column
             },
             {
-                "trait_type": "row",
+                "trait_type": "y",
                 "value": row
             },
             {
@@ -74,10 +74,10 @@ for(let i = 1; i < counter; ++i){
 function checkForSpecialPiece(column, row, x, y){
     var specialBoundaries = [
         { name: 'centerpiece', x: { from: 400, to: 600 }, y: { from: 400, to: 600 }, value: 10000 },
-        { name: 'upperLeftGuard', x: { from: 200, to: 400 }, y: { from: 200, to: 400 }, value: 10000 },
-        { name: 'upperRightGuard', x: { from: 600, to: 800 }, y: { from: 200, to: 400 }, value: 10000 },
-        { name: 'lowerLeftGuard', x: { from: 200, to: 400 }, y: { from: 600, to: 800 }, value: 10000 },
-        { name: 'lowerRightGuard', x: { from: 600, to: 800 }, y: { from: 600, to: 800 }, value: 10000 },
+        //{ name: 'upperLeftGuard', x: { from: 200, to: 400 }, y: { from: 200, to: 400 }, value: 10000 },
+        //{ name: 'upperRightGuard', x: { from: 600, to: 800 }, y: { from: 200, to: 400 }, value: 10000 },
+        //{ name: 'lowerLeftGuard', x: { from: 200, to: 400 }, y: { from: 600, to: 800 }, value: 10000 },
+        //{ name: 'lowerRightGuard', x: { from: 600, to: 800 }, y: { from: 600, to: 800 }, value: 10000 },
     ]
 
     for (var boundary of specialBoundaries) {

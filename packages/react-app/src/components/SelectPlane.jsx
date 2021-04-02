@@ -215,7 +215,7 @@ export default function SelectPlane(props) {
       window.removeEventListener('wheel', onWheel);
     };
   }, []);
-
+// {items}
   return (
     <div className="scroller zoom">
       <section id="boxes">

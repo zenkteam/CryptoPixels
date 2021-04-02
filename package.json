@@ -61,5 +61,9 @@
       "**/hardhat",
       "**/hardhat/**"
     ]
+  },
+  "dependencies": {
+    "ethereum-waffle": "3.3.0",
+    "ethers": "5.1.0"
   }
 }

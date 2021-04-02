@@ -14,13 +14,8 @@ describe("CryptoPixels.org", function () {
   let buy = getRandomPixelsToBuy(3)
   let price = (amount) => utils.parseEther((costPerPixel * amount).toString()); // We're calculating Ether but save it as wei
   let wei = (bigNum) => utils.formatUnits(bigNum,'wei')
-  
 
   beforeEach(async () => {
-    /*await network.provider.request({
-      method: "hardhat_reset",
-      params: []
-    })  */
     const CryptoPixels = await ethers.getContractFactory("CryptoPixels");
     cryptoPixels = await CryptoPixels.deploy();
     [owner, wallet2, wallet3] = await ethers.getSigners()
@@ -54,29 +49,35 @@ describe("CryptoPixels.org", function () {
       
       // Does Owner have open payments?
       expect(await cryptoPixels.payments(owner.address)).to.equal(actualPrice);
+
+      // Have 2 pixels been sold?
+      expect((await cryptoPixels.getSoldPixels()).length).to.equal(2);
         
-      // Try to re-buy the same NFTs (shouldn't work) 
-      await expect(cryptoPixels.connect(wallet3).buyPixels(buy, {value: price})).to.be.revertedWith('NOT FOR SALE ANYMORE');
+      // Try to re-buy the same NFTs with another wallet (shouldn't work) 
+      await expect(cryptoPixels.connect(wallet3).buyPixels(buy, {value: price(3)})).to.be.revertedWith('NOT FOR SALE ANYMORE');
       
       // TokenURI should be available
       expect(await cryptoPixels.tokenURI(buy[0].id)).to.equal('https://ipfs.io/ipfs/' + buy[0].ipfs);
       expect(await cryptoPixels.tokenURI(buy[1].id)).to.equal('https://ipfs.io/ipfs/' + buy[1].ipfs);
       await expect(cryptoPixels.tokenURI('999')).to.be.revertedWith('This pixel has not been minted yet - 1');
-
     
       // POTENTIAL TODO: Get contract return value (I didn't get any return value except the transaction)
-
+      
 
       // POTENTIAL TODO: Check for Reserved (We need to generate more pixels to get here :) )
 
 
-      // TODO: Adjust pixel price
-
+      //  Adjust pixel price
+      let newPrice = '2'
+      expect(await cryptoPixels.getPricePerPixel()).to.be.equal(utils.parseEther(costPerPixel.toString()))
+      await cryptoPixels.connect(owner).changePricePerPixel(utils.parseEther(newPrice));
+      await expect(cryptoPixels.connect(wallet2).changePricePerPixel(utils.parseEther(newPrice))).to.be.revertedWith('Ownable: caller is not the owner');
+      expect(await cryptoPixels.getPricePerPixel()).to.be.equal(utils.parseEther(newPrice))
 
       // Try to withdraw money
-      console.log('Owner status:', utils.formatEther(await provider.getBalance(owner.address)))
-      await expect(cryptoPixels.withdrawPayments(owner.address)).to.emit(cryptoPixels, 'Withdrawn');
-      console.log('Owner status:', utils.formatEther(await provider.getBalance(owner.address)))
+      let currentBalance = await owner.getBalance()
+      await cryptoPixels.withdrawPayments(owner.address);
+      expect(await owner.getBalance()).to.be.above(currentBalance)
 
     }); 
   });

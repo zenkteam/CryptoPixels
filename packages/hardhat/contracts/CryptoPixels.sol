@@ -21,13 +21,14 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
       uint16 y;
   }
 
-
   // Reserved: [x from, x to, y from, y to]
   // [200, 400, 200, 400], [600, 800, 200, 400], [200, 400, 600, 800], [600, 800, 600, 800],
   // 
   uint16[4] private reserved = [400, 600, 400, 600];
   
   uint16 public pixelsRemaining;
+
+  uint16[] public soldPixels;
 
   uint256 private pricePerPixel = 0.055066079 ether;
 
@@ -72,7 +73,10 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
 
         // Set to notForSale
         notForSale[_pixels[i].id] = true;
+
         --pixelsRemaining;
+
+        soldPixels.push(uint16(_pixels[i].id));
 
         // Build token-specific URI which points to metadata
         _tokenURIs[_pixels[i].id] = _pixels[i].ipfs;
@@ -91,12 +95,37 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
       return string(abi.encodePacked(_baseURI(), _tokenURIs[pixelId]));
   }
 
-    /**
-     * @dev Base URI for computing {tokenURI}. Empty by default, can be overriden
-     * in child contracts.
-     */
-    function _baseURI() override internal view virtual returns (string memory) {
-        return "https://ipfs.io/ipfs/"; //"https://api.cryptopixels.org/"
-    }
+  /**
+    * @dev Base URI for computing {tokenURI}. Empty by default, can be overriden
+    * in child contracts.
+    */
+  function _baseURI() override internal view virtual returns (string memory) {
+      return "https://ipfs.io/ipfs/"; //"https://api.cryptopixels.org/"
+  }
+
+  /**
+    * @dev Base URI for computing {tokenURI}. Empty by default, can be overriden
+    * in child contracts.
+    */
+  function changePricePerPixel(uint256 newPricePerPixel) public onlyOwner {
+      pricePerPixel = newPricePerPixel;
+  }
+
+  /**
+    * @dev Base URI for computing {tokenURI}. Empty by default, can be overriden
+    * in child contracts.
+    */
+  function getPricePerPixel() public view onlyOwner returns (uint256) {
+      return pricePerPixel;
+  }
+
+  /**
+    * @dev Get all ids of pixels sold
+    */
+  function getSoldPixels() public view returns (uint16[] memory) {
+      return soldPixels;
+  }
+
+
   
 }

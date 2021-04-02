@@ -100,7 +100,7 @@ const blockExplorer = targetNetwork.blockExplorer;
 function App(props) {
 
   const mainnetProvider = (scaffoldEthProvider && scaffoldEthProvider._network) ? scaffoldEthProvider : mainnetInfura
-  if(DEBUG) console.log("🌎 mainnetProvider",mainnetProvider)
+  // if(DEBUG) console.log("🌎 mainnetProvider",mainnetProvider)
 
   const [injectedProvider, setInjectedProvider] = useState();
   /* 💵 This hook will get the price of ETH from 🦄 Uniswap: */
@@ -115,10 +115,10 @@ function App(props) {
 
   // You can warn the user if you would like them to be on a specific network
   let localChainId = localProvider && localProvider._network && localProvider._network.chainId
-  if(DEBUG) console.log("🏠 localChainId",localChainId)
+  // if(DEBUG) console.log("🏠 localChainId",localChainId)
 
   let selectedChainId = userProvider && userProvider._network && userProvider._network.chainId
-  if(DEBUG) console.log("🕵🏻‍♂️ selectedChainId:",selectedChainId)
+  // if(DEBUG) console.log("🕵🏻‍♂️ selectedChainId:",selectedChainId)
 
   // For more hooks, check out 🔗eth-hooks at: https://www.npmjs.com/package/eth-hooks
 
@@ -174,12 +174,14 @@ function App(props) {
   useEffect(()=>{
     const updateCryptoPixels = async () => {
       let collectibleUpdate = []
-      for(let tokenIndex=0;tokenIndex<balance;tokenIndex++){
+      console.log("Balance after change", balance)
+      let ownPixels = [];
+      for(let tokenIndex=1;tokenIndex<=balance;tokenIndex++){
         try{
-          console.log("GEtting token index",tokenIndex)
-          const tokenId = await readContracts.CryptoPixels.tokenOfOwnerByIndex(address, tokenIndex)
-          console.log("tokenId",tokenId)
-          const tokenURI = await readContracts.CryptoPixels.tokenURI(tokenId)
+          ownPixels.push(tokenIndex);
+          console.log("Getting token index",tokenIndex)
+          
+          const tokenURI = await readContracts.CryptoPixels.tokenURI(tokenIndex)
           console.log("tokenURI",tokenURI)
 
           const ipfsHash =  tokenURI.replace("https://ipfs.io/ipfs/","")
@@ -190,13 +192,14 @@ function App(props) {
           try{
             const jsonManifest = JSON.parse(jsonManifestBuffer.toString())
             console.log("jsonManifest",jsonManifest)
-            collectibleUpdate.push({ id:tokenId, uri:tokenURI, owner: address, ...jsonManifest })
+            collectibleUpdate.push({ id:tokenIndex, uri:tokenURI, owner: address, ...jsonManifest })
           }catch(e){console.log(e)}
 
         }catch(e){console.log(e)}
       }
       setCryptoPixels(collectibleUpdate)
     }
+    setOwnPixels(ownPixels)
     updateCryptoPixels()
   },[ address, yourBalance ])
 
@@ -275,29 +278,36 @@ function App(props) {
   const [ transferToAddresses, setTransferToAddresses ] = useState({})
   const [ loadedAssets, setLoadedAssets ] = useState()
   const [ soldPixels, setSoldPixels ] = useState()
+  const [ ownPixels, setOwnPixels ] = useState()
 
   useEffect(()=>{
+    // LIST OF ASSETS GETS INITIATED
     const updateCryptoPixels = async () => {
       
       let assetUpdate = []
-      let soldPixels = []
+      let ownPixels = []
+      let soldPixels = await readContracts.CryptoPixels.getSoldPixels()
+      console.log("SOLD PIXELS: ", soldPixels)
+      console.log("asp9di asp9d", assets)
+
       for(let a in assets){
         try{
-          // Check if pixel is for sale
-          const forSale = await readContracts.CryptoPixels.forSale(utils.id(a))
-          let owner
+          let owner, notForSale = false
           // If pixel is not for sale, get me the owner
-          if(!forSale){
-            soldPixels.push(a.pixelId)
-            const tokenId = await readContracts.CryptoPixels.uriToTokenId(utils.id(a))
-            owner = await readContracts.CryptoPixels.ownerOf(tokenId)
+          if(soldPixels.indexOf(assets[a].pixelId) !== -1){
+            owner = await readContracts.CryptoPixels.ownerOf(assets[a].pixelId)
+            notForSale = true
+            if(owner === address){
+              ownPixels.push(assets[a].pixelId)
+            }
           }
-          assetUpdate.push({id:a,...assets[a],forSale:forSale,owner:owner})
+          assetUpdate.push({id:a,...assets[a], notForSale:notForSale, owner:owner})
         }catch(e){console.log(e)}
       }
-      console.log("SOLD: ", soldPixels)
+
       setLoadedAssets(assetUpdate)
       setSoldPixels(soldPixels)
+      setOwnPixels(ownPixels)
     }
     if(readContracts && readContracts.CryptoPixels) updateCryptoPixels()
   }, [ assets, readContracts, transferEvents ]);
@@ -305,7 +315,7 @@ function App(props) {
   let galleryList = []
   for(let a in loadedAssets){
     let cardActions = []
-    if(loadedAssets[a].forSale){
+    if(loadedAssets[a].notForSale){
   
       cardActions.push(
         <div>
@@ -411,7 +421,7 @@ function App(props) {
                 bordered
                 dataSource={CryptoPixels}
                 renderItem={(item) => {
-                  const id = item.id.toNumber()
+                  const id = item.id; //.toNumber()
                   return (
                     <List.Item key={id+"_"+item.uri+"_"+item.owner}>
                       <Card title={(

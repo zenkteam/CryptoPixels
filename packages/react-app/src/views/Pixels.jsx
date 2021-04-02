@@ -1,13 +1,14 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, PureComponent } from "react";
 import { SelectPlane } from "../components";
 import { Button } from "antd";
 import { Transactor } from "../helpers";
+import { utils } from "ethers";
 
 export default function Pixels(props) {
     
-    var pricePerPixelBlockInDollar = 1
+    var pricePerPixelBlockInDollar = 100
 
     const tx = Transactor(props.userProvider, props.gasPrice)
 
@@ -20,8 +21,6 @@ export default function Pixels(props) {
     }
 
     function onSelected(selection) {
-
-        
 
         const selected = getPixelsByIds(selection);
         setSelection(selected);
@@ -45,10 +44,10 @@ export default function Pixels(props) {
     }
 
     function initiateSales(selection){
-        console.log(props.price)
+        console.log('Price in initiateSales:', props.price)
         let price = typeof props.price == "undefined" ? 0 : parseInt(props.price)
         let priceInDollar = selection.length * pricePerPixelBlockInDollar
-        let priceInEther = price ? (priceInDollar / price).toFixed(2) : '-' 
+        let priceInEther = price ? (priceInDollar / price).toFixed(2) : '0.05543' 
         
         setPriceToBuyInDollar(priceInDollar)
         setPriceToBuyInEther(priceInEther)
@@ -91,10 +90,13 @@ export default function Pixels(props) {
           }
           buy.push({id: selectedAssets[i].pixelId, ipfs: selectedAssets[i].ipfsId, x: x, y: y })
         }
-        //initiateSales()
+        
         //tx( writeContracts.CryptoPixels.buyPixels(loadedAssets[a], ) )
-        //console.log()
-        tx( props.writeContracts.CryptoPixels.buyPixels(buy) ) //,  {gasPrice:gasPrice}
+        console.log('Buying', buy)
+        tx( props.writeContracts.CryptoPixels.buyPixels(buy, {
+            gasPrice:gasPrice, 
+            value: utils.parseEther(priceToBuyInEther)
+        }) ) //
     }
 
     function resetSelection() {
@@ -106,7 +108,7 @@ export default function Pixels(props) {
     }
 
     function getSpecialPieces() {
-        let upperLeftPointOfEachPiece = [2021, 2061, 4041, 6021, 6061]
+        let upperLeftPointOfEachPiece = [4041] // [2021, 2061, 4041, 6021, 6061]
         let sizeOfEachPiece = 20
         let reserved = new Array(upperLeftPointOfEachPiece.length * sizeOfEachPiece * sizeOfEachPiece)
         reserved.length = upperLeftPointOfEachPiece.length * sizeOfEachPiece * sizeOfEachPiece
@@ -146,11 +148,14 @@ export default function Pixels(props) {
 
     useEffect(() => {
         // generate Data only once
+        console.log("TEST")
         const pixels = getPixels()
         const reserved = getSpecialPieces()
+        console.log("SOLD 1:", props.soldPixels)
+        console.log("RESERVED:", props.soldPixels)
 
         if(props.soldPixels){
-            console.log("SOLD 2: "+props.soldPixels)
+            console.log("SOLD 2: ", props.soldPixels)
             for(var i = 0; i < props.soldPixels.length; ++i){
                 pixels[props.soldPixels[i]-1].s = STATI.SOLD
             }
