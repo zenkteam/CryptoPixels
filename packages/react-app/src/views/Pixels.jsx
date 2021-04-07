@@ -8,37 +8,48 @@ import { utils } from "ethers";
 
 export default function Pixels(props) {
     
-    var pricePerPixelBlockInDollar = 100
-
-    const tx = Transactor(props.userProvider, props.gasPrice)
-
-    function getPixelsByIds(ids) {
-        const list = new Array(ids.length);
-        for (let i = 0; i < ids.length; ++i) {
-            list[i] = pixels[ids[i] - 1]
-        }
-        return list;
-    }
+    const pricePerPixelBlockInDollar = 100
 
     function onSelected(selection) {
-
-        const selected = getPixelsByIds(selection);
-        setSelection(selected);
-        // all selected, no matter which status they have
-        //console.log('onSelectedSelection', selection);
-        //console.log('onSelected', selected);
        
         selection = selection.filter((x) => {
            return reserved.indexOf(x) === -1
         })
 
-        let selectedPixels = new Array(selection.length)
-        for(let n in selection){
+        // Selected Pixel Ranges
+        let selectedPixels = []
+        if(selection.length > 1){
+            let lastPixel, firstPixel, pixel
+            for(let i = 0; i < selection.length; ++i){
+                pixel = parseInt(selection[i])
+
+                if(!firstPixel){
+                    firstPixel = pixel
+                    lastPixel = pixel
+                    continue
+                }
+                
+                if(pixel == (lastPixel + 1) && (i+1) !== selection.length){
+                    lastPixel = pixel
+                    continue
+                } else {
+                    if((i+1) === selection.length){
+                        lastPixel = pixel
+                    }
+
+                    selectedPixels.push( <div key={pixel}>{firstPixel} - {lastPixel}</div> )
+
+                    firstPixel = pixel
+                    lastPixel = pixel
+                }
+            }
+        } else {
             selectedPixels.push(
-                <div key={selection[n]}>CryptoPixel# {selection[n]}</div> 
+                <div key={selection[0]}>{selection[0]}</div> 
             )
         }
-
+        
+        setCurrentSelection(selection)
         setSelectedPixels(selectedPixels)
         initiateSales(selection)
     }
@@ -69,7 +80,7 @@ export default function Pixels(props) {
                     if(selectedAssets.length === selection.length){
                         break;
                     }
-                }       
+                }
             }
         }
 
@@ -91,8 +102,8 @@ export default function Pixels(props) {
           buy.push({id: selectedAssets[i].pixelId, ipfs: selectedAssets[i].ipfsId, x: x, y: y })
         }
         
-        //tx( writeContracts.CryptoPixels.buyPixels(loadedAssets[a], ) )
         console.log('Buying', buy)
+        const tx = Transactor(props.userProvider, props.gasPrice)
         tx( props.writeContracts.CryptoPixels.buyPixels(buy, {
             gasPrice:gasPrice, 
             value: utils.parseEther(priceToBuyInEther)
@@ -100,11 +111,48 @@ export default function Pixels(props) {
     }
 
     function resetSelection() {
+        for(var i = 0; i < currentSelection.length; ++i){
+            if(pixels[currentSelection[i]-1]){
+                pixels[reserved[i]-1].s = STATI.AVAILABLE
+            } 
+        }  
+        
+        setPixels(pixels)
         onSelected([]);
+    }
+
+    function unselect(selectedEl){
+        for (const el of selectedEl) {
+            el.classList.remove('selected');
+        }
     }
 
     function onZoomUpdate(zoom) {
         setZoom(zoom);
+    }
+
+    const [pixels, setPixels] = useState();
+    const [reserved, setReserved] = useState();
+    const [selectedPixels, setSelectedPixels] = useState([]);
+    const [currentSelection, setCurrentSelection] = useState([]);
+    const [zoom, setZoom] = useState('auto');
+    const [selection, setSelection] = useState([]);
+    const [priceToBuyInDollar, setPriceToBuyInDollar] = useState(0);
+    const [priceToBuyInEther, setPriceToBuyInEther] = useState(0);
+
+    const STATI = {
+        AVAILABLE: '',
+        RESERVED: 'reserved',
+        SOLD: 'sold',
+    }
+
+    function getPixels(){
+        const amount = 10000
+        const pixels = new Array(amount)
+        for (let r = 0; r < amount; ++r) {
+            pixels[r] = {p:r+1,s:''}
+        }
+        return pixels;
     }
 
     function getSpecialPieces() {
@@ -124,29 +172,9 @@ export default function Pixels(props) {
         return reserved;
     }
 
-    const [pixels, setPixels] = useState();
-    const [reserved, setReserved] = useState();
-    const [selectedPixels, setSelectedPixels] = useState([]);
-    const [zoom, setZoom] = useState('auto');
-    const [selection, setSelection] = useState([]);
-    const [priceToBuyInDollar, setPriceToBuyInDollar] = useState(0);
-    const [priceToBuyInEther, setPriceToBuyInEther] = useState(0);
-
-    const STATI = {
-        AVAILABLE: '',
-        RESERVED: 'reserved',
-        SOLD: 'sold',
-    }
-
-    function getPixels(){
-        const pixels = new Array(10000)
-        for (let r = 0; r < 10000; r++) {
-            pixels[r] = {p:r+1,s:''}
-        }
-        return pixels;
-    }
-
     useEffect(() => {
+        
+
         // generate Data only once
         console.log("TEST")
         const pixels = getPixels()
@@ -162,8 +190,13 @@ export default function Pixels(props) {
         }
         
         for(var i = 0; i < reserved.length; ++i){
+            if(pixels[reserved[i]-1]){
+                //console.log(reserved[i])
+                //console.log(pixels[reserved[i]])
+                //console.log(pixels)
+            }
             pixels[reserved[i]-1].s = STATI.RESERVED
-        }
+        }  
         
         setPixels(pixels)
         setReserved(reserved)
@@ -177,38 +210,26 @@ export default function Pixels(props) {
                     pixels={pixels}
                     selection={selection}
                     zoom={zoom}
-                    onSelected={value => {
-                        onSelected(value);
-                    }}
-                    onZoomUpdate={value => {
-                        onZoomUpdate(value);
-                    }}
+                    onSelected={value => {onSelected(value);}}
+                    onZoomUpdate={value => {onZoomUpdate(value);}}
                 ></SelectPlane>
             }
-            <div className="reset-button" onClick={resetSelection}>Reset</div>
+            <div className="reset-button" onClick={() => resetSelection()}>Reset</div>
             
             {selectedPixels.length > 0 && 
-            <div>
-                <div className="priceUSD">
-                    Price $ {priceToBuyInDollar}
+                <div>
+                    <div className="priceUSD">
+                        Price $ {priceToBuyInDollar}
+                    </div>
+                    <div className="priceETH">Price ETH {priceToBuyInEther}</div>
+                    <div className="buyPixels"><Button onClick={buyPixel}>Buy</Button></div>
+                    <div className="selectedPixels">
+                        <p><b>Selected Pixels</b></p>
+                        {selectedPixels}
+                    </div>
                 </div>
-                <div className="priceETH">
-                    Price ETH {priceToBuyInEther}
-                </div>
-                <div className="buyPixels">
-                    <Button onClick={buyPixel}>
-                    Buy
-                    </Button>
-                </div>
-                <div className="selectedPixels">
-                    <p><b>Selected Pixels</b></p>
-                    {selectedPixels}
-                </div>
-            </div>
-            
             }
-        
-            
+         
             <div className="imageUpload">
                 
             </div>

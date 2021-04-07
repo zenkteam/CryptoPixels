@@ -35,16 +35,9 @@ import { ConsoleSqlOutlined } from "@ant-design/icons";
 
 export default function SelectPlane(props) {
   const headerHeight = 120;
-  const initialSize = 1000;
+  const initialSize = 1000; // Overall pixel-matrix dimension
 
   let container = null;
-  
-  const items = new Array(props.pixels.length);
-  for (let i = 0; i < props.pixels.length; ++i) {
-    items.push(<div key={props.pixels[i].p} id={props.pixels[i].p} className={props.pixels[i].s}></div>);
-  }
-
-  compareSelection();
 
   function initializeSelection() {
     window.plane = new SelectionArea({
@@ -69,6 +62,12 @@ export default function SelectPlane(props) {
       //     selection.clearSelection();
       // }
 
+      for (const el of store.stored) {
+        el.classList.remove('selected');
+      }
+  
+      window.plane.clearSelection();    
+
     }).on('move', ({ store: { changed: { added, removed } } }) => {
 
       // Add a custom class to the elements that where selected.
@@ -92,62 +91,9 @@ export default function SelectPlane(props) {
     }); 
   }
 
-  function selectIds(ids) {
-    for (let i = 0; i < ids.length; ++i) {
-      window.plane.select(document.getElementById(ids[ids]));
-    }
-    window.plane.keepSelection();
-  }
-
-  function deselectIds(ids) {
-    for (let i = 0; i < ids.length; ++i) {
-      const el = document.getElementById(ids[ids]);
-      if (el) {
-        window.plane.deselect(el);
-        el.classList.remove('selected');
-      }
-    }
-  }
-
-  function compareSelection() {
-    if (!window.plane || !props.selection) {
-      return;
-    }
-
-    // Newly selected
-    const propIds = new Array(props.selection.length);
-    for(let i = 0; i < props.selection.length; ++i){
-      propIds[i] = props.selection[i].p
-    }
-
-    // Already selected
-    const localIds = selectedIds();
-
-    const toAdd = [];
-    const toRemove = [];
-
-    // Check which 
-    for (let i = 0, j = 0; i < propIds.length; ++i){
-      if (localIds.indexOf(propIds[i]) === -1) {
-        toAdd[j] = propIds[i];
-        ++j;
-      }
-    }
-    
-    for (let i = 0,j=0; i < localIds.length; ++i) {
-      if (propIds.indexOf(localIds[i]) === -1) {
-        toRemove[j] =localIds[i];
-        ++j;
-      }
-    }
-    
-
-    selectIds(toAdd);
-    deselectIds(toRemove);
-  }
-
   function selectedIds() {
     const selected = window.plane.getSelection();
+    //console.log(selected)
     const ids = new Array(selected.length);
     for (let i = 0; i < selected.length; ++i) {
       ids[i] = selected[i].id;
@@ -195,6 +141,8 @@ export default function SelectPlane(props) {
       }
     }
   }
+  
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
     // run
@@ -206,8 +154,17 @@ export default function SelectPlane(props) {
     } else {
       zoom(props.zoom);
     }
+
     initializeSelection();
+    
     window.addEventListener('wheel', onWheel);
+
+    let items = new Array(props.pixels.length);
+    for (let i = 0; i < props.pixels.length; ++i) {
+      items.push(<div key={props.pixels[i].p} id={props.pixels[i].p} className={props.pixels[i].s}></div>);
+    }
+    setItems(items);
+    
 
     // Specify how to clean up after this effect:
     return function cleanup() {
@@ -215,6 +172,9 @@ export default function SelectPlane(props) {
       window.removeEventListener('wheel', onWheel);
     };
   }, []);
+
+ 
+  
 // {items}
   return (
     <div className="scroller zoom">

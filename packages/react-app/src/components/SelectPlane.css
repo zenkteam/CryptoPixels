@@ -33,10 +33,10 @@
 #boxes div.selected {
     background: green;
 }
-#boxes div.selected.reserved {
+#boxes div.selected.reserved, div.reserved {
     background: rgb(223, 209, 17) !important;
 }
-#boxes div.selected.sold {
+#boxes div.selected.sold, div.sold {
     background: red !important;
 }
 

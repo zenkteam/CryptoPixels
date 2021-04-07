@@ -37,12 +37,10 @@ const NFT_CONTRACT = "CryptoPixels"
     (and then use the `useExternalContractLoader()` hook!)
 */
 
+const DEBUG = true
 
 /// 📡 What chain are your contracts deployed to?
 const targetNetwork = NETWORKS['localhost']; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
-
-// 😬 Sorry for all the console logging
-const DEBUG = false
 
 //EXAMPLE STARTING JSON:
 const STARTING_JSON = {
@@ -104,22 +102,18 @@ function App(props) {
 
   const [injectedProvider, setInjectedProvider] = useState();
   /* 💵 This hook will get the price of ETH from 🦄 Uniswap: */
-  const price = useExchangePrice(targetNetwork,mainnetProvider);
+  const price = useExchangePrice(targetNetwork, mainnetProvider);
 
   /* 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation */
   const gasPrice = useGasPrice(targetNetwork,"fast");
   // Use your injected provider from 🦊 Metamask or if you don't have it then instantly generate a 🔥 burner wallet.
   const userProvider = useUserProvider(injectedProvider, localProvider);
   const address = useUserAddress(userProvider);
-  if(DEBUG) console.log("👩‍💼 selected address:",address)
-
+  
   // You can warn the user if you would like them to be on a specific network
   let localChainId = localProvider && localProvider._network && localProvider._network.chainId
-  // if(DEBUG) console.log("🏠 localChainId",localChainId)
 
   let selectedChainId = userProvider && userProvider._network && userProvider._network.chainId
-  // if(DEBUG) console.log("🕵🏻‍♂️ selectedChainId:",selectedChainId)
-
   // For more hooks, check out 🔗eth-hooks at: https://www.npmjs.com/package/eth-hooks
 
   // The transactor wraps transactions and provides notificiations
@@ -130,40 +124,68 @@ function App(props) {
 
   // 🏗 scaffold-eth is full of handy hooks like this one to get your balance:
   const yourLocalBalance = useBalance(localProvider, address);
-  if(DEBUG) console.log("💵 yourLocalBalance",yourLocalBalance?formatEther(yourLocalBalance):"...")
 
   // Just plug in different 🛰 providers to get your balance on different chains:
   const yourMainnetBalance = useBalance(mainnetProvider, address);
-  if(DEBUG) console.log("💵 yourMainnetBalance",yourMainnetBalance?formatEther(yourMainnetBalance):"...")
 
   // Load in your local 📝 contract and read a value from it:
   const readContracts = useContractLoader(localProvider)
-  if(DEBUG) console.log("📝 readContracts",readContracts)
 
   // If you want to make 🔐 write transactions to your contracts, use the userProvider:
   const writeContracts = useContractLoader(userProvider)
-  if(DEBUG) console.log("🔐 writeContracts",writeContracts)
 
   // EXTERNAL CONTRACT EXAMPLE:
-  //
   // If you want to bring in the mainnet DAI contract it would look like:
   const mainnetDAIContract = useExternalContractLoader(mainnetProvider, DAI_ADDRESS, DAI_ABI)
-  //if(DEBUG) console.log("🌍 DAI contract on mainnet:",mainnetDAIContract)
-  //
+
   // Then read your DAI balance like:
   const myMainnetDAIBalance = useContractReader({DAI: mainnetDAIContract},"DAI", "balanceOf",["0x34aA3F359A9D614239015126635CE7732c18fDF3"])
-  //if(DEBUG) console.log("🥇 myMainnetDAIBalance:",myMainnetDAIBalance)
-
 
   // keep track of a variable from the contract in the local React state:
   const balance = useContractReader(readContracts,NFT_CONTRACT, "balanceOf", [ address ])
-  if(DEBUG) console.log("🤗 balance:",balance)
 
   //📟 Listen for broadcast events
   const transferEvents = useEventListener(readContracts, NFT_CONTRACT, "Transfer", localProvider, 1);
-  if(DEBUG) console.log("📟 Transfer events:",transferEvents)
+ 
+  //
+  // These effects will log your major set up and upcoming transferEvents- and balance changes
+  // 😬 Sorry for all the console logging
+  // 
+  
 
+  useEffect(()=>{
+    if(DEBUG && address && selectedChainId && yourLocalBalance && yourMainnetBalance && readContracts && writeContracts && mainnetDAIContract){
+      console.log("_____________________________________")
+      console.log("🏠 localChainId",localChainId)
+      console.log("👩‍💼 selected address:",address)
+      console.log("🕵🏻‍♂️ selectedChainId:",selectedChainId)
+      console.log("💵 yourLocalBalance",yourLocalBalance?formatEther(yourLocalBalance):"...")
+      console.log("💵 yourMainnetBalance",yourMainnetBalance?formatEther(yourMainnetBalance):"...")
+      console.log("📝 readContracts",readContracts)
+      console.log("🌍 DAI contract on mainnet:",mainnetDAIContract) 
+      console.log("🔐 writeContracts",writeContracts)
+    }
+  }, [address, selectedChainId, yourLocalBalance, yourMainnetBalance, readContracts, writeContracts, mainnetDAIContract])
 
+  const [oldBalance, setOldBalance] = useState(0)
+  const [oldMainnetBalance, setOldMainnetDAIBalance] = useState(0)
+  const [oldTransferEvents, setOldTransferEvents] = useState([])
+  useEffect(()=>{
+    if(DEBUG){
+      if(transferEvents && oldTransferEvents !== transferEvents){
+        console.log("📟 Transfer events:", transferEvents)
+        setOldTransferEvents(transferEvents)
+      }
+      if(myMainnetDAIBalance && !myMainnetDAIBalance.eq(oldMainnetBalance)){
+        console.log("🥇 myMainnetDAIBalance:",myMainnetDAIBalance)
+        setOldMainnetDAIBalance(myMainnetDAIBalance)
+      }
+      if(balance && !balance.eq(oldBalance)){
+        console.log("🤗 balance:", balance)
+        setOldBalance(balance)
+      }
+    }
+  }, [myMainnetDAIBalance, balance, transferEvents])
 
   //
   // 🧠 This effect will update CryptoPixels by polling when your balance changes
@@ -250,7 +272,7 @@ function App(props) {
   }, [setRoute]);
 
   let faucetHint = ""
-  const faucetAvailable = localProvider && localProvider.connection && localProvider.connection.url && localProvider.connection.url.indexOf(window.location.hostname)>=0 && !process.env.REACT_APP_PROVIDER && price > 1;
+  const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name == "localhost"
 
   const [ faucetClicked, setFaucetClicked ] = useState( false );
   if(!faucetClicked&&localProvider&&localProvider._network&&localProvider._network.chainId==31337&&yourLocalBalance&&formatEther(yourLocalBalance)<=0){
@@ -297,7 +319,7 @@ function App(props) {
           if(soldPixels.indexOf(assets[a].pixelId) !== -1){
             owner = await readContracts.CryptoPixels.ownerOf(assets[a].pixelId)
             notForSale = true
-            if(owner === address){
+            if(owner === address){  
               ownPixels.push(assets[a].pixelId)
             }
           }
