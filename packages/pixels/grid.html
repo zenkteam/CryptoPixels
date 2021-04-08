@@ -11,13 +11,44 @@
     </head>
     <body></body>
     <script>
-        var docFrag = document.createDocumentFragment();
-        for(var i = 1; i < 10001; i++) {
-            let x = document.createElement('div')
-            x.setAttribute('id', i)
-            docFrag.appendChild(x); // Note that this does NOT go to the DOM
-        } 
-        document.body.appendChild(docFrag); // Appends all divs at once
+        function r(){
+            let upperLeftPointOfEachPiece = [4041] // [2021, 2061, 4041, 6021, 6061]
+            let sizeOfEachPiece = 20
+            let reserved = new Array(upperLeftPointOfEachPiece.length * sizeOfEachPiece * sizeOfEachPiece)
+            reserved.length = upperLeftPointOfEachPiece.length * sizeOfEachPiece * sizeOfEachPiece
+            let c = 0
+            for(let i = 0; i < upperLeftPointOfEachPiece.length; ++i){
+                for(let j = 0; j < sizeOfEachPiece; ++j){
+                    for(let k = 0; k < sizeOfEachPiece; ++k){
+                        reserved[c] = upperLeftPointOfEachPiece[i] + j + k*100
+                        ++c
+                    }
+                }
+            }
+            return reserved;
+        }
+        
+       
+        function renderPixels(){
+            let re = r();
+            var docFrag = document.createDocumentFragment();
+            for(var i = 1; i < 10001; i++) {
+                let x = document.createElement('div')
+                x.setAttribute('id', i)
+                if(re.indexOf(i) !== -1){
+                    x.setAttribute('class', 'r')
+                }
+                docFrag.appendChild(x); // Note that this does NOT go to the DOM
+            } 
+            document.body.appendChild(docFrag); // Appends all divs at once
+        }
+
+        function renderReservedList(){
+            console.log(r())
+        }
+
+        renderReservedList()
+        
 
     </script>
 </html>

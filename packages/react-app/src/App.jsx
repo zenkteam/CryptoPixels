@@ -9,7 +9,7 @@ import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
 import { useExchangePrice, useGasPrice, useUserProvider, useContractLoader, useContractReader, useEventListener, useBalance, useExternalContractLoader } from "./hooks";
-import { Header, Account, Faucet, Ramp, Contract, GasGauge, Address, AddressInput, ThemeSwitch } from "./components";
+import { Header, Account, Faucet, Ramp, Contract, GasGauge, Address, AddressInput } from "./components";
 import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
 import { utils } from "ethers";
@@ -17,7 +17,6 @@ import { utils } from "ethers";
 import { Pixels } from "./views"
 import { INFURA_ID, DAI_ADDRESS, DAI_ABI, NETWORK, NETWORKS } from "./constants";
 import StackGrid from "react-stack-grid";
-import ReactJson from 'react-json-view'
 import assets from './assets.js'
 
 const { BufferList } = require('bl')
@@ -41,24 +40,6 @@ const DEBUG = true
 
 /// 📡 What chain are your contracts deployed to?
 const targetNetwork = NETWORKS['localhost']; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
-
-//EXAMPLE STARTING JSON:
-const STARTING_JSON = {
-  "description": "It's actually a bison?",
-  "external_url": "https://austingriffith.com/portfolio/paintings/",// <-- this can link to a page for the specific file too
-  "image": "https://austingriffith.com/images/paintings/buffalo.jpg",
-  "name": "Buffalo",
-  "attributes": [
-     {
-       "trait_type": "BackgroundColor",
-       "value": "green"
-     },
-     {
-       "trait_type": "Eyes",
-       "value": "googly"
-     }
-  ]
-}
 
 // helper function to "Get" from IPFS
 // you usually go content.toString() after this...
@@ -148,11 +129,8 @@ function App(props) {
   const transferEvents = useEventListener(readContracts, NFT_CONTRACT, "Transfer", localProvider, 1);
  
   //
-  // These effects will log your major set up and upcoming transferEvents- and balance changes
-  // 😬 Sorry for all the console logging
+  // ☝️ These effects will log your major set up and upcoming transferEvents- and balance changes
   // 
-  
-
   useEffect(()=>{
     if(DEBUG && address && selectedChainId && yourLocalBalance && yourMainnetBalance && readContracts && writeContracts && mainnetDAIContract){
       console.log("_____________________________________")
@@ -167,8 +145,8 @@ function App(props) {
     }
   }, [address, selectedChainId, yourLocalBalance, yourMainnetBalance, readContracts, writeContracts, mainnetDAIContract])
 
-  const [oldBalance, setOldBalance] = useState(0)
-  const [oldMainnetBalance, setOldMainnetDAIBalance] = useState(0)
+  const [oldBalance, setOldBalance] = useState()
+  const [oldMainnetBalance, setOldMainnetDAIBalance] = useState()
   const [oldTransferEvents, setOldTransferEvents] = useState([])
   useEffect(()=>{
     if(DEBUG){
@@ -176,11 +154,11 @@ function App(props) {
         console.log("📟 Transfer events:", transferEvents)
         setOldTransferEvents(transferEvents)
       }
-      if(myMainnetDAIBalance && !myMainnetDAIBalance.eq(oldMainnetBalance)){
+      if(myMainnetDAIBalance && oldMainnetBalance && !myMainnetDAIBalance.eq(oldMainnetBalance)){
         console.log("🥇 myMainnetDAIBalance:",myMainnetDAIBalance)
         setOldMainnetDAIBalance(myMainnetDAIBalance)
       }
-      if(balance && !balance.eq(oldBalance)){
+      if(balance && oldBalance && !balance.eq(oldBalance)){
         console.log("🤗 balance:", balance)
         setOldBalance(balance)
       }
@@ -291,12 +269,6 @@ function App(props) {
     )
   }
 
-  const [ yourJSON, setYourJSON ] = useState( STARTING_JSON );
-  const [ sending, setSending ] = useState()
-  const [ ipfsHash, setIpfsHash ] = useState()
-  const [ ipfsDownHash, setIpfsDownHash ] = useState()
-  const [ downloading, setDownloading ] = useState()
-  const [ ipfsContent, setIpfsContent ] = useState()
   const [ transferToAddresses, setTransferToAddresses ] = useState({})
   const [ loadedAssets, setLoadedAssets ] = useState()
   const [ soldPixels, setSoldPixels ] = useState()
@@ -397,20 +369,11 @@ function App(props) {
           <Menu.Item key="/pixels">
             <Link onClick={()=>{setRoute("/pixels")}} to="/pixels">Pixels</Link>
           </Menu.Item>
-          <Menu.Item key="/">
-            <Link onClick={()=>{setRoute("/")}} to="/">Gallery</Link>
-          </Menu.Item>
           <Menu.Item key="/cryptopixels">
             <Link onClick={()=>{setRoute("/cryptopixels")}} to="/cryptopixels">CryptoPixels</Link>
           </Menu.Item>
           <Menu.Item key="/transfers">
             <Link onClick={()=>{setRoute("/transfers")}} to="/transfers">Transfers</Link>
-          </Menu.Item>
-          <Menu.Item key="/ipfsup">
-            <Link onClick={()=>{setRoute("/ipfsup")}} to="/ipfsup">IPFS Upload</Link>
-          </Menu.Item>
-          <Menu.Item key="/ipfsdown">
-            <Link onClick={()=>{setRoute("/ipfsdown")}} to="/ipfsdown">IPFS Download</Link>
           </Menu.Item>
           <Menu.Item key="/debugcontracts">
             <Link onClick={()=>{setRoute("/debugcontracts")}} to="/debugcontracts">Debug Contracts</Link>
@@ -512,68 +475,6 @@ function App(props) {
             </div>
           </Route>
 
-          <Route path="/ipfsup">
-            <div style={{ paddingTop:32, width:740, margin:"auto", textAlign:"left" }}>
-              <ReactJson
-                style={{ padding:8 }}
-                src={yourJSON}
-                theme={"pop"}
-                enableClipboard={false}
-                onEdit={(edit,a)=>{
-                  setYourJSON(edit.updated_src)
-                }}
-                onAdd={(add,a)=>{
-                  setYourJSON(add.updated_src)
-                }}
-                onDelete={(del,a)=>{
-                  setYourJSON(del.updated_src)
-                }}
-              />
-            </div>
-
-            <Button style={{margin:8}} loading={sending} size="large" shape="round" type="primary" onClick={async()=>{
-                console.log("UPLOADING...",yourJSON)
-                setSending(true)
-                setIpfsHash()
-                const result = await ipfs.add(JSON.stringify(yourJSON))//addToIPFS(JSON.stringify(yourJSON))
-                if(result && result.path) {
-                  setIpfsHash(result.path)
-                }
-                setSending(false)
-                console.log("RESULT:",result)
-            }}>Upload to IPFS</Button>
-
-            <div  style={{padding:16,paddingBottom:150}}>
-              {ipfsHash}
-            </div>
-
-          </Route>
-          <Route path="/ipfsdown">
-              <div style={{ paddingTop:32, width:740, margin:"auto" }}>
-                <Input
-                  value={ipfsDownHash}
-                  placeHolder={"IPFS hash (like QmadqNw8zkdrrwdtPFK1pLi8PPxmkQ4pDJXY8ozHtz6tZq)"}
-                  onChange={(e)=>{
-                    setIpfsDownHash(e.target.value)
-                  }}
-                />
-              </div>
-              <Button style={{margin:8}} loading={sending} size="large" shape="round" type="primary" onClick={async()=>{
-                  console.log("DOWNLOADING...",ipfsDownHash)
-                  setDownloading(true)
-                  setIpfsContent()
-                  const result = await getFromIPFS(ipfsDownHash)//addToIPFS(JSON.stringify(yourJSON))
-                  if(result && result.toString) {
-                    setIpfsContent(result.toString())
-                  }
-                  setDownloading(false)
-              }}>Download from IPFS</Button>
-
-              <pre  style={{padding:16, width:500, margin:"auto",paddingBottom:150}}>
-                {ipfsContent}
-              </pre>
-          </Route>
-
           <Route path="/debugcontracts">
               <Contract
                 name="CryptoPixels"
@@ -596,8 +497,6 @@ function App(props) {
           </Route>
         </Switch>
       </BrowserRouter>
-
-      <ThemeSwitch />
 
 
       {/* 👨‍💼 Your account is in the top right with a wallet at connect options */}
