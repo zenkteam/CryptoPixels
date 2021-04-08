@@ -16,7 +16,6 @@ import { utils } from "ethers";
 //import Hints from "./Hints";
 import { Pixels } from "./views"
 import { INFURA_ID, DAI_ADDRESS, DAI_ABI, NETWORK, NETWORKS } from "./constants";
-import StackGrid from "react-stack-grid";
 import assets from './assets.js'
 
 const { BufferList } = require('bl')
@@ -364,40 +363,17 @@ function App(props) {
       {networkDisplay}
 
       <BrowserRouter>
-
-        <Menu style={{ textAlign:"center" }} selectedKeys={[route]} mode="horizontal">
-          <Menu.Item key="/pixels">
-            <Link onClick={()=>{setRoute("/pixels")}} to="/pixels">Pixels</Link>
-          </Menu.Item>
-          <Menu.Item key="/cryptopixels">
-            <Link onClick={()=>{setRoute("/cryptopixels")}} to="/cryptopixels">CryptoPixels</Link>
-          </Menu.Item>
-          <Menu.Item key="/transfers">
-            <Link onClick={()=>{setRoute("/transfers")}} to="/transfers">Transfers</Link>
-          </Menu.Item>
-          <Menu.Item key="/debugcontracts">
-            <Link onClick={()=>{setRoute("/debugcontracts")}} to="/debugcontracts">Debug Contracts</Link>
-          </Menu.Item>
-        </Menu>
-
         <Switch>
-          <Route exact path="/">
-            {/*
-                🎛 this scaffolding is full of commonly used components
-                this <Contract/> component will automatically parse your ABI
-                and give you a form to interact with it locally
-            */}
 
-            <div style={{ maxWidth:820, margin: "auto", marginTop:32, paddingBottom:256 }}>
-              <StackGrid
-                columnWidth={200}
-                gutterWidth={16}
-                gutterHeight={16}
-              >
-                {galleryList}
-              </StackGrid>
-            </div>
-
+        <Route path="/">
+            <Pixels
+              soldPixels={soldPixels}
+              price={price}
+              gasPrice={gasPrice}
+              userProvider={userProvider}
+              writeContracts={writeContracts}
+              loadedAssets={loadedAssets}
+            />
           </Route>
 
           <Route path="/cryptopixels">
@@ -447,53 +423,6 @@ function App(props) {
                 }}
               />
             </div>
-          </Route>
-
-          <Route path="/transfers">
-            <div style={{ width:600, margin: "auto", marginTop:32, paddingBottom:32 }}>
-              <List
-                bordered
-                dataSource={transferEvents}
-                renderItem={(item) => {
-                  return (
-                    <List.Item key={item[0]+"_"+item[1]+"_"+item.blockNumber+"_"+item[2].toNumber()}>
-                      <span style={{fontSize:16, marginRight:8}}>#{item[2].toNumber()}</span>
-                      <Address
-                          address={item[0]}
-                          ensProvider={mainnetProvider}
-                          fontSize={16}
-                      /> =>
-                      <Address
-                          address={item[1]}
-                          ensProvider={mainnetProvider}
-                          fontSize={16}
-                      />
-                    </List.Item>
-                  )
-                }}
-              />
-            </div>
-          </Route>
-
-          <Route path="/debugcontracts">
-              <Contract
-                name="CryptoPixels"
-                signer={userProvider.getSigner()}
-                provider={localProvider}
-                address={address}
-                blockExplorer={blockExplorer}
-              />
-          </Route>
-
-          <Route path="/pixels">
-            <Pixels
-              soldPixels={soldPixels}
-              price={price}
-              gasPrice={gasPrice}
-              userProvider={userProvider}
-              writeContracts={writeContracts}
-              loadedAssets={loadedAssets}
-            />
           </Route>
         </Switch>
       </BrowserRouter>
