@@ -11,6 +11,8 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 });
 
+// https://www.apollographql.com/docs/react/get-started/
+
 ReactDOM.render(
   <ApolloProvider client={client}>
     <App subgraphUri={subgraphUri}/>

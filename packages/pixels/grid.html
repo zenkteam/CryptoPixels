@@ -27,16 +27,30 @@
             }
             return reserved;
         }
-        
+
+
+        function r2(){
+            let upperLeftPointOfEachPiece = [4041] // [2021, 2061, 4041, 6021, 6061]
+            let sizeOfEachPiece = 20
+            let reserved = new Array(20)
+            reserved.length = 20
+            for(let i = 0; i < sizeOfEachPiece; ++i){
+                reserved[i] = 4041 + (i * 100)
+            }
+            return reserved;
+        }
        
         function renderPixels(){
-            let re = r();
+            let re = r2();
             var docFrag = document.createDocumentFragment();
             for(var i = 1; i < 10001; i++) {
                 let x = document.createElement('div')
-                x.setAttribute('id', i)
                 if(re.indexOf(i) !== -1){
                     x.setAttribute('class', 'r')
+                    // Skip the next 200
+                    i += 19
+                } else {
+                    x.setAttribute('id', i)
                 }
                 docFrag.appendChild(x); // Note that this does NOT go to the DOM
             } 
@@ -47,7 +61,7 @@
             console.log(r())
         }
 
-        renderReservedList()
+        renderPixels()
         
 
     </script>

@@ -59,7 +59,7 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
         require(!notForSale[_pixels[i].id], "NOT FOR SALE ANYMORE");
 
         // Require that we're NOT in the reserved row-range and simulatiously in the reserved column-range
-        require(!(_pixels[i].y >= reserved[2] && _pixels[i].y <= reserved[3] && _pixels[i].x >= reserved[0] && _pixels[i].x <= reserved[1]), "RESERVED");
+        //require(!(_pixels[i].y >= reserved[2] && _pixels[i].y <= reserved[3] && _pixels[i].x >= reserved[0] && _pixels[i].x <= reserved[1]), "RESERVED");
       }
 
       // Make purchase
@@ -125,7 +125,5 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   function getSoldPixels() public view returns (uint16[] memory) {
       return soldPixels;
   }
-
-
   
 }

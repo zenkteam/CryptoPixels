@@ -9,19 +9,25 @@ export default function useExchangePrice(targetNetwork, mainnetProvider, pollTim
     async function getPrice() {
       if(targetNetwork.price){
         setPrice(targetNetwork.price)
-      }else{
+      }else if(mainnetProvider){
+        //await mainnetProvider.getNetwork()
         const DAI = new Token(
-          mainnetProvider.network ? mainnetProvider.network.chainId : 1,
+          mainnetProvider._network ? mainnetProvider._network.chainId : 1,
           "0x6B175474E89094C44Da98b954EedeAC495271d0F",
           18,
         );
         const pair = await Fetcher.fetchPairData(DAI, WETH[DAI.chainId], mainnetProvider);
         const route = new Route([pair], WETH[DAI.chainId]);
         setPrice(parseFloat(route.midPrice.toSignificant(6)));
+        console.log("PRICE IS REALLY", price)
       }
     }
     getPrice();
   };
+  
+  if(price === 0){
+    pollPrice()
+  }
   usePoller(pollPrice, pollTime || 9777);
 
   return price;

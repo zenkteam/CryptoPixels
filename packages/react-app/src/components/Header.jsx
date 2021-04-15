@@ -5,12 +5,12 @@ import { PageHeader } from "antd";
 
 export default function Header() {
   return (
-    <a href="https://github.com/austintgriffith/scaffold-eth" target="_blank" rel="noopener noreferrer">
+    <a href="https://cryptopixels.org" target="_blank" rel="noopener noreferrer">
       <PageHeader
         title="CryptoPixels.org"
         subTitle="Buy a piece of internet history and own it forever."
         style={{ cursor: "pointer" }}
       />
-    </a>
+    </a>  
   );
 }

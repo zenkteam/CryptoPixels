@@ -7,23 +7,30 @@
     position: fixed;
 }
 #boxes {
-    background-size: 1000px 1000px;
     height: 1000px;
     width: 1000px;
+    line-height: 10px;
 
-    display: grid;
+    /*display: grid;
     grid-template-columns: repeat(100, 1fr);
     align-items: flex-start;
     justify-content: flex-start;
 
     transform: scale(1);
-    transform-origin: left top;
+    transform-origin: left top;*/
+    margin-top: 200px;
 }
 #boxes div {
     height: 10px;
     width: 10px;
     border:solid 2px #181818;
     background-color: #2ecc71;
+    display: inline-block;
+}
+
+#boxes div.r{
+    width: 200px;
+    
 }
 
 #boxes div.selected{
@@ -34,12 +41,54 @@
     background: green;
 }
 #boxes div.selected.r, div.r {
-    background: rgb(223, 209, 17) !important;
+    background: rgb(185, 183, 149) !important;
 }
 #boxes div.selected.s, div.s {
     background: red !important;
 }
 
+@keyframes pulse {
+    50% {
+      background: #2ecc71;
+    }
+  }
+  @-webkit-keyframes pulse {
+    50% {
+      background: #2ecc71;
+    }
+  }
+  @keyframes flash {
+    20% {
+      background: #2ecc71;
+    }
+    40% {
+      background: #181818;
+    }
+  }
+  @-webkit-keyframes flash {
+    20% {
+      background: #2ecc71;
+    }
+    40% {
+      background: #181818;
+    }
+  }
+  
+.boxes div {
+    animation: pulse 2s ease-in-out 0s infinite;
+-webkit-animation: pulse 2s ease-in-out 0s infinite;
+}
+
+.boxpulse div:nth-child(-n + 11), .boxpulse div:nth-child(n + 111), .boxpulse div:nth-child(11n), .boxpulse div:nth-child(11n + 1) {
+animation: pulse 2s ease-in-out 0s infinite;
+-webkit-animation: pulse 2s ease-in-out 0s infinite;
+}
+
+.dotpulse div:nth-child(61) {
+animation: pulse 2s ease-in-out 0s infinite;
+-webkit-animation: pulse 2s ease-in-out 0s infinite;
+}
+  
 
 
 /* Other */
