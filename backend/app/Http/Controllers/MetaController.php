@@ -44,24 +44,34 @@ class MetaController extends Controller
     }
 
     private function getPixelData($id){
-        $row = 1;
-        $column = 0;
-        for($i = 1; $i <= $id; ++$i){
-            ++$column;
-
-            if($column === 100){
-                $column = 0;
-                $row += 1;
-            }
+        if($id > 999){
+            $t = $id % 1000;
+            if($t > 100){
+                $t = $t % 100;
+            } 
+            $column = $t;
+        } else if ($id > 100){
+            $column = $id - intval($id / 100) * 100;
+        } else {
+            $column = $id; 
         }
 
-        $x = ($column-1)*10;
+        // There are only 100 columns of 10px width whereby first starts on 0px
+        $x = ($column-1) * 10;
+
+        // There are only 100 rows. Let's see how often the 100 fits in.
+        // Beware that if id is < 100, it is supposed to be row 1
+        // Let's say id is 100, then we want row to be 1 after we added 1
+        // Because if id is 400, 
+        $row = intval(($id-1)/100) + 1;
         $y = ($row-1)*10;
-        
+
         return [
             'id' => $id,
+            'column' => $column,
             'x'  => $x,
-            'y'  => $y
+            'row' => $row,
+            'y'  => $y,
         ];
     }
 

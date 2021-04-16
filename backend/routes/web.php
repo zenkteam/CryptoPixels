@@ -13,10 +13,8 @@ use App\Http\Controllers\MetaController;
 |
 */
 
-// MetaController::class.'@getMetadataByPixelId'
-Route::post('api/meta', function(){
-    exit("test");
-});
+// 
+Route::post('api/meta', MetaController::class.'@getMetadataByPixelId');
 
 Route::get('/', function () {
     return view('welcome');
