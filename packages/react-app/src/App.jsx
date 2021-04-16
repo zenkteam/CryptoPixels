@@ -4,8 +4,7 @@ import {  JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import "antd/dist/antd.css";
 import Web3Modal from "web3modal";
 import "./App.css";
-import "./Animation.css";
-import { Header } from "./components";
+import { Header, Account } from "./components";
 import { Pixels } from "./views";
 import { INFURA_ID, NETWORKS } from "./constants";
 import { useUserProvider, useContractLoader, useEventListener } from "./hooks";
@@ -16,8 +15,8 @@ import { Token, WETH, Fetcher, Route as URoute } from "@uniswap/sdk";
 const targetNetwork = NETWORKS['localhost']; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 function App() {
-  const [injectedProvider, setInjectedProvider] = useState();
-  const [ soldPixels, setSoldPixels ] = useState()
+  const [ injectedProvider, setInjectedProvider ] = useState();
+  const [ soldPixels, setSoldPixels ] = useState([])
   const [ ownPixels, setOwnPixels ] = useState()
   const [ mainnetProvider, setMainnetProvider ] = useState()
   const [ readProvider, setReadProvider ] = useState()
@@ -27,6 +26,7 @@ function App() {
   const address = useUserAddress(userProvider);
   const writeContract = useContractLoader(mainnetProvider)
   const readContract = useContractLoader(readProvider)
+  const blockExplorer = targetNetwork.blockExplorer;
 
   useEffect(() => {
     const provider = targetNetwork.name === 'localhost' ? "https://rpc.scaffoldeth.io:48544" : targetNetwork.rpcUrl
@@ -90,6 +90,21 @@ function App() {
     <div className="App">
       <Header/>
 
+      {/* 👨‍💼 Your account is in the top right with a wallet at connect options */}
+      <div style={{ position: "fixed", textAlign: "right", right: 0, top: 0, padding: 10 }}>
+         <Account
+           address={address}
+           userProvider={userProvider}
+           mainnetProvider={mainnetProvider}
+           price={price}
+           web3Modal={web3Modal}
+           loadWeb3Modal={loadWeb3Modal}
+           logoutOfWeb3Modal={logoutOfWeb3Modal}
+           blockExplorer={blockExplorer}
+         />
+         {/*faucetHint*/}
+      </div>
+
       <BrowserRouter>
         <Switch>
           <Route path="/">
@@ -102,6 +117,8 @@ function App() {
               writeContract={writeContract}
               readContract={readContract}
               price={price}
+              injectedProvider={injectedProvider}
+              loadWeb3Modal={loadWeb3Modal}
             />
           </Route>
         </Switch>

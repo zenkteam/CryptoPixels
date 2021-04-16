@@ -4,6 +4,7 @@ import { Button } from "antd";
 import { Transactor } from "../helpers";
 import { utils } from "ethers";
 import { useGasPrice} from "../hooks/index.js";
+import axios from 'axios';
 
 export default function Pixels(props) {
     
@@ -13,6 +14,7 @@ export default function Pixels(props) {
     const [priceToBuyInDollar, setPriceToBuyInDollar] = useState(0);
     const [priceToBuyInEther, setPriceToBuyInEther] = useState(0);
     const gasPrice = useGasPrice(props.targetNetwork, "fast");
+    const apiLink = props.targetNetwork.name === 'localhost' ? 'http://cryptoapi.test/' : 'https://cryptopixels.org/';
 
     useEffect(() => {
         if(selection.length>0){
@@ -30,20 +32,16 @@ export default function Pixels(props) {
         setSelection(selection)
     }
 
-    function getPixelData(id){
-        return {
-            id: id,
-            ipfs: 'dj2938d2390d239dk' + id
-        }
+    async function getPixelData(ids){
+        let data = await axios.post(apiLink + 'api/meta',{"p":ids}, { headers: { Accept: "application/json" } })
+        console.log(data)
+        return data
     }
 
     function buyPixel(){
         console.log('selection', selection)
-        var buy = new Array(selection.length)
-        for(let i = 0; i < selection.length; ++i){
-            buy[i] = getPixelData(selection[i])
-        }
-        
+        var buy = getPixelData(selection)
+
         console.log('Buying', buy)
         console.log('Price in Ether', priceToBuyInEther)
         console.log('Gas', gasPrice)
@@ -67,27 +65,17 @@ export default function Pixels(props) {
         setZoom(zoom);
     }
 
-    const STATI = {
-        AVAILABLE: '',    
-        RESERVED: 'r', // Because we have pre-rendered the reserved ones we keep it short to save space
-        SOLD: 'sold'
-    }
-
     function isReserved(id) {
-        if(id < 4040 || id > 5961){
-            return false;
-        }
+        if(id < 4040 || id > 5961) return false;
         let t = id % 1000;
-        if(t > 100){
-            t = t % 100;
-        }
+        if(t > 100) t = t % 100;
         return t > 40 && t < 61;
     }
 
     useEffect(() => {
         if(props.soldPixels && props.soldPixels.length > 0){
             for(let i = 0; i < props.soldPixels.length; ++i){
-                document.getElementById(props.soldPixels[i]).classList.add(STATI.SOLD)
+                document.getElementById(props.soldPixels[i]).classList.add('sold')
             }
         } 
     }, [props.soldPixels])
@@ -102,20 +90,52 @@ export default function Pixels(props) {
                     zoom={zoom}
                     onSelected={value => {onSelected(value);}}
                     onZoomUpdate={value => {onZoomUpdate(value);}}
+                    soldPixels={props.soldPixels}
                 ></SelectPlane>
             }
-            <div className="reset-button" onClick={() => resetSelection()}>Reset</div>
             
-            {selection.length > 0 && 
-                <div>
-                    <div className="priceUSD">
-                        Price $ {priceToBuyInDollar}
+        
+            <div id="menu">
+                <ol>
+                    <li>1 Pixel = $1</li>
+                    <li>Minimum buyin 10x10 = 100 pixels => $100</li>
+                    <li>Each pixelblock can be replaced with an image</li>
+                    <li>The center block gets auctioned once everything else is gone</li>
+                </ol>
+
+                {selection.length > 0 &&
+                    <div id="reset-button" onClick={() => resetSelection()}>Reset</div>
+                }
+
+                <button onClick={() => getPixelData(selection)}>Meta</button>
+
+                
+                {selection.length > 0 && props.injectedProvider &&
+                    <div>
+                        <div id="priceETH">Price:  ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
+                        <div id="buyPixels"><Button onClick={buyPixel}>Buy and own {selection.length*100} pixels ({selection.length} blocks)</Button></div>
                     </div>
-                    <div className="priceETH">Price ETH {priceToBuyInEther}</div>
-                    <div className="buyPixels"><Button onClick={buyPixel}>Buy</Button></div>
-                    <p><b>Selected Pixels {selection.length}</b></p>
-                </div>
-            }
+                }
+                
+                {selection.length > 0 && !props.injectedProvider &&
+                    <div>
+                        <p>You need to connect your wallet first.</p>
+                        <p>
+                            <Button
+                            key="loginbutton"
+                            style={{ verticalAlign: "top", marginLeft: 8, marginTop: 4 }}
+                            shape="round"
+                            size="large"
+                            /*type={minimized ? "default" : "primary"}     too many people just defaulting to MM and having a bad time*/
+                            onClick={props.loadWeb3Modal}
+                            >
+                            Connect
+                            </Button>
+                        </p>
+                    </div>
+                }
+            </div>
+            
          
             <div className="imageUpload">
                 

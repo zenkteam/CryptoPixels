@@ -41,7 +41,6 @@ import Wallet from "./Wallet";
 export default function Account({
   address,
   userProvider,
-  localProvider,
   mainnetProvider,
   price,
   minimized,
@@ -85,11 +84,12 @@ export default function Account({
   ) : (
     <span>
       {address ? <Address address={address} ensProvider={mainnetProvider} blockExplorer={blockExplorer} /> : "Connecting..."}
-      <Balance address={address} provider={localProvider} price={price} />
+      
       <Wallet address={address} provider={userProvider} ensProvider={mainnetProvider} price={price} />
     </span>
   );
 
+  // <Balance address={address} provider={localProvider} price={price} />
   return (
     <div>
       {display}

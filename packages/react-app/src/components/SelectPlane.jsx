@@ -1,5 +1,5 @@
 import "./SelectPlane.css";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import SelectionArea from "@simonwep/selection-js";
 
 // provides plane which allows to select pixels
@@ -93,9 +93,11 @@ export default function SelectPlane(props) {
         //document.getElementById(selected[i].id).classList.add('r')
         window.plane.deselect(selected[i], false)
       } else {
+        document.getElementById(selected[i].id).className = 'selected'
         ids[i] = id;
       }
     }
+    setSelected(ids)
     return ids;
   }
 
@@ -140,6 +142,93 @@ export default function SelectPlane(props) {
     }
   }
 
+  const [selected, setSelected] = useState([])
+  const [changeEffects, setChangeEffects] = useState(0)
+  const [amountAnimatedPixels, setAmountAnimatedPixels] = useState(0)
+  const effectsOn = false
+  
+  useEffect(() => {
+    if(!effectsOn){
+      return
+    }
+
+    if(changeEffects === 0){
+
+      // Effects
+      function getRandomColor() {
+        let letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+          color += letters[~~(Math.random() * 16)];
+        }
+        return color;
+      }
+
+      let effects = [
+        'animate__pulse', 'animate__bounce', 'animate__tada', 'animate__shakeX', 'animate__shakeY', 
+        'animate__backInDown', 'animate__backInLeft', 'animate__backInRight', 'animate__backInUp',
+        'animate__fadeIn', 'animate__fadeInDown', 'animate__fadeInUp', 'animate__fadeInTopLeft', 'animate__fadeInTopRight', 'animate__fadeInBottomLeft', 'animate__fadeInBottomRight',
+        'animate__flip', 'animate__flipInX', 'animate__flipInY',
+        'animate__rotateIn', 'animate__rotateInDownLeft', 'animate__rotateInDownRight','animate__rotateInUpLeft','animate__rotateInUpRight',
+        'animate__zoomIn', 'animate__zoomInDown', 'animate__zoomInUp', 'animate__zoomInLeft', 'animate__zoomInRight'
+      ]
+      let speeds = ['animate__slow', 'animate__fast', 'animate__faster']
+      let amount = 30
+
+
+      // Slow down / Clean up
+      // Clean up
+      if(amountAnimatedPixels > 120){
+        let clean = (effect) => {
+          let el = document.getElementsByClassName(effect)
+          while(el.length > 0){
+            // First reset colors
+            el[0].style.setProperty('background-color', '#455a4e')
+            el[0].style.setProperty('border-color', '#181818')
+            // Then remove animations
+            el[0].classList.remove(effect, 'animate__animated') 
+          }
+        }
+
+        for(let i = 0; i < effects.length; ++i){
+          clean(effects[i])
+        }
+
+        setAmountAnimatedPixels(0)
+
+      // Slow down
+      } else if(amountAnimatedPixels > 100){
+        amount = 3
+      } else if(amountAnimatedPixels > 70){
+        amount = 5
+      } else if(amountAnimatedPixels > 50){
+        amount = 10
+      } else if (amount > 30){
+        amount = 15
+      }
+
+      // Generate random
+      for(let i = 0; i < amount; ++i){
+        const r = ~~(Math.random() * 10000) + 1
+        // Make sure it's not reserved, sold or selected already
+        if(!props.isReserved(r) && props.soldPixels.indexOf(r) === -1 && selected.indexOf(r) === -1){
+          const el = document.getElementById(r)
+          if(el) {
+            el.classList.add('animate__animated', effects[~~(Math.random() * effects.length)], speeds[~~(Math.random() * speeds.length)], 'animate__repeat-'+(~~(Math.random() * 3)+1))
+            const color = getRandomColor()
+            el.style.setProperty('background-color', color)
+            el.style.setProperty('border-color', color)
+          }
+        }
+      }
+      setAmountAnimatedPixels(amountAnimatedPixels+amount)
+      
+      // Change effects
+      setChangeEffects(1)
+      setTimeout(()=> { setChangeEffects(0) }, 4000);
+    }
+  }, [changeEffects])
+
   useEffect(() => {
     // run
     container = document.getElementById('boxes');
@@ -168,7 +257,7 @@ export default function SelectPlane(props) {
 //
   return (
     <div className="scroller zoom">
-      <section id="boxes" dangerouslySetInnerHTML={g()} />
+        <section id="boxes" dangerouslySetInnerHTML={g()} />
     </div>
   );
 }

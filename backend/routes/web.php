@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\MetaController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+// MetaController::class.'@getMetadataByPixelId'
+Route::post('api/meta', function(){
+    exit("test");
+});
 
 Route::get('/', function () {
     return view('welcome');

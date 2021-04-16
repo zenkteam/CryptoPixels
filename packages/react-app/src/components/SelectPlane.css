@@ -4,33 +4,35 @@
     background-color: #111111;
     background-size: 100px;
     overflow: scroll;
-    position: fixed;
+    margin-left: auto;
+    margin-right: auto;
 }
 #boxes {
     height: 1000px;
     width: 1000px;
     line-height: 10px;
-
+    margin-top: 200px;
+    margin-left: auto;
+    margin-right: auto;
     /*display: grid;
     grid-template-columns: repeat(100, 1fr);
     align-items: flex-start;
     justify-content: flex-start;
-
     transform: scale(1);
     transform-origin: left top;*/
-    margin-top: 200px;
+    
 }
+
 #boxes div {
     height: 10px;
     width: 10px;
     border:solid 2px #181818;
-    background-color: #2ecc71;
+    background-color: #455a4e;
     display: inline-block;
 }
 
 #boxes div.r{
     width: 200px;
-    
 }
 
 #boxes div.selected{
@@ -38,7 +40,7 @@
 }
 
 #boxes div.selected {
-    background: green;
+    background: rgb(29, 123, 167);
 }
 #boxes div.selected.r, div.r {
     background: rgb(185, 183, 149) !important;
@@ -49,49 +51,44 @@
 
 @keyframes pulse {
     50% {
-      background: #2ecc71;
+      background: #49b1f7;
     }
   }
   @-webkit-keyframes pulse {
     50% {
-      background: #2ecc71;
+      background: #49b1f7;
     }
   }
-  @keyframes flash {
-    20% {
-      background: #2ecc71;
-    }
-    40% {
-      background: #181818;
-    }
-  }
-  @-webkit-keyframes flash {
-    20% {
-      background: #2ecc71;
-    }
-    40% {
-      background: #181818;
-    }
-  }
-  
-.boxes div {
-    animation: pulse 2s ease-in-out 0s infinite;
--webkit-animation: pulse 2s ease-in-out 0s infinite;
-}
 
-.boxpulse div:nth-child(-n + 11), .boxpulse div:nth-child(n + 111), .boxpulse div:nth-child(11n), .boxpulse div:nth-child(11n + 1) {
-animation: pulse 2s ease-in-out 0s infinite;
--webkit-animation: pulse 2s ease-in-out 0s infinite;
-}
 
-.dotpulse div:nth-child(61) {
-animation: pulse 2s ease-in-out 0s infinite;
--webkit-animation: pulse 2s ease-in-out 0s infinite;
+.selected{
+  animation: pulse 2s ease-in-out 1s infinite;
+  -webkit-animation: pulse 2s ease-in-out 1s infinite;
 }
-  
 
 
 /* Other */
+#menu{
+    position: absolute;
+    top: 140px;
+    left: 40px;
+    background: white;
+    padding: 1em;
+    border-radius: 1em;
+    text-align: left;
+    font-family: 'Roboto Slab', serif;
+}
+
+#menu > ol {
+  list-style-type: cjk-ideographic;
+}
+
+#buyPixels Button{
+  border:2px solid orange;
+  background-color: orange;
+  color:#fff;
+}
+/*
 .reset-button {
     position: absolute;
     top: 140px;
@@ -131,8 +128,23 @@ animation: pulse 2s ease-in-out 0s infinite;
     background: white;
     padding: 1em;
     border-radius: 1em;
-}
+}*/
 
 /*.ant-menu{
     display:none !important;
 }*/
+
+.ant-page-header{
+  background-color: #111111;
+  color:#ffffff;
+}
+
+.ant-page-header, 
+.ant-page-header-heading-title,
+.ant-page-header-heading-sub-title {
+  color:#ffffff
+}
+
+body{
+  font-family: 'Major Mono Display', monospace;
+}
