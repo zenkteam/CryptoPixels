@@ -1,5 +1,5 @@
 {
-  "name": "@scaffold-eth/react-app",
+  "name": "CryptoPixels.org",
   "version": "1.0.0",
   "homepage": ".",
   "browserslist": {
@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.2.2",
-    "@apollo/react-hooks": "^4.0.0",
     "@ethersproject/address": "^5.1.0",
     "@ethersproject/bignumber": "^5.1.0",
     "@ethersproject/bytes": "^5.1.0",
@@ -33,9 +32,6 @@
     "@walletconnect/web3-provider": "^1.3.1",
     "animate.css": "^4.1.1",
     "antd": "^4.7.0",
-    "apollo-boost": "^0.4.9",
-    "apollo-client": "^2.6.10",
-    "apollo-utilities": "^1.3.4",
     "axios": "^0.20.0",
     "bnc-notify": "^1.5.0",
     "burner-provider": "^1.0.38",
@@ -43,21 +39,15 @@
     "dragselect": "^2.0.2",
     "eth-hooks": "^1.1.2",
     "ethers": "^5.0.31",
-    "graphiql": "^1.0.5",
-    "graphql": "^15.3.0",
-    "isomorphic-fetch": "^3.0.0",
     "node-watch": "^0.7.1",
     "postcss": "^8.2.6",
     "qrcode.react": "^1.0.0",
     "react": "^17.0.2",
     "react-blockies": "^1.4.1",
-    "react-css-theme-switcher": "^0.2.2",
     "react-dom": "^16.14.0",
-    "react-json-view": "^1.21.1",
     "react-qr-reader": "^2.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.3",
-    "react-stack-grid": "^0.7.1",
     "web3modal": "^1.9.1"
   },
   "devDependencies": {

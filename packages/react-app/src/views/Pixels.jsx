@@ -176,7 +176,7 @@ export default function Pixels(props) {
                 
                 {selection.length > 0 && !props.injectedProvider &&
                     <div>
-                        <p>You need to connect your wallet first.</p>
+                        <p>You selected <b>{selection.length} pixelblocks</b> but you need to connect your wallet first.</p>
                         <p>
                             <Button
                             key="loginbutton"
