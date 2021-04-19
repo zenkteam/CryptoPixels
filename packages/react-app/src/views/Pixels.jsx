@@ -4,7 +4,6 @@ import { Button } from "antd";
 import { Transactor } from "../helpers";
 import { utils } from "ethers";
 import { useGasPrice} from "../hooks/index.js";
-import axios from 'axios';
 
 export default function Pixels(props) {
     
@@ -29,7 +28,6 @@ export default function Pixels(props) {
     },[props.price, selection])
     
     function onSelected(selection) {
-        console.log('SELECTION', selection)
         setSelection(selection)
     }
 
@@ -139,7 +137,6 @@ export default function Pixels(props) {
                 ></SelectPlane>
             }
             
-        
             <div id="menu">
                 <div class="corner" id="topleft-1"></div>
                 <div class="corner" id="topleft-2"></div>
@@ -183,10 +180,8 @@ export default function Pixels(props) {
                         <p>
                             <Button
                             key="loginbutton"
-                            style={{ verticalAlign: "top", marginLeft: 8, marginTop: 4 }}
-                            shape="round"
                             size="large"
-                            /*type={minimized ? "default" : "primary"}     too many people just defaulting to MM and having a bad time*/
+                            id="menuConnect"
                             onClick={props.loadWeb3Modal}
                             >
                             Connect

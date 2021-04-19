@@ -2,6 +2,30 @@ body{
   font-family: 'Major Mono Display', monospace;
 }
 
+/**
+* HEADER
+*/
+#headerConnect,
+#menuConnect{
+  animation: pulse 2s ease-in-out 1s infinite;
+  -webkit-animation: pulse 2s ease-in-out 1s infinite;
+  font-family: 'Major Mono Display', monospace !important;
+  font-weight:bold !important;
+  vertical-align: "top";
+  margin-left: 8px;
+  margin-top: 4px;
+  background-color:'#f58420';
+  border:'none';
+  border-radius:0;
+}
+
+#headerConnect{
+  margin-left:0px;
+  margin-right:20px;
+}
+/**
+* PIXEL FIELD
+*/
 .scroller {
     /*height: 100vh;
     width: 100vw;*/
@@ -22,24 +46,30 @@ body{
 }
 
 .ds-selector{
-  background-color: aqua !important;
-  border:1px solid blue !important;
+  background-color: #f58420 !important;
+  opacity: 0.8;
+  border:solid 2px #181818 !important;
   z-index:3 !important
 }
 
 @keyframes pulse {
   50% {
-    background: #175e8d;
+    background: #f58420;
+    opacity:0.8;
+    border:solid 2px #181818;
   }
 }
 @-webkit-keyframes pulse {
   50% {
-    background: #175e8d;
+    background: #f58420;
+    opacity:0.8;
+    border:solid 2px #181818;
   }
 }
 
 #selectedArea{
-  background-color: #49b1f7;
+  background-color: #f58420;
+  border:solid 2px #181818;
   position:absolute;
   z-index:100;
   animation: pulse 2s ease-in-out 1s infinite;
@@ -52,7 +82,7 @@ body{
   height:200px !important;
   top:400px !important;
   left:400px !important;
-  z-index: 10 !important;
+  z-index: 110 !important;
   padding: 0 0 !important;
   background: url('/pepe200.jpg') no-repeat !important;
   display: block !important;

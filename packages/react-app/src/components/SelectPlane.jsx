@@ -111,7 +111,7 @@ export default function SelectPlane(props) {
     })
 
     function selectElements(ids){
-      if (typeof props.onSelected === "function") {
+      if (typeof props.onSelected === 'function') {
         props.onSelected(ids);
       }
       setSelected(ids)
@@ -124,16 +124,23 @@ export default function SelectPlane(props) {
         }
     }
 
-    document.addEventListener("click", (evt) => {
-      const flyoutElement = document.getElementById("boxes");
-      let targetElement = evt.target; // clicked element
-  
+    /**
+     * Unselect pixels except clickon within the "ok"-areas: header, connect, menu, pixel area, centerpiece
+     */
+    document.addEventListener('click', (evt) => {
+      const ok1 = document.getElementById('boxes');
+      const ok2 = document.getElementById('menu');
+      const ok3 = document.getElementById('WEB3_CONNECT_MODAL_ID');
+      const ok4 = document.getElementById('headerConnect');
+      const ok5 = document.getElementById('c');
+      let targetElement = evt.target; 
       do {
-          if (targetElement == flyoutElement) {
-              // This is a click inside. Do nothing, just return.
-              return;
-          }
-          // Go up the DOM
+          if (targetElement === ok1 || 
+              targetElement === ok2 ||
+              targetElement === ok3 ||
+              targetElement === ok4 ||
+              targetElement === ok5
+            ) {return;}
           targetElement = targetElement.parentNode;
       } while (targetElement);
   
