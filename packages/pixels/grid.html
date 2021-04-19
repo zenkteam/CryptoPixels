@@ -1,68 +1,81 @@
 <html>
     <head>
         <style>
-            body div {
-                width: 10px;
-                height: 10px;
-                background-color: aquamarine;
+            #wrapper{
+                display:block;
+                width:1000px;
+                height:1000px;
+                margin-left:auto;
+                margin-right:auto;
+            }
+
+            #wrapper i {
+                width: 6px;
+                height: 6px;
+                border:solid 2px #181818;
+                background-color: #455a4e;
+                display: inline-block;
+                line-height: 10px;
+                z-index:1;
+                margin: 0 0;
+                padding:0 0;
+            }
+
+            .r {
+                width: 200px !important;
+                height: 6px;
+                display: inline-block;
+                line-height: 10px;
+                border-left:none !important;
+                border-right:none !important;
+                z-index:2 !important;
+            }
+            #c{
+                position:absolute !important;
+                width:200px !important;
+                height:200px !important;
+                margin-top:400px !important;
+                margin-left:400px !important;
+                z-index: 10 !important;
+                padding: 0 0 !important;
+                background-color: aqua !important;
+                display: block !important;
+                border:none !important;
             }
         </style>
-        
     </head>
-    <body></body>
+    <body>
+        <div id="wrapper"></div>
+    </body>
     <script>
-        function r(){
-            let upperLeftPointOfEachPiece = [4041] // [2021, 2061, 4041, 6021, 6061]
-            let sizeOfEachPiece = 20
-            let reserved = new Array(upperLeftPointOfEachPiece.length * sizeOfEachPiece * sizeOfEachPiece)
-            reserved.length = upperLeftPointOfEachPiece.length * sizeOfEachPiece * sizeOfEachPiece
-            let c = 0
-            for(let i = 0; i < upperLeftPointOfEachPiece.length; ++i){
-                for(let j = 0; j < sizeOfEachPiece; ++j){
-                    for(let k = 0; k < sizeOfEachPiece; ++k){
-                        reserved[c] = upperLeftPointOfEachPiece[i] + j + k*100
-                        ++c
-                    }
-                }
-            }
-            return reserved;
+        function isReserved(id) {
+            if(id < 4040 || id > 5961) return false;
+            let t = id % 1000;
+            if(t > 100) t = t % 100;
+            return t > 40 && t < 61;
         }
 
-
-        function r2(){
-            let upperLeftPointOfEachPiece = [4041] // [2021, 2061, 4041, 6021, 6061]
-            let sizeOfEachPiece = 20
-            let reserved = new Array(20)
-            reserved.length = 20
-            for(let i = 0; i < sizeOfEachPiece; ++i){
-                reserved[i] = 4041 + (i * 100)
-            }
-            return reserved;
-        }
-       
-        function renderPixels(){
-            let re = r2();
+        function renderPixelsNew(){
             var docFrag = document.createDocumentFragment();
+            let c = document.createElement('div')
+            c.setAttribute('id', 'c')
+            document.getElementById('wrapper').appendChild(c)
             for(var i = 1; i < 10001; i++) {
-                let x = document.createElement('div')
-                if(re.indexOf(i) !== -1){
+                let x = document.createElement('i')
+
+                if(isReserved(i)){
                     x.setAttribute('class', 'r')
                     // Skip the next 200
-                    i += 19
+                    i += 19  
                 } else {
                     x.setAttribute('id', i)
                 }
+                //x.setAttribute('title', i)
                 docFrag.appendChild(x); // Note that this does NOT go to the DOM
             } 
-            document.body.appendChild(docFrag); // Appends all divs at once
+            document.getElementById('wrapper').appendChild(docFrag); // Appends all divs at once
         }
 
-        function renderReservedList(){
-            console.log(r())
-        }
-
-        renderPixels()
-        
-
+        renderPixelsNew()
     </script>
 </html>

@@ -17,14 +17,7 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   struct CryptoPixel {
       uint256 id;
       string ipfs;
-      uint16 x;
-      uint16 y;
   }
-
-  // Reserved: [x from, x to, y from, y to]
-  // [200, 400, 200, 400], [600, 800, 200, 400], [200, 400, 600, 800], [600, 800, 600, 800],
-  // 
-  uint16[4] private reserved = [400, 600, 400, 600];
   
   uint16 public pixelsRemaining;
 
@@ -46,20 +39,17 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
     Allow to buy pixels in bulk
    */
   function buyPixels(CryptoPixel[] memory _pixels) payable public returns (CryptoPixel[] memory){
-      require(_pixels.length > 0, 'You need at least buy one pixel');
-      require(_pixels.length <= 1000, 'You can only buy 1000 pixels at a time');
-      require(pixelsRemaining > 0, 'No pixels left');
+      require(_pixels.length > 0, 'NOT ENOUGH PIXELS');
+      require(_pixels.length <= 1000, 'TOO MANY PIXELS');
+      require(pixelsRemaining > 0, 'ALL PIXELS HAVE BEEN MINTED');
       
       uint256 minPrice = (pricePerPixel / 10 * 8) * _pixels.length;
       require(msg.value >= minPrice, 'NOT PAYED ENOUGH');
 
       for (uint8 i = 0; i < _pixels.length; i++) {
-        require(_pixels[i].id > 0 && _pixels[i].id < 10001, "PIXEL ID DOES NOT EXIST");
-        
-        require(!notForSale[_pixels[i].id], "NOT FOR SALE ANYMORE");
-
-        // Require that we're NOT in the reserved row-range and simulatiously in the reserved column-range
-        //require(!(_pixels[i].y >= reserved[2] && _pixels[i].y <= reserved[3] && _pixels[i].x >= reserved[0] && _pixels[i].x <= reserved[1]), "RESERVED");
+        require(_pixels[i].id > 0 && _pixels[i].id < 10001, "DOES NOT EXIST");
+        require(!notForSale[_pixels[i].id], "ALREADY MINTED");
+        require(!isReserved(_pixels[i].id), "RESERVED");
       }
 
       // Make purchase
@@ -86,11 +76,25 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   }
 
   /**
+  * Checks if id is within reserved range
+  */
+  function isReserved(uint256 pixelId) private pure returns (bool){
+    if(pixelId < 4040 || pixelId > 5961) {
+      return false;
+    }
+    uint256 rest = pixelId % 1000;
+    if(rest > 100){
+      rest = rest % 100;
+    } 
+    return rest > 40 && rest < 61;
+  }
+
+  /**
   * We're overwriting this function as we can do it cheaper than the contract we're inherting from
   * @dev See {IERC721Metadata-tokenURI}.
   */
   function tokenURI(uint256 pixelId) public view virtual override returns (string memory) {
-      require(pixelId > 0 && pixelId < 10001, "ERC721Metadata: URI query for nonexistent token");
+      require(!isReserved(pixelId), "ERC721Metadata: URI query for nonexistent token");
       require(notForSale[pixelId], 'This pixel has not been minted yet - 1');
       return string(abi.encodePacked(_baseURI(), _tokenURIs[pixelId]));
   }

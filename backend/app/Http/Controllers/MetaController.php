@@ -43,26 +43,42 @@ class MetaController extends Controller
         return response()->json($data, $code);
     }
 
+    /** 
+     * Calculates columns, rows, x- & y-coordinate based on the id
+     */
     private function getPixelData($id){
+
+        // There are 100 columns and 100 Rows
+        // To determine the column we just want to break down the id to ten-digits
+        // If the id is smaller 100, column is automatically id 
+            // as e.g. id 3 points to the third pixel in the first row
         if($id > 999){
-            $t = $id % 1000;
-            if($t > 100){
-                $t = $t % 100;
-            } 
-            $column = $t;
+            $column = $id % 1000; // ignore thousand-digit
+
+            if($column > 99){
+                $column = $column % 100; // ignore hundred digit
+            }
         } else if ($id > 100){
-            $column = $id - intval($id / 100) * 100;
+            $column = $id % 100;
         } else {
             $column = $id; 
         }
+        // If %-rest equals zero, it has to be a full hundred and column = 100
+        if($column === 0){ 
+            $column = 100;
+        }
 
-        // There are only 100 columns of 10px width whereby first starts on 0px
+        // There are only 100 columns of 10px width, whereby first pixel starts on 0px
         $x = ($column-1) * 10;
 
         // There are only 100 rows. Let's see how often the 100 fits in.
         // Beware that if id is < 100, it is supposed to be row 1
         // Let's say id is 100, then we want row to be 1 after we added 1
-        // Because if id is 400, 
+        // Because if id is 400, row is actually 3:
+        // Row 1: 1 - 100
+        // Row 2: 101 - 200
+        // Row 3: 201 - 300
+        // Row 4: 301 - 400
         $row = intval(($id-1)/100) + 1;
         $y = ($row-1)*10;
 

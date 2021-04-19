@@ -1,53 +1,74 @@
+
+body{
+  font-family: 'Major Mono Display', monospace;
+}
+
 .scroller {
-    height: 100vh;
-    width: 100vw;
-    background-color: #111111;
-    background-size: 100px;
-    overflow: scroll;
+    /*height: 100vh;
+    width: 100vw;*/
+    width:1000px;
+    height:1000px;
+    padding:0 0;
     margin-left: auto;
     margin-right: auto;
 }
 #boxes {
     height: 1000px;
     width: 1000px;
-    line-height: 10px;
-    margin-top: 200px;
     margin-left: auto;
     margin-right: auto;
-    /*display: grid;
-    grid-template-columns: repeat(100, 1fr);
-    align-items: flex-start;
-    justify-content: flex-start;
-    transform: scale(1);
-    transform-origin: left top;*/
-
-    
+    display: block;
+    overflow: auto;
+    line-height: 8px;
+    font-size: 10px;
 }
 
-#boxes div {
-    height: 10px;
-    width: 10px;
-    border:solid 2px #181818;
-    background-color: #455a4e;
-    display: inline-block;
+#boxes i {
+  width: 10px;
+  height: 10px;
+  border:solid 2px #181818;
+  background-color: #455a4e;
+  display: inline-block;
+  z-index:1;
+  margin: 0 0 !important;
+  padding:0 0 !important;
 }
 
-#boxes div.r{
-    width: 200px;
+#boxes i.r{
+  width: 200px !important;
+  height: 10px;
+  display: inline-block;
+  line-height: 10px !important;
+  border-left:none !important;
+  border-right:none !important;
+  z-index:2 !important;
 }
 
-#boxes div.selected{
+#boxes i.selected{
     opacity: 0.7;
 }
 
-#boxes div.selected {
+#boxes i.selected {
     background: rgb(29, 123, 167);
 }
-#boxes div.selected.r, div.r {
+#boxes i.selected.r, i.r {
     background: rgb(185, 183, 149) !important;
 }
-#boxes div.selected.s, div.s {
+#boxes i.selected.s, i.s {
     background: red !important;
+}
+
+#c{
+  position:absolute !important;
+  width:200px !important;
+  height:200px !important;
+  margin-top:400px !important;
+  margin-left:400px !important;
+  z-index: 10 !important;
+  padding: 0 0 !important;
+  background-color: aqua !important;
+  display: block !important;
+  border:none !important;
 }
 
 @keyframes pulse {
@@ -206,8 +227,4 @@
 .ant-page-header-heading-title,
 .ant-page-header-heading-sub-title {
   color:#ffffff
-}
-
-body{
-  font-family: 'Major Mono Display', monospace;
 }
