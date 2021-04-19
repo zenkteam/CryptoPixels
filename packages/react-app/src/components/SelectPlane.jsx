@@ -60,9 +60,7 @@ export default function SelectPlane(props) {
         start.id = start.column + ((start.row - 1) * 100)
         end.id = end.column + ((end.row - 1) * 100)
 
-        console.log('start', start.id, 'end', end.id)
-        console.log('start', start, 'end', end)
-
+        // Make sure to do the math in the right direction
         let from = start
         let to = end
         if(from.id > to.id){
@@ -74,7 +72,6 @@ export default function SelectPlane(props) {
         let amountRows = to.row - from.row
         let amountColumns = to.column - from.column
         let ids = [];
-        console.log("rows", amountRows, "columns", amountColumns)
         if(amountRows > 0 || amountColumns > 0){
             let count = 0;
             for(let i = 0; i <= amountRows; ++i){
@@ -92,6 +89,10 @@ export default function SelectPlane(props) {
             }
         }
 
+        // Set selected pixels
+        if (typeof props.onSelected === "function") {
+          props.onSelected(ids);
+        }
         setSelected(ids)
 
         // Remove existing overlay
@@ -101,10 +102,10 @@ export default function SelectPlane(props) {
         }
 
         // Create new overlay
-        let width = (amountColumns + 1) * 10
-        let height = (amountRows + 1) * 10
-        let marginLeft = (from.column - 1) * 10
-        let marginTop = (from.row - 1) * 10
+        const width = (amountColumns + 1) * 10
+        const height = (amountRows + 1) * 10
+        const marginLeft = (from.column - 1) * 10
+        const marginTop = (from.row - 1) * 10
         let overlay = document.createElement('div')
         overlay.style.cssText = 'width:' + width + 'px;height:' + height + 'px;margin-left:' + marginLeft + 'px;margin-top:' + marginTop + 'px'
         overlay.setAttribute('id', 'selectedArea')
@@ -169,7 +170,7 @@ export default function SelectPlane(props) {
 
       // Effects
       function getRandomColor() {
-        let letters = '0123456789ABCDEF';
+        const letters = '0123456789ABCDEF';
         let color = '#';
         for (let i = 0; i < 6; i++) {
           color += letters[~~(Math.random() * 16)];
@@ -188,18 +189,16 @@ export default function SelectPlane(props) {
       let speeds = ['animate__slow', 'animate__fast', 'animate__faster']
       let amount = 30
 
-
       // Slow down / Clean up
       // Clean up
       if(amountAnimatedPixels > 120){
         let el = document.getElementsByClassName('animate__animated')
         while(el.length > 0){
           // First reset colors
-          el.remove() 
+          el[0].remove() 
         }
 
         setAmountAnimatedPixels(0)
-
       // Slow down
       } else if(amountAnimatedPixels > 100){
         amount = 3
@@ -212,8 +211,7 @@ export default function SelectPlane(props) {
       }
 
       function createPixel(id){
-        let pixel = props.generatePixelData(id)
-        console.log('pixelData', pixel)
+        const pixel = props.generatePixelData(id)
         let p = document.createElement('div')
         p.style.cssText = 'position:absolute;z-index:2;width:10px;height:10px;margin-left:' + pixel.x + 'px;margin-top:' + pixel.y + 'px'
         p.setAttribute('id', id)
@@ -259,18 +257,13 @@ export default function SelectPlane(props) {
 
     // Specify how to clean up after this effect:
     return function cleanup() {
-      window.plane.destroy();
       //window.removeEventListener('wheel', onWheel);
     };
   }, []);
- 
-  let g = () => {
-    return {__html: "<div id='c'></div>"}
-  }
-//
+
   return (
     <div className="">
-        <section id="boxes" dangerouslySetInnerHTML={g()} />
+        <section id="boxes"><div id="c"></div></section>
     </div>
   );
 }

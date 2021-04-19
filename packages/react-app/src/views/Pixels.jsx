@@ -29,6 +29,7 @@ export default function Pixels(props) {
     },[props.price, selection])
     
     function onSelected(selection) {
+        console.log('SELECTION', selection)
         setSelection(selection)
     }
 
@@ -100,11 +101,7 @@ export default function Pixels(props) {
     }
 
     function resetSelection() { 
-        let el = document.getElementsByClassName('selected')
-        while(el.length > 0) {
-            el[0].classList.remove('selected')
-        }
-        
+        document.getElementById('selectedArea').remove()
         onSelected([]);
     }
 
@@ -156,9 +153,6 @@ export default function Pixels(props) {
                 {selection.length > 0 &&
                     <div id="reset-button" onClick={() => resetSelection()}>Reset</div>
                 }
-
-                <button onClick={() => getPixelData(selection)}>Meta</button>
-
                 
                 {selection.length > 0 && props.injectedProvider &&
                     <div>
