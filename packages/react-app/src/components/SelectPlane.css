@@ -18,11 +18,10 @@ body{
     margin-left: auto;
     margin-right: auto;
     display: block;
-    overflow: auto;
-    line-height: 8px;
-    font-size: 10px;
+    background: url('/grid.png') no-repeat;
 }
 
+/*
 #boxes i {
   width: 10px;
   height: 10px;
@@ -56,6 +55,18 @@ body{
 }
 #boxes i.selected.s, i.s {
     background: red !important;
+}*/
+
+.ds-selector{
+  background-color: aqua !important;
+  border:1px solid blue !important;
+  z-index:3 !important
+}
+
+#selectedArea{
+  position:absolute;
+  background-color:red;
+  z-index:100;
 }
 
 #c{
@@ -66,7 +77,7 @@ body{
   margin-left:400px !important;
   z-index: 10 !important;
   padding: 0 0 !important;
-  background-color: aqua !important;
+  background: url('/pepe200.jpg') no-repeat !important;
   display: block !important;
   border:none !important;
 }

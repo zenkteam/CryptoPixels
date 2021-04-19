@@ -7,6 +7,7 @@
                 height:1000px;
                 margin-left:auto;
                 margin-right:auto;
+                background: url('./grid.png') no-repeat;
             }
 
             #wrapper i {
@@ -42,12 +43,112 @@
                 display: block !important;
                 border:none !important;
             }
+
+            
+            .ds-selector{
+                background-color: aqua !important;
+                border:1px solid blue !important;
+                z-index:3 !important
+            }
+
+            #c{
+            position:absolute !important;
+            width:200px !important;
+            height:200px !important;
+            margin-top:400px !important;
+            margin-left:400px !important;
+            z-index: 100000 !important;
+            padding: 0 0 !important;
+            background: url('./pepe200.jpg') no-repeat !important;
+            display: block !important;
+            border:none !important;
+            }
         </style>
+        <script src="https://dragselect.com/v2/ds.min.js"></script>
     </head>
     <body>
-        <div id="wrapper"></div>
+        <div id="wrapper"><div id="c"></div></div>
     </body>
     <script>
+
+        const ds = new DragSelect({
+            area: document.getElementById('wrapper'),
+        });
+
+        ds.subscribe('callback', ({ items, event }) => {
+            let start = ds.getInitialCursorPositionArea()
+            let end = ds.getCurrentCursorPositionArea()
+
+            end.x = end.x < 0 ? 0 : end.x
+            end.y = end.y < 0 ? 0 : end.y
+
+            start.column = parseInt(start.x / 10) + 1
+            start.row = parseInt(start.y / 10) + 1
+
+            end.column = parseInt(end.x / 10) + 1
+            end.row = parseInt(end.y / 10) + 1
+
+            start.id = start.column + ((start.row - 1) * 100)
+            end.id = end.column + ((end.row - 1) * 100)
+
+            console.log('start', start.id, 'end', end.id)
+            console.log('start', start, 'end', end)
+
+            let from = start
+            let to = end
+            if(from.id > to.id){
+                from = end
+                to = start
+            }
+
+            // Calculate all ids
+            let amountRows = to.row - from.row
+            let amountColumns = to.column - from.column
+            let ids = [];
+            console.log("rows", amountRows, "columns", amountColumns)
+            if(amountRows > 0 || amountColumns > 0){
+                let count = 0;
+                for(let i = 0; i <= amountRows; ++i){
+                    for(let j = 0; j <= amountColumns; ++j){
+                        const id = from.id + (i*100) + j
+                        console.log(id, isReserved(id))
+                        if(isReserved(id) === false){
+                            ids[count] = id
+                        }
+                        ++count
+                    }
+                }
+            } else {
+                if(isReserved(from.id) === false){
+                    ids[0] = from.id
+                }
+            }
+            
+            console.log(ids)
+
+            // Remove existing overlay
+            let selectedArea = document.getElementById('selectedArea')
+            if(selectedArea){
+                selectedArea.remove()
+            }
+
+            // Create new overlay
+            let overlay = document.createElement('div')
+            let style = 'position:absolute;background-color:red;z-index:100;'
+            let width = (amountColumns + 1) * 10
+            let height = (amountRows + 1) * 10
+            let marginLeft = (from.column - 1) * 10
+            let marginTop = (from.row - 1) * 10
+            overlay.style.cssText = style + 'width:' + width + 'px;height:' + height + 'px;margin-left:' + marginLeft + 'px;margin-top:' + marginTop + 'px'
+            overlay.setAttribute('id', 'selectedArea')
+            document.getElementById('wrapper').appendChild(overlay);
+
+            
+        })
+
+
+        var displayReserved = false;
+
         function isReserved(id) {
             if(id < 4040 || id > 5961) return false;
             let t = id % 1000;
@@ -57,13 +158,15 @@
 
         function renderPixelsNew(){
             var docFrag = document.createDocumentFragment();
+            /*
             let c = document.createElement('div')
             c.setAttribute('id', 'c')
-            document.getElementById('wrapper').appendChild(c)
+            document.getElementById('wrapper').appendChild(c)*/
+
             for(var i = 1; i < 10001; i++) {
                 let x = document.createElement('i')
 
-                if(isReserved(i)){
+                if(displayReserved && isReserved(i)){
                     x.setAttribute('class', 'r')
                     // Skip the next 200
                     i += 19  
@@ -73,9 +176,10 @@
                 //x.setAttribute('title', i)
                 docFrag.appendChild(x); // Note that this does NOT go to the DOM
             } 
+
             document.getElementById('wrapper').appendChild(docFrag); // Appends all divs at once
         }
 
-        renderPixelsNew()
+        //renderPixelsNew()
     </script>
 </html>

@@ -33,9 +33,56 @@ export default function Pixels(props) {
     }
 
     async function getPixelData(ids){
-        let data = await axios.post(apiLink + 'api/meta',{"p":ids}, { headers: { Accept: "application/json" } })
-        console.log(data)
+        let data = new Array(ids.length)
+        for(let i = 0; i < ids.length; ++i){
+            data[i] = generatePixelData(ids[i])
+        }
         return data
+    }
+
+    function generatePixelData(id){
+        let column, row, x, y
+        // There are 100 columns and 100 Rows
+        // To determine the column we just want to break down the id to ten-digits
+        // If the id is smaller 100, column is automatically id 
+            // as e.g. id 3 points to the third pixel in the first row
+        if(id > 999){
+            column = id % 1000; // ignore thousand-digit
+    
+            if(column > 99){
+                column = column % 100; // ignore hundred digit
+            }
+        } else if (id > 100){
+            column = id % 100;
+        } else {
+            column = id; 
+        }
+        // If %-rest equals zero, it has to be a full hundred and column = 100
+        if(column === 0){ 
+            column = 100;
+        }
+    
+        // There are only 100 columns of 10px width, whereby first pixel starts on 0px
+        x = (column-1) * 10;
+    
+        // There are only 100 rows. Let's see how often the 100 fits in.
+        // Beware that if id is < 100, it is supposed to be row 1
+        // Let's say id is 100, then we want row to be 1 after we added 1
+        // Because if id is 400, row is actually 3:
+        // Row 1: 1 - 100
+        // Row 2: 101 - 200
+        // Row 3: 201 - 300
+        // Row 4: 301 - 400
+        row = parseInt((id-1)/100) + 1;
+        y = (row-1)*10;
+    
+        return {
+            id: id,
+            column: column,
+            x: x,
+            row: row,
+            y: y,
+        };
     }
 
     function buyPixel(){
@@ -91,6 +138,7 @@ export default function Pixels(props) {
                     onSelected={value => {onSelected(value);}}
                     onZoomUpdate={value => {onZoomUpdate(value);}}
                     soldPixels={props.soldPixels}
+                    generatePixelData={(id) => generatePixelData(id)}
                 ></SelectPlane>
             }
             

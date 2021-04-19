@@ -2193,11 +2193,6 @@
   resolved "https://registry.yarnpkg.com/@sheerun/mutationobserver-shim/-/mutationobserver-shim-0.3.3.tgz#5405ee8e444ed212db44e79351f0c70a582aae25"
   integrity sha512-DetpxZw1fzPD5xUBrIAoplLChO2VB8DlL5Gg+I1IR9b2wPqYIca2WSUxL5g1vLeR4MsQq1NeWriXAVffV+U1Fw==
 
-"@simonwep/selection-js@^2.0.2":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@simonwep/selection-js/-/selection-js-2.0.3.tgz#1d89146f124b794e3f2bc5d4f90ef83668205591"
-  integrity sha512-nltDPVMxCwEdZIOhfvO636iVnFz5REErfwG3JVk1+dqTtF2qZBPVAMKPXioiIGXNFboK81aVp8W1xfUQ9nGk3A==
-
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -7071,6 +7066,11 @@ dotignore@~0.1.2:
   integrity sha512-UGGGWfSauusaVJC+8fgV+NVvBXkCTmVv7sk6nojDZZvuOUNGUy0Zk4UpHQD6EDjS0jpBwcACvH4eofvyzBcRDw==
   dependencies:
     minimatch "^3.0.4"
+
+dragselect@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/dragselect/-/dragselect-2.0.2.tgz#5ae15db3b68b03f3772ecd258875abb51bfaaaed"
+  integrity sha512-BAU9FqVw06bSW+Fj9LSYwrwVJ4iKTIsQKvgkORZt4raBZ1XGNi7e+L6/b2trVze3U4EfmdHMDOEEXTWMIyqCzA==
 
 drbg.js@^1.0.1:
   version "1.0.1"
