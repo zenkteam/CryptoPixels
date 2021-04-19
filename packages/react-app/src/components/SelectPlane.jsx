@@ -41,6 +41,9 @@ export default function SelectPlane(props) {
   function initializeSelection() {
     
     const ds = new DragSelect({
+      customStyles: true,
+      draggability: false,
+      immediateDrag: false,
       area: document.getElementById('boxes'),
     });
 
@@ -90,16 +93,10 @@ export default function SelectPlane(props) {
         }
 
         // Set selected pixels
-        if (typeof props.onSelected === "function") {
-          props.onSelected(ids);
-        }
-        setSelected(ids)
+        selectElements(ids)
 
         // Remove existing overlay
-        let selectedArea = document.getElementById('selectedArea')
-        if(selectedArea){
-            selectedArea.remove()
-        }
+        removeSelectedArea()
 
         // Create new overlay
         const width = (amountColumns + 1) * 10
@@ -112,6 +109,38 @@ export default function SelectPlane(props) {
         document.getElementById('boxes').appendChild(overlay);
 
     })
+
+    function selectElements(ids){
+      if (typeof props.onSelected === "function") {
+        props.onSelected(ids);
+      }
+      setSelected(ids)
+    }
+
+    function removeSelectedArea(){
+      let selectedArea = document.getElementById('selectedArea')
+        if(selectedArea){
+            selectedArea.remove()
+        }
+    }
+
+    document.addEventListener("click", (evt) => {
+      const flyoutElement = document.getElementById("boxes");
+      let targetElement = evt.target; // clicked element
+  
+      do {
+          if (targetElement == flyoutElement) {
+              // This is a click inside. Do nothing, just return.
+              return;
+          }
+          // Go up the DOM
+          targetElement = targetElement.parentNode;
+      } while (targetElement);
+  
+      // This is a click outside.
+      selectElements([])
+      removeSelectedArea()
+  });
 
   }
 

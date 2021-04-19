@@ -141,6 +141,22 @@ export default function Pixels(props) {
             
         
             <div id="menu">
+                <div class="corner" id="topleft-1"></div>
+                <div class="corner" id="topleft-2"></div>
+                <div class="corner" id="topright-1"></div>
+                <div class="corner" id="topright-2"></div>
+                <div class="corner" id="bottomleft-1"></div>
+                <div class="corner" id="bottomleft-2"></div>
+                <div class="corner" id="bottomright-1"></div>
+                <div class="corner" id="bottomright-2"></div>
+                <div class="corner" id="topmiddle-1"></div>
+                <div class="corner" id="topmiddle-2"></div>
+                <div class="corner" id="rightmiddle-1"></div>
+                <div class="corner" id="rightmiddle-2"></div>
+                <div class="corner" id="bottommiddle-1"></div>
+                <div class="corner" id="bottommiddle-2"></div>
+                <div class="corner" id="bottommiddle-3"></div>
+
                 <ol>
                     <li>1 Pixel = $1</li>
                     <li>10.000 blocks of 10x10 pixels: $100</li>
