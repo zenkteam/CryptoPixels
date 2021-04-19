@@ -1,8 +1,320 @@
+body{
+  font-family: 'Major Mono Display', monospace;
+  background-color: #111111;
+  margin: 0;
+}
+
 .App {
   text-align: center;
 }
 
+/**
+* HEADER
+*/
+#headerConnect,
+#menuConnect{
+  animation: pulse 2s ease-in-out 1s infinite;
+  -webkit-animation: pulse 2s ease-in-out 1s infinite;
+  font-family: 'Major Mono Display', monospace !important;
+  font-weight:bold !important;
+  vertical-align: "top";
+  margin-left: 8px;
+  margin-top: 4px;
+  background-color:'#f58420';
+  border:'none';
+  border-radius:0;
+}
 
-body{
+#headerConnect{
+  margin-left:0px;
+  margin-right:20px;
+}
+
+/**
+* PIXEL FIELD
+*/
+.scroller {
+    /*height: 100vh;
+    width: 100vw;*/
+    width:1000px;
+    height:1000px;
+    padding:0 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+#boxes {
+    height: 1000px;
+    width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    background: url('/grid.png') no-repeat;
+    animation: glitch 4s linear infinite;
+}
+
+.ds-selector{
+  background-color: #f58420 !important;
+  opacity: 0.8;
+  border:solid 2px #181818 !important;
+  z-index:3 !important
+}
+
+@keyframes pulse {
+  50% {
+    background: #f58420;
+    opacity:0.8;
+    border:solid 2px #181818;
+  }
+}
+@-webkit-keyframes pulse {
+  50% {
+    background: #f58420;
+    opacity:0.8;
+    border:solid 2px #181818;
+  }
+}
+
+#selectedArea{
+  background-color: #f58420;
+  border:solid 2px #181818;
+  position:absolute;
+  z-index:100;
+  animation: pulse 2s ease-in-out 1s infinite;
+  -webkit-animation: pulse 2s ease-in-out 1s infinite;
+}
+
+#c{
+  position:absolute !important;
+  width:200px !important;
+  height:200px !important;
+  top:400px !important;
+  left:400px !important;
+  z-index: 110 !important;
+  padding: 0 0 !important;
+  background: url('/pepe200.jpg') no-repeat !important;
+  display: block !important;
+  border:none !important;
+}
+
+
+/**
+  MENU
+**/
+
+.corner{
+  width:10px;
+  height:10px;
+  background-color: #181818;
+  position: absolute;
+}
+
+#topleft-1{
+  width:20px;
+  left:0px;
+  top:0px;
+}
+#topright-1{
+  width:20px;
+  top:0px;
+  right:0px;
+}
+#bottomleft-1{
+  width:20px;
+  bottom:0px;
+  left:0px;
+}
+#bottomright-1{
+  width:20px;
+  bottom:0px;
+  right:0px;
+}
+
+#topleft-2{
+  height:40px;
+  left:0px;
+  top:10px;
+}
+#topright-2{
+  top:10px;
+  right:0px;
+}
+#bottomleft-2{
+  bottom:10px;
+  left:0px;
+}
+#bottomright-2{
+  bottom:10px;
+  right:0px;
+}
+
+#topmiddle-1{
+  width:30px;
+  left:140px;
+  top:0px;
+}
+#topmiddle-2{
+  left:150px;
+  top:10px;
+}
+
+#rightmiddle-1{
+  top:80px;
+  right:0px;
+}
+#rightmiddle-2{
+  height:20px;
+  top:170px;
+  right:0px;
+}
+
+#bottommiddle-1{
+  left:50px;
+  bottom:0px;
+}
+#bottommiddle-2{
+  height:20px;
+  left:60px;
+  bottom:0px;
+}
+#bottommiddle-3{
+  height:30px;
+  bottom:0px;
+  right:40px;
+}
+
+#menu{
+  position: absolute;
+  top: 140px;
+  left: 40px;
+  background: white;
+  padding: 30px 10px;
+  text-align: left;
+  font-family: 'Roboto Slab', serif;
+  width: 350px;
+  font-weight:bold;
+  color: #000;
+}
+
+#menu > ol {
+  list-style-type: none;
+}
+
+#menu > ol li::before {
+  content: "";  
+  color: red; /* Change the color */
+  display: inline-block; /* Needed to add space between the bullet and the text */
+  width: 10px; /* Also needed for space (tweak if needed) */
+  line-height:10px;
+  height:10px;
+  margin-left: -1em; /* Also needed for space (tweak if needed) */
+  margin-right:10px;
+}
+
+
+#menu > ol li:nth-child(1)::before{
+  background-color:aqua;
+}
+#menu > ol li:nth-child(2)::before{
+  background-color:green;
+}
+#menu > ol li:nth-child(3)::before{
+  background-color:blue;
+}
+#menu > ol li:nth-child(4){
+  font-weight: bold;
+}
+
+#buyPixels Button{
+  border:2px solid orange;
+  background-color: orange;
+  color:#fff;
+}
+/*
+.reset-button {
+    position: absolute;
+    top: 140px;
+    left: 40px;
+    background: white;
+    padding: 1em;
+    border-radius: 1em;
+}
+
+
+/**
+  HEADER
+**/
+
+
+/*.ant-menu{
+    display:none !important;
+}*/
+
+.ant-page-header{
   background-color: #111111;
+  color:#ffffff;
+}
+
+@keyframes glitch{
+  2%,64%{
+    transform: translate(1px,0) skew(0deg);
+  }
+  4%,60%{
+    transform: translate(-1px,0) skew(0deg);
+  }
+  62%{
+    transform: translate(0,0) skew(5deg); 
+  }
+}
+
+.ant-page-header-heading-left{
+  animation: glitch 1s linear infinite;
+}
+
+.ant-page-header-heading-left:before,
+.ant-page-header-heading-left:after{
+  content: attr(title);
+  position: absolute;
+  left: 0;
+}
+
+.ant-page-header-heading-left:before {
+  animation: glitchTop 1s linear infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+  -webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+}
+
+@keyframes glitchTop{
+  2%,64%{
+    transform: translate(3px,-3px);
+  }
+  4%,60%{
+    transform: translate(-3px,3px);
+  }
+  62%{
+    transform: translate(13px,-1px) skew(-13deg); 
+  }
+}
+
+.ant-page-header-heading-left:after{
+  animation: glitchBotom 1.5s linear infinite;
+  clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+  -webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+}
+
+@keyframes glitchBotom{
+  2%,64%{
+    transform: translate(-3px,0);
+  }
+  4%,60%{
+    transform: translate(-3px,0);
+  }
+  62%{
+    transform: translate(-22px,5px) skew(21deg); 
+  }
+}
+
+.ant-page-header, 
+.ant-page-header-heading-title,
+.ant-page-header-heading-sub-title {
+  color:#ffffff
 }

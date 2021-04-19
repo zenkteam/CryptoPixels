@@ -1,41 +1,9 @@
-import "./SelectPlane.css";
 import React, { useEffect, useState } from "react";
 import DragSelect from "dragselect";
-
-// provides plane which allows to select pixels
-
-/*
-  ~ What it does? ~
-
-  Displays a plane with background image which allows the user to select an area.
-
-  ~ How can I use? ~
-
-  <SelectPlane
-    pixels={pixels}
-    selection={selection}
-    zoom={zoom}
-    onSelected={value => {
-      onSelected(value);
-    }}
-    onZoomUpdate={value => {
-      onZoomUpdate(value);
-    }}
-  />
-
-  ~ Features ~
-
-  - Provide pixels={pixels} as list of objects with ids to identify the areas.
-  - Provide selection={selection} as a list of pixels which are currently selected
-  - Provide zoom={zoom} to define the initial zoom level (ToDo: continues updates)
-  - Get notifiyed of changes by onSelected={value => { useSelection(value);}}
-  - Get notifiyed of changes by onZoomUpdate={value => { storeZoom(value);}}
-*/
 
 export default function SelectPlane(props) {
   const headerHeight = 120;
   const initialSize = 1000; // Overall pixel-matrix dimension
-
   let container = null;
 
   function initializeSelection() {
