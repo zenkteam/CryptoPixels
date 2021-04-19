@@ -144,9 +144,9 @@ export default function Pixels(props) {
                 <ol>
                     <li>1 Pixel = $1</li>
                     <li>10.000 blocks of 10x10 pixels: $100</li>
+                    <li>Select your pixels, connect and mint</li>
                     <li>Rundown:</li>
                     <li>Once all pixels apart from the centerpiece have been minted, we'll run a two week period in which pixels can be replaced with images and the centerpiece will be auctionized.</li>
-                    <li>Select pixels on the field to buy & mint them</li>
                     <li><a href="">FAQ</a></li>
                 </ol>
 

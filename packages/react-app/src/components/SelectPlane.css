@@ -117,7 +117,32 @@ body{
 }
 
 #menu > ol {
-  list-style-type: cjk-ideographic;
+  list-style-type: none;
+}
+
+#menu > ol li::before {
+  content: "";  
+  color: red; /* Change the color */
+  display: inline-block; /* Needed to add space between the bullet and the text */
+  width: 10px; /* Also needed for space (tweak if needed) */
+  line-height:10px;
+  height:10px;
+  margin-left: -1em; /* Also needed for space (tweak if needed) */
+  margin-right:1em
+}
+
+
+#menu > ol li:nth-child(1)::before{
+  background-color:aqua;
+}
+#menu > ol li:nth-child(2)::before{
+  background-color:green;
+}
+#menu > ol li:nth-child(3)::before{
+  background-color:blue;
+}
+#menu > ol li:nth-child(4){
+  font-weight: bold;
 }
 
 #buyPixels Button{
