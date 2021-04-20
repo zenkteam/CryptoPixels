@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "name": "@scaffold-eth/react-app",
+=======
+  "name": "cryptopixels",
+>>>>>>> 52794643a374373e1e3ebee87e4e635160c2ccf9
   "version": "1.0.0",
   "homepage": ".",
   "browserslist": {

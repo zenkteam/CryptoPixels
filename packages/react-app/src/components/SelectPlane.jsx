@@ -48,7 +48,6 @@ export default function SelectPlane(props) {
             for(let i = 0; i <= amountRows; ++i){
                 for(let j = 0; j <= amountColumns; ++j){
                     const id = from.id + (i*100) + j
-                    console.log(from.id, id, props.isReserved(id))
                     if(props.isReserved(id) === false){
                         ids[count] = id
                         ++count
