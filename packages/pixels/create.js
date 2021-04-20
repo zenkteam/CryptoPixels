@@ -30,7 +30,7 @@ const amount = 1;
     const stream = canvas.createPNGStream()
     stream.pipe(out)
     out.on('finish', () => {
-        let colors = shuffle(['#f58420', '#455a4e', '#8c8c8c', '#343434', '#393939', '#141414'])
+        let colors = shuffle(['#f58420', '#455a4e', '#343434', '#393939', '#141414'])
 
         let options_object = {
             // ====== Basic
@@ -41,7 +41,26 @@ const amount = 1;
             colorLight : "#f2f2f2",
             autoColor: true,
             correctLevel : QRCode.CorrectLevel.H, // L, M, Q, H
-            dotScale: 0.5,
+
+            dotScale: Math.random(),
+            dotScaleTiming: Math.random(),
+            dotScaleA: Math.random(),
+            dotScaleTiming_H:Math.random(),
+            dotScaleTiming_V:Math.random(),
+            dotScaleAO:Math.random(),
+            dotScaleAI:Math.random(),
+
+            PO_TL: colors[~~(Math.random() * colors.length)],
+            PI_TL: colors[~~(Math.random() * colors.length)],
+            PO_TR: colors[~~(Math.random() * colors.length)],
+            PI_TR: colors[~~(Math.random() * colors.length)],
+            PO_BL: colors[~~(Math.random() * colors.length)],
+            PI_BL: colors[~~(Math.random() * colors.length)],
+
+            timing: colors[~~(Math.random() * colors.length)],
+            timing_H: colors[~~(Math.random() * colors.length)],
+            timing_V: colors[~~(Math.random() * colors.length)],
+
             quietZone: 40,
             quietZoneColor: colors[0],
             PO: colors[1],
