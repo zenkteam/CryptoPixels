@@ -224,21 +224,18 @@ body{
   font-weight: bold;
 }
 
+#priceETH{
+  margin-left:20px;
+}
+
 #buyPixels Button{
   border:2px solid orange;
   background-color: orange;
   color:#fff;
+  margin-top:10px;
+  margin-bottom:10px;
+  margin-left:20px;
 }
-/*
-.reset-button {
-    position: absolute;
-    top: 140px;
-    left: 40px;
-    background: white;
-    padding: 1em;
-    border-radius: 1em;
-}
-
 
 /**
   HEADER

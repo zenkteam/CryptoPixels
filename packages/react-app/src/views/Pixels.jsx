@@ -3,7 +3,8 @@ import { SelectPlane } from "../components";
 import { Button } from "antd";
 import { Transactor } from "../helpers";
 import { utils } from "ethers";
-import { useGasPrice} from "../hooks/index.js";
+import { useGasPrice } from "../hooks/index.js";
+import axios from "axios";
 
 export default function Pixels(props) {
     
@@ -31,77 +32,55 @@ export default function Pixels(props) {
         setSelection(selection)
     }
 
-    async function getPixelData(ids){
-        let data = new Array(ids.length)
-        for(let i = 0; i < ids.length; ++i){
-            data[i] = generatePixelData(ids[i])
-        }
+    async function getIPFSData(ids){
+        let data = await axios.post(apiLink + 'api/ipfs',{"p":ids}, { headers: { Accept: "application/json" } })
         return data
     }
 
     function generatePixelData(id){
-        let column, row, x, y
-        // There are 100 columns and 100 Rows
-        // To determine the column we just want to break down the id to ten-digits
-        // If the id is smaller 100, column is automatically id 
-            // as e.g. id 3 points to the third pixel in the first row
+        let column = id
+        const row = parseInt((id-1)/100) + 1
         if(id > 999){
             column = id % 1000; // ignore thousand-digit
-    
             if(column > 99){
                 column = column % 100; // ignore hundred digit
             }
         } else if (id > 100){
             column = id % 100;
-        } else {
-            column = id; 
-        }
-        // If %-rest equals zero, it has to be a full hundred and column = 100
-        if(column === 0){ 
+        } else if(column === 0){
             column = 100;
         }
-    
-        // There are only 100 columns of 10px width, whereby first pixel starts on 0px
-        x = (column-1) * 10;
-    
-        // There are only 100 rows. Let's see how often the 100 fits in.
-        // Beware that if id is < 100, it is supposed to be row 1
-        // Let's say id is 100, then we want row to be 1 after we added 1
-        // Because if id is 400, row is actually 3:
-        // Row 1: 1 - 100
-        // Row 2: 101 - 200
-        // Row 3: 201 - 300
-        // Row 4: 301 - 400
-        row = parseInt((id-1)/100) + 1;
-        y = (row-1)*10;
-    
         return {
             id: id,
             column: column,
-            x: x,
+            x: (column-1) * 10,
             row: row,
-            y: y,
+            y: (row-1)*10,
         };
     }
 
     function buyPixel(){
         console.log('selection', selection)
-        var buy = getPixelData(selection)
-
+        const buy = getIPFSData(selection)
         console.log('Buying', buy)
         console.log('Price in Ether', priceToBuyInEther)
         console.log('Gas', gasPrice)
         const tx = Transactor(props.mainnetProvider, gasPrice)
         tx( props.writeContract.CryptoPixels.buyPixels(buy, {
-            gasPrice: gasPrice, 
-            value: utils.parseEther(priceToBuyInEther)
-        }) ) //
+                gasPrice: gasPrice, 
+                value: utils.parseEther(priceToBuyInEther)
+            })
+        )
     }
 
-    function resetSelection() { 
-        document.getElementById('selectedArea').remove()
-        onSelected([]);
-    }
+    function createPixel(id){
+        const pixel = generatePixelData(id)
+        let p = document.createElement('div')
+        p.style.cssText = 'position:absolute;z-index:2;width:10px;height:10px;margin-left:' + pixel.x + 'px;margin-top:' + pixel.y + 'px'
+        p.setAttribute('id', id)
+        p.setAttribute('class', 'p')
+        return p
+      }
 
     function onZoomUpdate(zoom) {
         setZoom(zoom);
@@ -117,7 +96,9 @@ export default function Pixels(props) {
     useEffect(() => {
         if(props.soldPixels && props.soldPixels.length > 0){
             for(let i = 0; i < props.soldPixels.length; ++i){
-                document.getElementById(props.soldPixels[i]).classList.add('sold')
+                let pixel = createPixel()
+                pixel.classList.add('sold')
+                document.getElementById('boxes').appendChild(pixel)
             }
         } 
     }, [props.soldPixels])
@@ -130,29 +111,30 @@ export default function Pixels(props) {
                     isReserved={(val) => isReserved(val)}
                     selection={selection}
                     zoom={zoom}
-                    onSelected={value => {onSelected(value);}}
-                    onZoomUpdate={value => {onZoomUpdate(value);}}
+                    onSelected={value => onSelected(value)}
+                    onZoomUpdate={value => onZoomUpdate(value)}
                     soldPixels={props.soldPixels}
                     generatePixelData={(id) => generatePixelData(id)}
+                    createPixel={id => createPixel(id)}
                 ></SelectPlane>
             }
             
             <div id="menu">
-                <div class="corner" id="topleft-1"></div>
-                <div class="corner" id="topleft-2"></div>
-                <div class="corner" id="topright-1"></div>
-                <div class="corner" id="topright-2"></div>
-                <div class="corner" id="bottomleft-1"></div>
-                <div class="corner" id="bottomleft-2"></div>
-                <div class="corner" id="bottomright-1"></div>
-                <div class="corner" id="bottomright-2"></div>
-                <div class="corner" id="topmiddle-1"></div>
-                <div class="corner" id="topmiddle-2"></div>
-                <div class="corner" id="rightmiddle-1"></div>
-                <div class="corner" id="rightmiddle-2"></div>
-                <div class="corner" id="bottommiddle-1"></div>
-                <div class="corner" id="bottommiddle-2"></div>
-                <div class="corner" id="bottommiddle-3"></div>
+                <div className="corner" id="topleft-1"></div>
+                <div className="corner" id="topleft-2"></div>
+                <div className="corner" id="topright-1"></div>
+                <div className="corner" id="topright-2"></div>
+                <div className="corner" id="bottomleft-1"></div>
+                <div className="corner" id="bottomleft-2"></div>
+                <div className="corner" id="bottomright-1"></div>
+                <div className="corner" id="bottomright-2"></div>
+                <div className="corner" id="topmiddle-1"></div>
+                <div className="corner" id="topmiddle-2"></div>
+                <div className="corner" id="rightmiddle-1"></div>
+                <div className="corner" id="rightmiddle-2"></div>
+                <div className="corner" id="bottommiddle-1"></div>
+                <div className="corner" id="bottommiddle-2"></div>
+                <div className="corner" id="bottommiddle-3"></div>
 
                 <ol>
                     <li>1 Pixel = $1</li>
@@ -162,14 +144,10 @@ export default function Pixels(props) {
                     <li>Once all pixels apart from the centerpiece have been minted, we'll run a two week period in which pixels can be replaced with images and the centerpiece will be auctionized.</li>
                     <li><a href="">FAQ</a></li>
                 </ol>
-
-                {selection.length > 0 &&
-                    <div id="reset-button" onClick={() => resetSelection()}>Reset</div>
-                }
                 
                 {selection.length > 0 && props.injectedProvider &&
                     <div>
-                        <div id="priceETH">Price:  ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
+                        <div id="priceETH">Price for {selection.length*100} pixels: ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
                         <div id="buyPixels"><Button onClick={buyPixel}>Buy and own {selection.length*100} pixels ({selection.length} blocks)</Button></div>
                     </div>
                 }
@@ -191,7 +169,6 @@ export default function Pixels(props) {
                 }
             </div>
             
-         
             <div className="imageUpload">
                 
             </div>

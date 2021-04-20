@@ -14,12 +14,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract CryptoPixels is Ownable, PullPayment, ERC721 {
 
-  struct CryptoPixel {
-      uint256 id;
-      string ipfs;
-  }
-  
-  uint16 public pixelsRemaining;
+  string public baseUri = "https://cryptopixels.org/api/pixel/";
 
   uint16[] public soldPixels;
 
@@ -28,28 +23,23 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   // For Sale (maps a token id to its availability)
   mapping (uint256 => bool) public notForSale;
 
-  //this lets you look up a token by the uri (assuming there is only one of each uri for now)
-  mapping (uint256 => string) private _tokenURIs;
-
-  constructor() ERC721("CryptoPixels", "CPX") payable {
-    pixelsRemaining = 10000;
-  }
+  constructor() ERC721("CryptoPixels", "CPX") payable {}
 
   /**
     Allow to buy pixels in bulk
    */
-  function buyPixels(CryptoPixel[] memory _pixels) payable public returns (CryptoPixel[] memory){
+  function buyPixels(uint256[] memory _pixels) payable public returns (CryptoPixel[] memory){
       require(_pixels.length > 0, 'NOT ENOUGH PIXELS');
       require(_pixels.length <= 1000, 'TOO MANY PIXELS');
-      require(pixelsRemaining > 0, 'ALL PIXELS HAVE BEEN MINTED');
+      require(soldPixels.length > 9998, 'ALL PIXELS HAVE BEEN MINTED - TIME FOR THE CENTER PIECE');
       
-      uint256 minPrice = (pricePerPixel / 10 * 8) * _pixels.length;
+      // Minium price
+      uint256 minPrice = (pricePerPixel / 10 * 9) * _pixels.length;
       require(msg.value >= minPrice, 'NOT PAYED ENOUGH');
 
+      // Check each pixels availability
       for (uint8 i = 0; i < _pixels.length; i++) {
-        require(_pixels[i].id > 0 && _pixels[i].id < 10001, "DOES NOT EXIST");
-        require(!notForSale[_pixels[i].id], "ALREADY MINTED");
-        require(!isReserved(_pixels[i].id), "RESERVED");
+        require(_pixels[i] > 0 && _pixels[i] < 10001 && !notForSale[_pixels[i]] && !isReserved(_pixels[i]), "DOES NOT EXIST, HAS ALREADY BEEN MINTED OR IS RESERVED");
       }
 
       // Make purchase
@@ -59,17 +49,13 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
       for (uint8 i = 0; i < _pixels.length; i++) {
 
         // Mint the NFT and attach the token with the current ID to the message sender
-        _mint(msg.sender, _pixels[i].id);
+        _mint(msg.sender, _pixels[i]);
 
         // Set to notForSale
-        notForSale[_pixels[i].id] = true;
+        notForSale[_pixels[i]] = true;
 
-        --pixelsRemaining;
-
-        soldPixels.push(uint16(_pixels[i].id));
-
-        // Build token-specific URI which points to metadata
-        _tokenURIs[_pixels[i].id] = _pixels[i].ipfs;
+        // Add pixel to sold pixels
+        soldPixels.push(uint16(_pixels[i]));
       } 
 
       return _pixels;
@@ -96,7 +82,7 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   function tokenURI(uint256 pixelId) public view virtual override returns (string memory) {
       require(!isReserved(pixelId), "ERC721Metadata: URI query for nonexistent token");
       require(notForSale[pixelId], 'This pixel has not been minted yet - 1');
-      return string(abi.encodePacked(_baseURI(), _tokenURIs[pixelId]));
+      return string(abi.encodePacked(_baseURI(), pixelId));
   }
 
   /**
@@ -104,15 +90,23 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
     * in child contracts.
     */
   function _baseURI() override internal view virtual returns (string memory) {
-      return "https://ipfs.io/ipfs/"; //"https://api.cryptopixels.org/"
+      return baseUri;
   }
 
   /**
     * @dev Base URI for computing {tokenURI}. Empty by default, can be overriden
     * in child contracts.
     */
-  function changePricePerPixel(uint256 newPricePerPixel) public onlyOwner {
+  function changeEtherPricePerPixel(uint256 newPricePerPixel) public onlyOwner {
       pricePerPixel = newPricePerPixel;
+  }
+
+  /**
+    * @dev Base URI for computing {tokenURI}. Empty by default, can be overriden
+    * in child contracts.
+    */
+  function changeBaseUri(string newBaseUri) public onlyOwner {
+      baseUri = newBaseUri;
   }
 
   /**

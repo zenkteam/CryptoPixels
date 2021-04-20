@@ -6,7 +6,52 @@ use Illuminate\Http\Request;
 
 class MetaController extends Controller
 {
+    /**
+     * Returns the meta information for each pixel
+     */
+    public function getPixel($id){
+        if($id === 'center'){
+            return $this->getCenterpiece();
+        }
 
+        $pixelData = $this->getPixelData($id);
+        return [
+            "name" => "CryptoPixel#" . $id,
+            "description" => "This CryptoPixel lives " + $pixelData['x'] + "px to the right and " + $pixelData['y'] + "px down south.",
+            "external_url"=> "https://cryptopixels.org/#CryptoPixel-" . $id,
+            "image"=> "https://cryptopixels.org/pixels/" . $id . ".jpg",
+            "attributes"=> [
+                [
+                    "trait_type"=> "nr",
+                    "value"=> $id
+                ],
+                [
+                    "trait_type"=> "x",
+                    "value"=> $pixelData['x']
+                ],
+                [
+                    "trait_type"=> "y",
+                    "value"=> $pixelData['y']
+                ],
+                [
+                    "trait_type"=> "column",
+                    "value"=> $pixelData['column']
+                ],
+                [
+                    "trait_type"=> "row",
+                    "value"=> $pixelData['row']
+                ],
+                [
+                    "trait_type"=> "value",
+                    "value"=> 100
+                ]
+            ]
+        ]; 
+    }
+
+    /**
+     * Returns meta information for multiple pixels
+     */
     public function getMetadataByPixelId(Request $request){
         $ids = $request->input('p');
         $code = 200;
@@ -41,6 +86,28 @@ class MetaController extends Controller
         }
 
         return response()->json($data, $code);
+    }
+
+    /**
+     * Returns the centerpiece's meta information
+     */
+    private function getCenterpiece(){
+        return [
+            "name" => "CryptoPixel#Center",
+            "description" => "This CryptoPixel lives right in the center.",
+            "external_url"=> "https://cryptopixels.org/#CryptoPixel-Center",
+            "image"=> "https://cryptopixels.org/pixels/center.jpg",
+            "attributes"=> [
+                [
+                    "trait_type"=> "nr",
+                    "value"=> "Center has no number"
+                ],
+                [
+                    "trait_type"=> "value",
+                    "value"=> 40000
+                ]
+            ]
+        ];
     }
 
     /** 

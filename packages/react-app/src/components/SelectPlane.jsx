@@ -48,10 +48,11 @@ export default function SelectPlane(props) {
             for(let i = 0; i <= amountRows; ++i){
                 for(let j = 0; j <= amountColumns; ++j){
                     const id = from.id + (i*100) + j
+                    console.log(from.id, id, props.isReserved(id))
                     if(props.isReserved(id) === false){
                         ids[count] = id
+                        ++count
                     }
-                    ++count
                 }
             }
         } else {
@@ -163,7 +164,7 @@ export default function SelectPlane(props) {
   const [selected, setSelected] = useState([])
   const [changeEffects, setChangeEffects] = useState(0)
   const [amountAnimatedPixels, setAmountAnimatedPixels] = useState(0)
-  const effectsOn = true
+  const effectsOn = false
   
   useEffect(() => {
     if(!effectsOn){
@@ -198,7 +199,6 @@ export default function SelectPlane(props) {
       if(amountAnimatedPixels > 120){
         let el = document.getElementsByClassName('animate__animated')
         while(el.length > 0){
-          // First reset colors
           el[0].remove() 
         }
 
@@ -214,21 +214,12 @@ export default function SelectPlane(props) {
         amount = 15
       }
 
-      function createPixel(id){
-        const pixel = props.generatePixelData(id)
-        let p = document.createElement('div')
-        p.style.cssText = 'position:absolute;z-index:2;width:10px;height:10px;margin-left:' + pixel.x + 'px;margin-top:' + pixel.y + 'px'
-        p.setAttribute('id', id)
-        p.setAttribute('class', 'p')
-        return p
-      }
-
       // Generate random
       for(let i = 0; i < amount; ++i){
         const r = ~~(Math.random() * 10000) + 1
         // Make sure it's not reserved, sold or selected already
         if(!props.isReserved(r) && props.soldPixels.indexOf(r) === -1 && selected.indexOf(r) === -1){
-          const el = createPixel(r)
+          const el = props.createPixel(r)
           el.classList.add('animate__animated', effects[~~(Math.random() * effects.length)], speeds[~~(Math.random() * speeds.length)], 'animate__repeat-'+(~~(Math.random() * 3)+1))
           const color = getRandomColor()
           el.style.setProperty('background-color', color)
