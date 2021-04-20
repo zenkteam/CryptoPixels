@@ -93,7 +93,7 @@ export default function SelectPlane(props) {
     }
 
     /**
-     * Unselect pixels except clickon within the "ok"-areas: header, connect, menu, pixel area, centerpiece
+     * Unselect pixels except clicks within the "ok"-areas: header, connect, menu, pixel area, centerpiece
      */
     document.addEventListener('click', (evt) => {
       const ok1 = document.getElementById('boxes');

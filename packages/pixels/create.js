@@ -1,90 +1,78 @@
-var fs = require('fs')
-var PImage = require('pureimage')
-
+const fs = require('fs')
+const QRCode = require('easyqrcodejs-nodejs')
+const { createCanvas, registerFont } = require('canvas')
+registerFont('MajorMonoDisplay-Regular.ttf', { family: 'Major Mono Display' })
 const amount = 1;
 
-var tokens = []
+//for(let i = 1; i <= amount; ++i){
+    createImage(456)
+    createImage(1)
+    createImage(10000)
+//}
 
-var row = 1
-var column = 0
+ function createImage(id){
+    // img
+    let w = 160, h = 32, fontSize = 32
+    let canvas = createCanvas(w,h)
+    let ctx = canvas.getContext('2d', {alpha: true})
+    ctx.font = fontSize+"px 'Major Mono Display'";
 
-let hexCode = "0123456789ABCDEF";
-let Color = '#'
-let counter = amount + 1
+    // nr
+    const text = "#"+id
+    const textData = ctx.measureText(text)
+    const x = parseInt(w/2 - textData.width/2)
+    const y = h-5
+    ctx.fillStyle = '#000000'
+    ctx.fillText(text, x, y);
 
-var fnt = PImage.registerFont('MajorMonoDisplay-Regular.ttf','Major Mono Display');
+    let logo = './created/nrs/'+id+'.png'
+    const out = fs.createWriteStream(logo)
+    const stream = canvas.createPNGStream()
+    stream.pipe(out)
+    out.on('finish', () => {
+        let colors = shuffle(['#f58420', '#455a4e', '#8c8c8c', '#343434', '#393939', '#141414'])
 
-for(let i = 1; i < counter; ++i){
-    createImage(i)
-}
+        let options_object = {
+            // ====== Basic
+            text: "https://cryptopixels.org/pixels/" + id,
+            width: 350,
+            height: 350,
+            colorDark : "#141414",
+            colorLight : "#f2f2f2",
+            autoColor: true,
+            correctLevel : QRCode.CorrectLevel.H, // L, M, Q, H
+            dotScale: 0.5,
+            quietZone: 40,
+            quietZoneColor: colors[0],
+            PO: colors[1],
+            PI: colors[2],
+            AO: colors[3],
+            AI: colors[4],
+            
+            // EXTRA
+            logo: logo,
+            compressionLevel: 5,
+            logoBackgroundColor: '#f2f2f2',
+            logoBackgroundTransparent: false
 
-function createImage(id){
-    // Create pixel-imag
-    // https://joshmarinacci.github.io/node-pureimage/
-    fnt.load(() => {
-        var img = PImage.make(350,350);
-
-        // bg
-        let ctx = img.getContext('2d')
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0,0,1000,1000);
-
-        // nr
-        ctx.font = "48pt 'Major Mono Display'";
-        ctx.fillStyle = '#000000';
-        const text = "#"+id
-        const textData = ctx.measureText(text)
-        const x = parseInt(350/2-(textData.width/2))
-        const y = parseInt(350/2)
-        ctx.fillText(text, x, y);
-
-        for(let i = 0; i < 20; ++i){
-            ctx = addRandomPixelblock(ctx)
         }
-        
 
-        // random positioned pixels
-        //ctx.fillRect(0,0,350,350);
-        //ctx.fillStyle = '#ffffff';
-        //ctx.fillRect(x,y, sizeX, sizeY);
-
-        // Write image
-        PImage.encodePNGToStream(img, fs.createWriteStream('./created/'+id+'.png')) //../react-app/public/pixels/'+id+'.png' 
-    });
+        let qrcode = new QRCode(options_object);
+        qrcode.saveImage({
+            path: './created/'+id+'.png' // save path
+        });
+    })
    
 }
 
-var randomProperty = function (obj) {
-    const keys = Object.keys(obj);
-    return obj[keys[ keys.length * Math.random() << 0]];
-};
 
-function addRandomPixelblock(ctx){
-    let randPos = Math.random() * 350
-    let sides = { 
-        left: { // left
-            "x": 0,
-            "y": randPos
-        },
-        right : { // right
-            "x": 350,
-            "y": randPos
-        },
-        bottom : { // bottom
-            "x": randPos,
-            "y": 340
-        },
-        top : { // top
-            "x": randPos,
-            "y": 0
-        }
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
     }
-    
-    let r = randomProperty(sides)
-   // console.log(r)
-
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(randPos = Math.random() * 350,randPos = Math.random() * 350, 10, 10);
-
-    return ctx
+    return a;
 }
