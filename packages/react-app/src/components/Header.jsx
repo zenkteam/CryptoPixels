@@ -6,7 +6,7 @@ import { PageHeader } from "antd";
 export default function Header() {
   
   return (
-    <a href="https://cryptopixels.org" target="_blank" rel="noopener noreferrer">
+    <a href="/" id="header" rel="noopener noreferrer">
       <PageHeader
         title="CryptoPixels.org"
         subTitle="Buy a piece of internet history and own it forever."

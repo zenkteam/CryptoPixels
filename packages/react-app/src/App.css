@@ -2,10 +2,26 @@ body{
   font-family: 'Major Mono Display', monospace;
   background-color: #111111;
   margin: 0;
+  overflow: hidden;
 }
 
 .App {
   text-align: center;
+}
+
+.Account {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 201;
+  padding: 14px;
+}
+
+.Content {
+  position: relative;
+  overflow: scroll;
+  height: calc(100vh - 72px);
+  animation: glitch 4s linear infinite;
 }
 
 /**
@@ -49,7 +65,7 @@ body{
     margin-right: auto;
     display: block;
     background: url('/grid.png') no-repeat;
-    animation: glitch 4s linear infinite;
+    transform-origin: 0px 0px;
 }
 
 .ds-selector{
@@ -61,26 +77,21 @@ body{
 
 @keyframes pulse {
   50% {
-    background: #f58420;
     opacity:0.8;
-    border:solid 2px #181818;
-  }
-}
-@-webkit-keyframes pulse {
-  50% {
-    background: #f58420;
-    opacity:0.8;
-    border:solid 2px #181818;
   }
 }
 
-#selectedArea{
+#selectedArea {
+  border: solid 2px transparent;
+  position: absolute;
+  z-index: 100;
+}
+
+#selectedArea div {
   background-color: #f58420;
-  border:solid 2px #181818;
-  position:absolute;
-  z-index:100;
+  height: 100%;
+  width: 100%;
   animation: pulse 2s ease-in-out 1s infinite;
-  -webkit-animation: pulse 2s ease-in-out 1s infinite;
 }
 
 #c{
@@ -182,8 +193,8 @@ body{
   right:40px;
 }
 
-#menu{
-  position: absolute;
+#menu {
+  position: fixed;
   top: 140px;
   left: 40px;
   background: white;
@@ -193,6 +204,11 @@ body{
   width: 350px;
   font-weight:bold;
   color: #000;
+  transition: opacity 200ms;
+  user-select: none;
+}
+#menu.hovering {
+  opacity: 0.1;
 }
 
 #menu > ol {

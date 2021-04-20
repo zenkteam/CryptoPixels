@@ -1,62 +1,79 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import DragSelect from "dragselect";
 
 export default function SelectPlane(props) {
   const headerHeight = 120;
   const initialSize = 1000; // Overall pixel-matrix dimension
-  let container = null;
+  let container = useRef();
+  let menu = useRef();
+  let currentZoom;
+  let controlPressed;
+  let ds;
 
-  function initializeSelection() {
-    
-    const ds = new DragSelect({
+  function initializeSelection() {  
+    ds = new DragSelect({
       customStyles: true,
       draggability: false,
       immediateDrag: false,
-      area: document.getElementById('boxes'),
+      area: container.current,
     });
 
-    ds.subscribe('callback', ({ items, event }) => {
+    ds.subscribe('dragstart', () => {
+      // hide menu
+      menu.current.classList.add('hovering');
+    });
+
+    ds.subscribe('callback', () => {
+        // reset menu  
+        menu.current.classList.remove('hovering');
+        
         let start = ds.getInitialCursorPositionArea()
         let end = ds.getCurrentCursorPositionArea()
 
-        end.x = end.x < 0 ? 0 : end.x
-        end.y = end.y < 0 ? 0 : end.y
+        // transform position based on zoom
+        start.x = start.x / currentZoom;
+        start.y = start.y / currentZoom;
+        end.x = end.x / currentZoom;
+        end.y = end.y / currentZoom;
 
+        // ensure position are in the area
+        start.x = Math.max(0, Math.min(999, start.x));
+        start.y = Math.max(0, Math.min(999, start.y));
+        end.x = Math.max(0, Math.min(999, end.x));
+        end.y = Math.max(0, Math.min(999, end.y));
+        
+        // find rows and cols
         start.column = parseInt(start.x / 10) + 1
         start.row = parseInt(start.y / 10) + 1
-
         end.column = parseInt(end.x / 10) + 1
         end.row = parseInt(end.y / 10) + 1
 
-        start.id = start.column + ((start.row - 1) * 100)
-        end.id = end.column + ((end.row - 1) * 100)
-
-        // Make sure to do the math in the right direction
-        let from = start
-        let to = end
-        if(from.id > to.id){
-            from = end
-            to = start
+        // find top left and bottom right corner
+        const from = {
+          column: Math.min(start.column, end.column),
+          row: Math.min(start.row, end.row),
+        }
+        const to = {
+          column: Math.max(start.column, end.column),
+          row: Math.max(start.row, end.row),
         }
 
+        // find pixel ids
+        from.id = from.column + ((from.row - 1) * 100)
+        to.id = to.column + ((to.row - 1) * 100)
+
         // Calculate all ids
-        let amountRows = to.row - from.row
-        let amountColumns = to.column - from.column
+        let amountRows = to.row - from.row + 1
+        let amountColumns = to.column - from.column + 1
         let ids = [];
-        if(amountRows > 0 || amountColumns > 0){
-            let count = 0;
-            for(let i = 0; i <= amountRows; ++i){
-                for(let j = 0; j <= amountColumns; ++j){
-                    const id = from.id + (i*100) + j
-                    if(props.isReserved(id) === false){
-                        ids[count] = id
-                        ++count
-                    }
+        let count = 0;
+        for (let i = 0; i < amountRows; ++i){
+            for (let j = 0; j < amountColumns; ++j){
+                const id = from.id + (i*100) + j
+                if (props.isReserved(id) === false){
+                    ids[count] = id
+                    ++count
                 }
-            }
-        } else {
-            if(props.isReserved(from.id) === false){
-                ids[0] = from.id
             }
         }
 
@@ -67,15 +84,18 @@ export default function SelectPlane(props) {
         removeSelectedArea()
 
         // Create new overlay
-        const width = (amountColumns + 1) * 10
-        const height = (amountRows + 1) * 10
+        const width = (amountColumns) * 10
+        const height = (amountRows) * 10
         const marginLeft = (from.column - 1) * 10
         const marginTop = (from.row - 1) * 10
         let overlay = document.createElement('div')
-        overlay.style.cssText = 'width:' + width + 'px;height:' + height + 'px;margin-left:' + marginLeft + 'px;margin-top:' + marginTop + 'px'
+        overlay.style.width = width + 'px';
+        overlay.style.height = height + 'px';
+        overlay.style.marginLeft = marginLeft + 'px';
+        overlay.style.marginTop = marginTop + 'px';
         overlay.setAttribute('id', 'selectedArea')
-        document.getElementById('boxes').appendChild(overlay);
-
+        overlay.appendChild(document.createElement('div'));
+        container.current.appendChild(overlay);
     })
 
     function selectElements(ids){
@@ -95,27 +115,28 @@ export default function SelectPlane(props) {
     /**
      * Unselect pixels except clicks within the "ok"-areas: header, connect, menu, pixel area, centerpiece
      */
-    document.addEventListener('click', (evt) => {
-      const ok1 = document.getElementById('boxes');
-      const ok2 = document.getElementById('menu');
-      const ok3 = document.getElementById('WEB3_CONNECT_MODAL_ID');
-      const ok4 = document.getElementById('headerConnect');
-      const ok5 = document.getElementById('c');
-      let targetElement = evt.target; 
-      do {
-          if (targetElement === ok1 || 
-              targetElement === ok2 ||
-              targetElement === ok3 ||
-              targetElement === ok4 ||
-              targetElement === ok5
-            ) {return;}
-          targetElement = targetElement.parentNode;
-      } while (targetElement);
-  
-      // This is a click outside.
-      selectElements([])
-      removeSelectedArea()
-  });
+    // document.addEventListener('click', (evt) => {
+    //   console.log(evt);
+    //   const ok1 = document.getElementById('boxes');
+    //   const ok2 = document.getElementById('menu');
+    //   const ok3 = document.getElementById('WEB3_CONNECT_MODAL_ID');
+    //   const ok4 = document.getElementById('headerConnect');
+    //   const ok5 = document.getElementById('c');
+    //   let targetElement = evt.target; 
+    //   do {
+    //       if (targetElement === ok1 || 
+    //           targetElement === ok2 ||
+    //           targetElement === ok3 ||
+    //           targetElement === ok4 ||
+    //           targetElement === ok5
+    //         ) {return;}
+    //       targetElement = targetElement.parentNode;
+    //   } while (targetElement);
+    //   // This is a click outside.
+    //   selectElements([])
+    //   console.log('remove');
+    //   removeSelectedArea()
+    // });
 
   }
 
@@ -125,15 +146,17 @@ export default function SelectPlane(props) {
     }
 
     window.requestAnimationFrame(() => {
-      container.style.transform = `scale(${zoom})`;
+      container.current.style.transform = `scale(${zoom})`;
+      currentZoom = zoom;
+      ds.Area._zoom = zoom;
       calculatePostion(zoom);
     });
   }
 
   function position(x, y) {
     window.requestAnimationFrame(() => {
-      container.style.marginLeft = `${x}px`;
-      container.style.marginTop = `${y}px`;
+      container.current.style.marginLeft = `${x}px`;
+      container.current.style.marginTop = `${y}px`;
     });
   }
 
@@ -141,7 +164,7 @@ export default function SelectPlane(props) {
     // Todo: when positions would be less than 0, try to scroll view
     let calculatedLeft = Math.max(0, (window.innerWidth - initialSize * zoom) / 2);
     let calculatedTop = Math.max(0, (window.innerHeight - headerHeight - initialSize * zoom) / 2);
-    position(calculatedLeft, calculatedTop);
+    position(calculatedLeft,calculatedTop)
   }
 
   function calculateZoom() {
@@ -150,28 +173,41 @@ export default function SelectPlane(props) {
   }
 
   function onWheel(e) {
-    // Todo: integrate gestures https://medium.com/@auchenberg/detecting-multi-touch-trackpad-gestures-in-javascript-a2505babb10e
-    if (e.ctrlKey) {
-      const currentZoom = parseFloat(container.style.transform.replace('scale(', ''))
+    if (controlPressed) {
+      const currentZoom = parseFloat(container.current.style.transform.replace('scale(', ''))
       const scale = currentZoom - e.deltaY * 0.01;
       if (scale > 0.5 && scale < 5) {
         zoom(scale);
       }
+
+      e.preventDefault();
+    }
+  }
+
+  function onKeyDown(e) {
+    if (e.key === 'Control') {
+      controlPressed = true;
+    }
+  }
+
+  function onKeyUp(e) {
+    if (e.key === 'Control') {
+      controlPressed = false;
     }
   }
 
   const [selected, setSelected] = useState([])
   const [changeEffects, setChangeEffects] = useState(0)
   const [amountAnimatedPixels, setAmountAnimatedPixels] = useState(0)
-  const effectsOn = false
+  const effectsOn = true
   
   useEffect(() => {
     if(!effectsOn){
       return
     }
-
+    
     if(changeEffects === 0){
-
+      container.current = document.getElementById('boxes');
       // Effects
       function getRandomColor() {
         const letters = '0123456789ABCDEF';
@@ -223,7 +259,7 @@ export default function SelectPlane(props) {
           const color = getRandomColor()
           el.style.setProperty('background-color', color)
           el.style.setProperty('border-color', color)
-          document.getElementById('boxes').appendChild(el);
+          container.current.appendChild(el);
         }
       }
       setAmountAnimatedPixels(amountAnimatedPixels+amount)
@@ -235,23 +271,28 @@ export default function SelectPlane(props) {
   }, [changeEffects])
 
   useEffect(() => {
-    // run
-    container = document.getElementById('boxes');
-    //window.selectIds = selectIds;
-    // console.info('Tired of manually selecting pixels? Use the `selectIds([])` function in your console to programatically select what you want.');
-    /*if (!props.zoom || props.zoom === 'auto') {
+    container.current = document.getElementById('boxes');
+    menu.current = document.getElementById('menu')
+
+    if (!props.zoom || props.zoom === 'auto') {
       calculateZoom();
     } else {
       zoom(props.zoom);
-    }*/
+    }
 
     initializeSelection();
     
-    //window.addEventListener('wheel', onWheel);
+    window.addEventListener('wheel', onWheel, {passive: false});
+    window.addEventListener('resize', calculateZoom);
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
 
     // Specify how to clean up after this effect:
     return function cleanup() {
-      //window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('resize', calculateZoom);
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
     };
   }, []);
 

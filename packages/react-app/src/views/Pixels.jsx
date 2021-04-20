@@ -104,7 +104,7 @@ export default function Pixels(props) {
     }, [props.soldPixels])
    
     return (
-        <div>
+        <div className="Content" id="Content">
             {/* Only render pixels if they have already been generated */}
             {
                 <SelectPlane
