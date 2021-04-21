@@ -4,11 +4,17 @@ import DragSelect from "dragselect";
 export default function SelectPlane(props) {
   const headerHeight = 120;
   const initialSize = 1000; // Overall pixel-matrix dimension
+
   let container = useRef();
   let menu = useRef();
   let currentZoom;
   let controlPressed;
   let ds;
+
+  const [selected, setSelected] = useState([])
+  const [changeEffects, setChangeEffects] = useState(0)
+  const [amountAnimatedPixels, setAmountAnimatedPixels] = useState(0)
+  const effectsOn = true
 
   function initializeSelection() {  
     ds = new DragSelect({
@@ -27,8 +33,8 @@ export default function SelectPlane(props) {
         // reset menu  
         menu.current.classList.remove('hovering');
         
-        let start = ds.getInitialCursorPositionArea()
-        let end = ds.getCurrentCursorPositionArea()
+        const start = ds.getInitialCursorPositionArea()
+        const end = ds.getCurrentCursorPositionArea()
 
         // transform position based on zoom
         start.x = start.x / currentZoom;
@@ -63,14 +69,14 @@ export default function SelectPlane(props) {
         to.id = to.column + ((to.row - 1) * 100)
 
         // Calculate all ids
-        let amountRows = to.row - from.row + 1
-        let amountColumns = to.column - from.column + 1
+        const amountRows = to.row - from.row + 1
+        const amountColumns = to.column - from.column + 1
         let ids = [];
         let count = 0;
         for (let i = 0; i < amountRows; ++i){
             for (let j = 0; j < amountColumns; ++j){
                 const id = from.id + (i*100) + j
-                if (props.isReserved(id) === false){
+                if (isManipulatable(id)){
                     ids[count] = id
                     ++count
                 }
@@ -84,61 +90,44 @@ export default function SelectPlane(props) {
         removeSelectedArea()
 
         // Create new overlay
-        const width = (amountColumns) * 10
-        const height = (amountRows) * 10
-        const marginLeft = (from.column - 1) * 10
-        const marginTop = (from.row - 1) * 10
         let overlay = document.createElement('div')
-        overlay.style.width = width + 'px';
-        overlay.style.height = height + 'px';
-        overlay.style.marginLeft = marginLeft + 'px';
-        overlay.style.marginTop = marginTop + 'px';
+        overlay.style.setProperty('width', (amountColumns) * 10 + 'px');
+        overlay.style.setProperty('height', (amountRows) * 10 + 'px');
+        overlay.style.setProperty('margin-left', (from.column - 1) * 10 + 'px');
+        overlay.style.setProperty('margin-top', (from.row - 1) * 10 + 'px');
         overlay.setAttribute('id', 'selectedArea')
         overlay.appendChild(document.createElement('div'));
         container.current.appendChild(overlay);
     })
-
-    function selectElements(ids){
-      if (typeof props.onSelected === 'function') {
-        props.onSelected(ids);
-      }
-      setSelected(ids)
-    }
-
-    function removeSelectedArea(){
-      let selectedArea = document.getElementById('selectedArea')
-        if(selectedArea){
-            selectedArea.remove()
-        }
-    }
-
-    /**
-     * Unselect pixels except clicks within the "ok"-areas: header, connect, menu, pixel area, centerpiece
-     */
-    // document.addEventListener('click', (evt) => {
-    //   console.log(evt);
-    //   const ok1 = document.getElementById('boxes');
-    //   const ok2 = document.getElementById('menu');
-    //   const ok3 = document.getElementById('WEB3_CONNECT_MODAL_ID');
-    //   const ok4 = document.getElementById('headerConnect');
-    //   const ok5 = document.getElementById('c');
-    //   let targetElement = evt.target; 
-    //   do {
-    //       if (targetElement === ok1 || 
-    //           targetElement === ok2 ||
-    //           targetElement === ok3 ||
-    //           targetElement === ok4 ||
-    //           targetElement === ok5
-    //         ) {return;}
-    //       targetElement = targetElement.parentNode;
-    //   } while (targetElement);
-    //   // This is a click outside.
-    //   selectElements([])
-    //   console.log('remove');
-    //   removeSelectedArea()
-    // });
-
   }
+
+  function selectElements(ids){
+    if (typeof props.onSelected === 'function') {
+      props.onSelected(ids);
+    }
+    setSelected(ids)
+  }
+
+  function removeSelectedArea(){
+    let selectedArea = document.getElementById('selectedArea')
+      if(selectedArea){
+          selectedArea.remove()
+      }
+  }
+
+  function isManipulatable(id){
+    return props.isReserved(id) === false && props.soldPixels.indexOf(id) === -1
+  }
+
+  useEffect(() => {
+    // Make sure to not select
+    for(let i = 0; i < selected.length; ++i){
+      if(isManipulatable(selected[i]) === false){
+        selectElements([])
+        removeSelectedArea()
+      }
+    }
+  }, [selected])
 
   function zoom(zoom) {
     if (typeof props.onZoomUpdate === "function") {
@@ -146,7 +135,7 @@ export default function SelectPlane(props) {
     }
 
     window.requestAnimationFrame(() => {
-      container.current.style.transform = `scale(${zoom})`;
+      container.current.style.setProperty('transform', `scale(${zoom})`);
       currentZoom = zoom;
       ds.Area._zoom = zoom;
       calculatePostion(zoom);
@@ -155,8 +144,8 @@ export default function SelectPlane(props) {
 
   function position(x, y) {
     window.requestAnimationFrame(() => {
-      container.current.style.marginLeft = `${x}px`;
-      container.current.style.marginTop = `${y}px`;
+      container.current.style.setProperty('margin-left', `${x}px`);
+      container.current.style.setProperty('margin-top', `${y}px`);
     });
   }
 
@@ -195,11 +184,6 @@ export default function SelectPlane(props) {
       controlPressed = false;
     }
   }
-
-  const [selected, setSelected] = useState([])
-  const [changeEffects, setChangeEffects] = useState(0)
-  const [amountAnimatedPixels, setAmountAnimatedPixels] = useState(0)
-  const effectsOn = false
   
   useEffect(() => {
     if(!effectsOn){
@@ -210,7 +194,7 @@ export default function SelectPlane(props) {
       container.current = document.getElementById('boxes');
       // Effects
       function getRandomColor() {
-        return '#'+('0123456789ABCDEF'.split('').sort(function(){return 0.5-Math.random()}).join('')).substring(0,6);
+        return '#'+('0123456789ABCDEF'.split('').sort(()=>{return 0.5-Math.random()}).join('')).substring(0,6);
       }
 
       let effects = [
@@ -248,7 +232,7 @@ export default function SelectPlane(props) {
       for(let i = 0; i < amount; ++i){
         const r = ~~(Math.random() * 10000) + 1
         // Make sure it's not reserved, sold or selected already
-        if(!props.isReserved(r) && props.soldPixels.indexOf(r) === -1 && selected.indexOf(r) === -1){
+        if(isManipulatable(r) && selected.indexOf(r) === -1){
           const el = props.createPixel(r)
           el.classList.add('animate__animated', effects[~~(Math.random() * effects.length)], speeds[~~(Math.random() * speeds.length)], 'animate__repeat-'+(~~(Math.random() * 3)+1))
           const color = getRandomColor()
@@ -292,7 +276,7 @@ export default function SelectPlane(props) {
   }, []);
 
   return (
-    <div className="">
+    <div>
         <section id="boxes"><div id="c"></div></section>
     </div>
   );

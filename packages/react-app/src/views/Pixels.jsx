@@ -48,7 +48,7 @@ export default function Pixels(props) {
             column: column,
             x: (column-1) * 10,
             row: row,
-            y: (row-1)*10,
+            y: (row-1) * 10,
         };
     }
 
@@ -74,9 +74,10 @@ export default function Pixels(props) {
     function createPixel(id){
         const pixel = generatePixelData(id)
         let p = document.createElement('div')
-        p.style.cssText = 'position:absolute;z-index:2;width:10px;height:10px;margin-left:' + pixel.x + 'px;margin-top:' + pixel.y + 'px'
+        p.className = 'p'
+        p.style.setProperty('margin-left', pixel.x + 'px')
+        p.style.setProperty('margin-top', pixel.y + 'px')
         p.setAttribute('id', id)
-        p.classList.add('p')
         return p
       }
 
@@ -93,8 +94,7 @@ export default function Pixels(props) {
 
     useEffect(() => {
         if(props.ownPixels && props.soldPixels){
-            let soldButNotMine = props.soldPixels.filter(value=>props.ownPixels.includes(props.soldPixels));
-            console.log(soldButNotMine)
+            let soldButNotMine = props.soldPixels.filter((i) => props.ownPixels.indexOf(i) === -1)
             if(soldButNotMine && soldButNotMine.length > 0){
                 for(let i = 0; i < soldButNotMine.length; ++i){
                     let pixel = createPixel(soldButNotMine[i])
