@@ -23,7 +23,10 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   // For Sale (maps a token id to its availability)
   mapping (uint256 => bool) public notForSale;
 
-  constructor() ERC721("CryptoPixels", "CPX") payable {}
+  constructor() ERC721("CryptoPixels", "CPX") payable {
+    _mint(msg.sender, 40000);
+    notForSale[40000] = true;
+  }
 
   /**
     Allow to buy pixels in bulk
@@ -61,13 +64,12 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
       return _pixels;
   }
 
-
+//// NOT FINISHED
   function setForSale(pixelId, forAddress){
     approve(forAddress, pixelId);
   }
 
   function buyFromSomeone(pixelId){
-
     // Split
     uint256 foundersShare = msg.value / 100 * 15;
     uint256 pixelOwnerShare = msg.value - founderShare;
@@ -79,13 +81,7 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
     // Transfer
     safeTransferFrom(pixelOwner, msg.sender, pixelId);
   }
-
-
-
-  function mintCenterpiece(address centerpieceOwner) public view onlyOwner{
-    _mint(centerpieceOwner, 40000);
-    notForSale[40000] = true;
-  }
+//// NOT FINISHED
 
   /**
   * Checks if id is within reserved range
