@@ -7,7 +7,7 @@ import "./App.css";
 import { Header, Account } from "./components";
 import { Pixels } from "./views";
 import { INFURA_ID, NETWORKS } from "./constants";
-import { useUserProvider, useContractLoader } from "./hooks";
+import { useContractLoader } from "./hooks";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
 import { Token, WETH, Fetcher, Route as URoute } from "@uniswap/sdk";

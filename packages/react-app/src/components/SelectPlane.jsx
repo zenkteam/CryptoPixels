@@ -14,7 +14,7 @@ export default function SelectPlane(props) {
   const [selected, setSelected] = useState([])
   const [changeEffects, setChangeEffects] = useState(0)
   const [amountAnimatedPixels, setAmountAnimatedPixels] = useState(0)
-  const effectsOn = true
+  const effectsOn = false
 
   function initializeSelection() {  
     ds = new DragSelect({
@@ -29,7 +29,7 @@ export default function SelectPlane(props) {
       menu.current.classList.add('hovering');
     });
 
-    ds.subscribe('callback', () => {
+    ds.subscribe('callback',async () => {
         // reset menu  
         menu.current.classList.remove('hovering');
         
@@ -76,9 +76,14 @@ export default function SelectPlane(props) {
         for (let i = 0; i < amountRows; ++i){
             for (let j = 0; j < amountColumns; ++j){
                 const id = from.id + (i*100) + j
-                if (isManipulatable(id)){
+                if (props.isManipulatable(id)){
                     ids[count] = id
                     ++count
+                }else{
+                  // Reset
+                  selectElements([])
+                  removeSelectedArea()
+                  return false;
                 }
             }
         }
@@ -115,19 +120,10 @@ export default function SelectPlane(props) {
       }
   }
 
-  function isManipulatable(id){
-    return props.isReserved(id) === false && props.soldPixels.indexOf(id) === -1
-  }
-
   useEffect(() => {
-    // Make sure to not select
-    for(let i = 0; i < selected.length; ++i){
-      if(isManipulatable(selected[i]) === false){
-        selectElements([])
-        removeSelectedArea()
-      }
-    }
-  }, [selected])
+    // We need to reinitialize once we know what has already been sold
+    initializeSelection();
+  }, [props.soldPixels])
 
   function zoom(zoom) {
     if (typeof props.onZoomUpdate === "function") {
@@ -232,7 +228,7 @@ export default function SelectPlane(props) {
       for(let i = 0; i < amount; ++i){
         const r = ~~(Math.random() * 10000) + 1
         // Make sure it's not reserved, sold or selected already
-        if(isManipulatable(r) && selected.indexOf(r) === -1){
+        if(props.isManipulatable(r) && selected.indexOf(r) === -1){
           const el = props.createPixel(r)
           el.classList.add('animate__animated', effects[~~(Math.random() * effects.length)], speeds[~~(Math.random() * speeds.length)], 'animate__repeat-'+(~~(Math.random() * 3)+1))
           const color = getRandomColor()

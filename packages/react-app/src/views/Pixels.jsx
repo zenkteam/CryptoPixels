@@ -92,6 +92,11 @@ export default function Pixels(props) {
         return t > 40 && t < 61;
     }
 
+    function isManipulatable(id){
+        // not reserved and not sold
+        return isReserved(id) === false && props.soldPixels.indexOf(id) === -1
+      }
+
     useEffect(() => {
         if(props.ownPixels && props.soldPixels){
             let soldButNotMine = props.soldPixels.filter((i) => props.ownPixels.indexOf(i) === -1)
@@ -118,6 +123,7 @@ export default function Pixels(props) {
             {
                 <SelectPlane
                     isReserved={(val) => isReserved(val)}
+                    isManipulatable={(val) => isManipulatable(val)}
                     selection={selection}
                     zoom={zoom}
                     onSelected={value => onSelected(value)}
