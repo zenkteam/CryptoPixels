@@ -12,26 +12,25 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
 import { Token, WETH, Fetcher, Route as URoute } from "@uniswap/sdk";
 
-const targetNetwork = NETWORKS['localhost']; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+// Switching to "mainnet" or "rinkeby" automatically changs the targetNetwork.rpcUrl
+const network = 'localhost'
+const targetNetwork = NETWORKS[network]; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 function App() {
-  const [ injectedProvider, setInjectedProvider ] = useState();
   const [ soldPixels, setSoldPixels ] = useState([])
   const [ ownPixels, setOwnPixels ] = useState()
   const [ mainnetProvider, setMainnetProvider ] = useState()
-  const [ readProvider, setReadProvider ] = useState()
   const [ price, setPrice ] = useState(0)
+  const [ wallet, setWallet ] = useState()
 
-  const userProvider = useUserProvider(injectedProvider)
-  const address = useUserAddress(userProvider);
-  const writeContract = useContractLoader(mainnetProvider)
-  const readContract = useContractLoader(readProvider)
+  // The UserProvider is your wallet
+  const walletAddress = useUserAddress(wallet)
+  const writeContract = useContractLoader(wallet)
+  const readContract = useContractLoader(mainnetProvider)
   const blockExplorer = targetNetwork.blockExplorer;
 
   useEffect(() => {
-    const provider = targetNetwork.name === 'localhost' ? "https://rpc.scaffoldeth.io:48544" : targetNetwork.rpcUrl
-    const mainnetProvider = new JsonRpcProvider(provider);
-    const readProvider = targetNetwork.name === 'localhost' ? new JsonRpcProvider(targetNetwork.rpcUrl) : mainnetProvider;
+    const mainnetProvider = new JsonRpcProvider(targetNetwork.rpcUrl);
 
     const fetchPrice = async () => {
       const DAI = new Token(
@@ -47,7 +46,6 @@ function App() {
     fetchPrice()
     
     setMainnetProvider(mainnetProvider)
-    setReadProvider(readProvider)
   }, [])
 
   useEffect(() => {
@@ -63,7 +61,7 @@ function App() {
       let soldPixels = await readContract.CryptoPixels.getSoldPixels()
       for(let i = 0; i < soldPixels.length; ++i){
         const owner = await readContract.CryptoPixels.ownerOf(soldPixels[i])
-        if(address && owner === address){  
+        if(walletAddress && owner === walletAddress){  
           ownPixels.push(soldPixels[i])
         }
       }
@@ -72,13 +70,14 @@ function App() {
     }
 
     if(!soldPixels && readContract && readContract.CryptoPixels) updateCryptoPixels()
-  }, [readContract, address]); //, transferEvents
+  }, [readContract, walletAddress]); //, transferEvents
   
 
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
-    setInjectedProvider(new Web3Provider(provider));
-  }, [setInjectedProvider]);
+    const wallet = new Web3Provider(provider)
+    setWallet(wallet);
+  }, [setWallet]);
 
   useEffect(() => {
     if (web3Modal.cachedProvider) {
@@ -93,8 +92,8 @@ function App() {
       {/* 👨‍💼 Your account is in the top right with a wallet at connect options */}
       <div className="Account">
          <Account
-           address={address}
-           userProvider={userProvider}
+           walletAddress={walletAddress}
+           wallet={wallet}
            mainnetProvider={mainnetProvider}
            price={price}
            web3Modal={web3Modal}
@@ -111,13 +110,12 @@ function App() {
             <Pixels
               soldPixels={soldPixels}
               ownPixels={ownPixels}
+              wallet={wallet}
               targetNetwork={targetNetwork}
-              userProvider={userProvider}
               mainnetProvider={mainnetProvider}
               writeContract={writeContract}
               readContract={readContract}
               price={price}
-              injectedProvider={injectedProvider}
               loadWeb3Modal={loadWeb3Modal}
             />
           </Route>

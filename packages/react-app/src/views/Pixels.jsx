@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { SelectPlane } from "../components";
 import { Button } from "antd";
 import { Transactor } from "../helpers";
-import { utils } from "ethers";
+import { utils, BigNumber } from "ethers";
+import { parseEther, formatEther } from "@ethersproject/units";
 import { useGasPrice } from "../hooks/index.js";
 import axios from "axios";
 
@@ -18,11 +19,8 @@ export default function Pixels(props) {
 
     useEffect(() => {
         if(selection.length>0){
-            let priceInDollar = selection.length * pricePerPixelBlockInDollar
-            let priceInEther = props.price ? (priceInDollar / props.price).toFixed(2) : 0
-            console.log('Price', props.price)
-            console.log('Price', priceInEther)
-            
+            const priceInDollar = selection.length * pricePerPixelBlockInDollar
+            const priceInEther = props.price ? (priceInDollar / props.price).toFixed(2) : 0
             setPriceToBuyInDollar(priceInDollar)
             setPriceToBuyInEther(priceInEther)
         }
@@ -30,11 +28,6 @@ export default function Pixels(props) {
     
     function onSelected(selection) {
         setSelection(selection)
-    }
-
-    async function getIPFSData(ids){
-        let data = await axios.post(apiLink + 'api/ipfs',{"p":ids}, { headers: { Accept: "application/json" } })
-        return data
     }
 
     function generatePixelData(id){
@@ -60,15 +53,20 @@ export default function Pixels(props) {
     }
 
     function buyPixel(){
-        console.log('selection', selection)
-        const buy = getIPFSData(selection)
-        console.log('Buying', buy)
+        console.log('Buying', selection)
         console.log('Price in Ether', priceToBuyInEther)
+        console.log('Price in Ether BIGNUMBER', utils.parseEther(priceToBuyInEther))
         console.log('Gas', gasPrice)
-        const tx = Transactor(props.mainnetProvider, gasPrice)
-        tx( props.writeContract.CryptoPixels.buyPixels(buy, {
+
+        let pixels = new Array(selection.length)
+        for(let i = 0; i < selection.length; ++i){
+            pixels[i] = BigNumber.from(selection[i])
+        }
+
+        const tx = Transactor(props.wallet, gasPrice)
+        tx( props.writeContract.CryptoPixels.buyPixels(pixels, {
                 gasPrice: gasPrice, 
-                value: utils.parseEther(priceToBuyInEther)
+                value: parseEther(priceToBuyInEther)
             })
         )
     }
@@ -145,14 +143,14 @@ export default function Pixels(props) {
                     <li><a href="">FAQ</a></li>
                 </ol>
                 
-                {selection.length > 0 && props.injectedProvider &&
+                {selection.length > 0 && props.wallet &&
                     <div>
                         <div id="priceETH">Price for {selection.length*100} pixels: ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
                         <div id="buyPixels"><Button onClick={buyPixel}>Buy and own {selection.length*100} pixels ({selection.length} blocks)</Button></div>
                     </div>
                 }
                 
-                {selection.length > 0 && !props.injectedProvider &&
+                {selection.length > 0 && !props.wallet &&
                     <div>
                         <p>You selected <b>{selection.length} pixelblocks</b> but you need to connect your wallet first.</p>
                         <p>

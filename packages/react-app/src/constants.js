@@ -27,7 +27,7 @@ export const NETWORKS = {
         color: '#666666',
         chainId: 31337,
         blockExplorer: '',
-        rpcUrl: "http://" + window.location.hostname + ":8545",
+        rpcUrl: "https://rpc.scaffoldeth.io:48544",
     },
     mainnet: {
         name: "mainnet",

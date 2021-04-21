@@ -25,9 +25,9 @@ import Wallet from "./Wallet";
 
   ~ Features ~
   
-  - Provide address={address} and get balance corresponding to the given address
+  - Provide walletAddress={walletAddress} and get balance corresponding to the given address
   - Provide localProvider={localProvider} to access balance on local network
-  - Provide userProvider={userProvider} to display a wallet
+  - Provide wallet={wallet} to display a wallet
   - Provide mainnetProvider={mainnetProvider} and your address will be replaced by ENS name
               (ex. "0xa870" => "user.eth")
   - Provide price={price} of ether and get your balance converted to dollars
@@ -38,8 +38,8 @@ import Wallet from "./Wallet";
 */
 
 export default function Account({
-  address,
-  userProvider,
+  walletAddress,
+  wallet,
   mainnetProvider,
   price,
   minimized,
@@ -78,13 +78,13 @@ export default function Account({
     ""
   ) : (
     <span>
-      {address ? <Address address={address} ensProvider={mainnetProvider} blockExplorer={blockExplorer} /> : "Connecting..."}
+      {walletAddress ? <Address address={walletAddress} ensProvider={mainnetProvider} blockExplorer={blockExplorer} /> : "Connecting..."}
       
-      <Wallet address={address} provider={userProvider} ensProvider={mainnetProvider} price={price} />
+      <Wallet address={walletAddress} provider={wallet} ensProvider={mainnetProvider} price={price} />
     </span>
   );
 
-  // <Balance address={address} provider={localProvider} price={price} />
+  // <Balance address={walletAddress} provider={localProvider} price={price} />
   return (
     <div>
       {display}

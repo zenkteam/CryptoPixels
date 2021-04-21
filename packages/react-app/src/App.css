@@ -64,9 +64,18 @@ body{
     margin-left: auto;
     margin-right: auto;
     display: block;
-    background: url('/grid.png') no-repeat;
+    background: url('./assets/grid.png') no-repeat;
     transform-origin: 0px 0px;
 }
+
+/*
+ "arrowParens": "avoid",
+  "bracketSpacing": true,
+  "printWidth": 120,
+  "singleQuote": false,
+  "tabWidth": 2,
+  "trailingComma": "all"
+  */
 
 .ds-selector{
   background-color: #f58420 !important;
@@ -102,7 +111,7 @@ body{
   left:400px !important;
   z-index: 110 !important;
   padding: 0 0 !important;
-  background: url('/pepe200.jpg') no-repeat !important;
+  background: url('./assets/pepe200.jpg') no-repeat !important;
   display: block !important;
   border:none !important;
 }

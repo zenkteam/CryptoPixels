@@ -199,7 +199,7 @@ export default function SelectPlane(props) {
   const [selected, setSelected] = useState([])
   const [changeEffects, setChangeEffects] = useState(0)
   const [amountAnimatedPixels, setAmountAnimatedPixels] = useState(0)
-  const effectsOn = true
+  const effectsOn = false
   
   useEffect(() => {
     if(!effectsOn){
@@ -210,12 +210,7 @@ export default function SelectPlane(props) {
       container.current = document.getElementById('boxes');
       // Effects
       function getRandomColor() {
-        const letters = '0123456789ABCDEF';
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-          color += letters[~~(Math.random() * 16)];
-        }
-        return color;
+        return '#'+('0123456789ABCDEF'.split('').sort(function(){return 0.5-Math.random()}).join('')).substring(0,6);
       }
 
       let effects = [

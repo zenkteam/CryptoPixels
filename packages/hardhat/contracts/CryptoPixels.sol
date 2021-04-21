@@ -31,7 +31,7 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   /**
     Allow to buy pixels in bulk
    */
-  function buyPixels(uint256[] memory _pixels) payable public returns (CryptoPixel[] memory){
+  function buyPixels(uint256[] memory _pixels) payable public returns (uint256[] memory){
       require(_pixels.length > 0, 'NOT ENOUGH PIXELS');
       require(_pixels.length <= 1000, 'TOO MANY PIXELS');
       require(soldPixels.length > 9998, 'ALL PIXELS HAVE BEEN MINTED - TIME FOR THE CENTER PIECE');
@@ -64,12 +64,12 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
       return _pixels;
   }
 
-//// NOT FINISHED
-  function setForSale(pixelId, forAddress){
+/* NOT FINISHED
+  function setForSale(uint256 pixelId, address forAddress) public {
     approve(forAddress, pixelId);
   }
 
-  function buyFromSomeone(pixelId){
+  function buyFromSomeone(uint256 pixelId) public {
     // Split
     uint256 foundersShare = msg.value / 100 * 15;
     uint256 pixelOwnerShare = msg.value - founderShare;
@@ -81,7 +81,7 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
     // Transfer
     safeTransferFrom(pixelOwner, msg.sender, pixelId);
   }
-//// NOT FINISHED
+*/
 
   /**
   * Checks if id is within reserved range
@@ -127,7 +127,7 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
     * @dev Base URI for computing {tokenURI}. Empty by default, can be overriden
     * in child contracts.
     */
-  function changeBaseUri(string newBaseUri) public onlyOwner {
+  function changeBaseUri(string memory newBaseUri) public onlyOwner {
       baseUri = newBaseUri;
   }
 

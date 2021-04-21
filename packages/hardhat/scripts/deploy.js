@@ -10,7 +10,7 @@ const main = async () => {
 
   console.log("\n\n 📡 Deploying...\n");
 
-  // read in all the assets to get their IPFS hash...
+  /* read in all the assets to get their IPFS hash...
   let uploadedAssets = JSON.parse(fs.readFileSync("./uploaded.json"))
   let bytes32Array = []
   for(let a in uploadedAssets){
@@ -19,7 +19,7 @@ const main = async () => {
     console.log(" #️⃣ hashed:",bytes32)
     bytes32Array.push(bytes32)
   }
-  console.log(" \n")
+  console.log(" \n")*/
 
   // deploy the contract with all the artworks forSale
   const cryptoPixels = await deploy("CryptoPixels") // // <-- add in constructor args like line 19 vvvv
