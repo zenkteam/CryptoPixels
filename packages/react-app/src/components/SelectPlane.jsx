@@ -14,7 +14,60 @@ export default function SelectPlane(props) {
   const [selected, setSelected] = useState([])
   const [changeEffects, setChangeEffects] = useState(0)
   const [amountAnimatedPixels, setAmountAnimatedPixels] = useState(0)
+  const [newArea, setNewArea] = useState();
   const effectsOn = false
+
+
+  useEffect(() => {
+    function selectElements(ids){
+      if (typeof props.onSelected === 'function') {
+        props.onSelected(ids);
+      }
+      setSelected(ids)
+    }
+
+
+    if (newArea) {
+        const {to, from} = newArea;
+        setNewArea(undefined) // reset area to avoid triggering effect multiple times
+
+        // Calculate all ids
+        const amountRows = to.row - from.row + 1
+        const amountColumns = to.column - from.column + 1
+        let ids = [];
+        let count = 0;
+        for (let i = 0; i < amountRows; ++i){
+            for (let j = 0; j < amountColumns; ++j){
+                const id = from.id + (i*100) + j
+                if (props.isManipulatable(id)){
+                    ids[count] = id
+                    ++count
+                }else{
+                  // Reset
+                  selectElements([])
+                  removeSelectedArea()
+                  return
+                }
+            }
+        }
+
+        // Set selected pixels
+        selectElements(ids)
+
+        // Remove existing overlay
+        removeSelectedArea()
+
+        // Create new overlay
+        let overlay = document.createElement('div')
+        overlay.style.setProperty('width', (amountColumns) * 10 + 'px');
+        overlay.style.setProperty('height', (amountRows) * 10 + 'px');
+        overlay.style.setProperty('margin-left', (from.column - 1) * 10 + 'px');
+        overlay.style.setProperty('margin-top', (from.row - 1) * 10 + 'px');
+        overlay.setAttribute('id', 'selectedArea')
+        overlay.appendChild(document.createElement('div'));
+        container.current.appendChild(overlay);
+      }
+  }, [newArea, props]) // the handling of a newArea changes when props.isManipulatable is updated
 
   function initializeSelection() {  
     ds = new DragSelect({
@@ -68,49 +121,8 @@ export default function SelectPlane(props) {
         from.id = from.column + ((from.row - 1) * 100)
         to.id = to.column + ((to.row - 1) * 100)
 
-        // Calculate all ids
-        const amountRows = to.row - from.row + 1
-        const amountColumns = to.column - from.column + 1
-        let ids = [];
-        let count = 0;
-        for (let i = 0; i < amountRows; ++i){
-            for (let j = 0; j < amountColumns; ++j){
-                const id = from.id + (i*100) + j
-                if (props.isManipulatable(id)){
-                    ids[count] = id
-                    ++count
-                }else{
-                  // Reset
-                  selectElements([])
-                  removeSelectedArea()
-                  return false;
-                }
-            }
-        }
-
-        // Set selected pixels
-        selectElements(ids)
-
-        // Remove existing overlay
-        removeSelectedArea()
-
-        // Create new overlay
-        let overlay = document.createElement('div')
-        overlay.style.setProperty('width', (amountColumns) * 10 + 'px');
-        overlay.style.setProperty('height', (amountRows) * 10 + 'px');
-        overlay.style.setProperty('margin-left', (from.column - 1) * 10 + 'px');
-        overlay.style.setProperty('margin-top', (from.row - 1) * 10 + 'px');
-        overlay.setAttribute('id', 'selectedArea')
-        overlay.appendChild(document.createElement('div'));
-        container.current.appendChild(overlay);
+        setNewArea({from, to});
     })
-  }
-
-  function selectElements(ids){
-    if (typeof props.onSelected === 'function') {
-      props.onSelected(ids);
-    }
-    setSelected(ids)
   }
 
   function removeSelectedArea(){
@@ -119,11 +131,6 @@ export default function SelectPlane(props) {
           selectedArea.remove()
       }
   }
-
-  useEffect(() => {
-    // We need to reinitialize once we know what has already been sold
-    initializeSelection();
-  }, [props.soldPixels])
 
   function zoom(zoom) {
     if (typeof props.onZoomUpdate === "function") {
