@@ -6,6 +6,7 @@ pragma abicoder v2;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/security/PullPayment.sol"; 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 //learn more: https://docs.openzeppelin.com/contracts/3.x/erc721
 
 // GET LISTED ON OPENSEA: https://testnets.opensea.io/get-listed/step-two
@@ -13,10 +14,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // Contract ERC271: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol
 
 contract CryptoPixels is Ownable, PullPayment, ERC721 {
+  using Strings for uint256;
 
   string public baseUri = "https://cryptopixels.org/api/pixel/";
+  uint256 centerPieceId = 40000;
 
-  uint16[] public soldPixels;
+  uint256[] public soldPixels;
 
   uint256 private pricePerPixel = 0.055066079 ether;
 
@@ -24,25 +27,26 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   mapping (uint256 => bool) public notForSale;
 
   constructor() ERC721("CryptoPixels", "CPX") payable {
-    _mint(msg.sender, 40000);
-    notForSale[40000] = true;
+    _mint(msg.sender, centerPieceId);
+    notForSale[centerPieceId] = true;
   }
 
   /**
     Allow to buy pixels in bulk
    */
   function buyPixels(uint256[] memory _pixels) payable public returns (uint256[] memory){
-      require(_pixels.length > 0, 'NOT ENOUGH PIXELS');
-      require(_pixels.length <= 1000, 'TOO MANY PIXELS');
-      require(soldPixels.length > 9998, 'ALL PIXELS HAVE BEEN MINTED - TIME FOR THE CENTER PIECE');
-      
+      require(_pixels.length > 0, 'not enough pixels');
+
       // Minium price
       uint256 minPrice = (pricePerPixel / 10 * 9) * _pixels.length;
-      require(msg.value >= minPrice, 'NOT PAYED ENOUGH');
+      require(msg.value >= minPrice, 'more $ pls');
 
       // Check each pixels availability
       for (uint8 i = 0; i < _pixels.length; i++) {
-        require(_pixels[i] > 0 && _pixels[i] < 10001 && !notForSale[_pixels[i]] && !isReserved(_pixels[i]), "DOES NOT EXIST, HAS ALREADY BEEN MINTED OR IS RESERVED");
+        require(_pixels[i] > 0 && _pixels[i] < 10001, "not valid");
+        require(!notForSale[_pixels[i]], "already minted");
+        require(!isReserved(_pixels[i]), "reserved");
+        require(_pixels[i] != centerPieceId, "centerpiece not allowed");
       }
 
       // Make purchase
@@ -58,7 +62,7 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
         notForSale[_pixels[i]] = true;
 
         // Add pixel to sold pixels
-        soldPixels.push(uint16(_pixels[i]));
+        soldPixels.push(_pixels[i]);
       } 
 
       return _pixels;
@@ -86,9 +90,12 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   /**
   * Checks if id is within reserved range
   */
-  function isReserved(uint256 pixelId) private pure returns (bool){
+  function isReserved(uint256 pixelId) public view returns (bool){
     if(pixelId < 4040 || pixelId > 5961) {
       return false;
+    }
+    if(pixelId == centerPieceId){
+      return true;
     }
     uint256 rest = pixelId % 1000;
     if(rest > 100){
@@ -101,10 +108,11 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   * We're overwriting this function as we can do it cheaper than the contract we're inherting from
   * @dev See {IERC721Metadata-tokenURI}.
   */
-  function tokenURI(uint256 pixelId) public view virtual override returns (string memory) {
-      require(!isReserved(pixelId), "ERC721Metadata: URI query for nonexistent token");
-      require(notForSale[pixelId], 'This pixel has not been minted yet - 1');
-      return string(abi.encodePacked(_baseURI(), pixelId));
+  function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+      require(!isReserved(tokenId), "not minted, yet");
+      require(notForSale[tokenId], 'ERC721Metadata: URI query for nonexistent token');
+      require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token - exists");
+      return string(abi.encodePacked(_baseURI(), tokenId.toString()));
   }
 
   /**
@@ -142,7 +150,7 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   /**
     * @dev Get all ids of pixels sold
     */
-  function getSoldPixels() public view returns (uint16[] memory) {
+  function getSoldPixels() public view returns (uint256[] memory) {
       return soldPixels;
   }
   

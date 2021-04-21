@@ -81,8 +81,9 @@ for(let i = 1; i <= amount; ++i){
    
 }
 
-function randomNumber(min) {
-    return ~~(Math.random() * (10 - min) + min) / 10
+function randomNumber(min, max) {
+    max = max || 10
+    return ~~(Math.random() * (max - min) + min) / 10
 }
 
 function shuffle(a) {
