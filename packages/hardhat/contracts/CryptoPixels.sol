@@ -61,6 +61,32 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
       return _pixels;
   }
 
+
+  function setForSale(pixelId, forAddress){
+    approve(forAddress, pixelId);
+  }
+
+  function buyFromSomeone(pixelId){
+
+    // Split
+    uint256 foundersShare = msg.value / 100 * 15;
+    uint256 pixelOwnerShare = msg.value - founderShare;
+
+    // Pay
+    _asyncTransfer(pixelOwner, pixelOwner);
+    _asyncTransfer(owner(), foundersShare);
+
+    // Transfer
+    safeTransferFrom(pixelOwner, msg.sender, pixelId);
+  }
+
+
+
+  function mintCenterpiece(address centerpieceOwner) public view onlyOwner{
+    _mint(centerpieceOwner, 40000);
+    notForSale[40000] = true;
+  }
+
   /**
   * Checks if id is within reserved range
   */
