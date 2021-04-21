@@ -18,19 +18,23 @@ const targetNetwork = NETWORKS[network]; // <------- select your target frontend
 
 function App() {
   const [ soldPixels, setSoldPixels ] = useState([])
+  const [ updating, setUpdating ] = useState(0)
   const [ ownPixels, setOwnPixels ] = useState()
   const [ mainnetProvider, setMainnetProvider ] = useState()
+  const [ dappProvider, setDappProvider ] = useState()
   const [ price, setPrice ] = useState(0)
   const [ wallet, setWallet ] = useState()
 
   // The UserProvider is your wallet
+  // We need this for readContract | so that we can read from the blockchain even though no wallet is connected
+  const readContract = useContractLoader(dappProvider)
+  // Obviusly only set if wallet is connected and a wallet is also needed to write to the blockchain
   const walletAddress = useUserAddress(wallet)
   const writeContract = useContractLoader(wallet)
-  const readContract = useContractLoader(mainnetProvider)
-  const blockExplorer = targetNetwork.blockExplorer;
 
   useEffect(() => {
     const mainnetProvider = new JsonRpcProvider(targetNetwork.rpcUrl);
+    const dappProvider = new JsonRpcProvider(network === 'localhost' ? 'http://localhost:8545' : process.env.REACT_APP_PROVIDER)
 
     const fetchPrice = async () => {
       const DAI = new Token(
@@ -45,31 +49,33 @@ function App() {
     }
     fetchPrice()
     
+    setDappProvider(dappProvider)
     setMainnetProvider(mainnetProvider)
   }, [])
-
-  useEffect(() => {
-    console.log("sold pixels", soldPixels)
-  }, [soldPixels])
 
   //const transferEvents = useEventListener(contract, "CryptoPixels", "Transfer", mainnetProvider, 1);
  // console.log("📟 Transfer events:",transferEvents)
 
   useEffect(()=>{
     const updateCryptoPixels = async () => {
-      let ownPixels = []
-      let soldPixels = await readContract.CryptoPixels.getSoldPixels()
-      for(let i = 0; i < soldPixels.length; ++i){
-        const owner = await readContract.CryptoPixels.ownerOf(soldPixels[i])
-        if(walletAddress && owner === walletAddress){  
-          ownPixels.push(soldPixels[i])
+      let ownPixels = [], soldPixels = []
+      let soldPixelList = await readContract.CryptoPixels.getSoldPixels()
+      for(let i = 0; i < soldPixelList.length; ++i){
+        const owner = await readContract.CryptoPixels.ownerOf(soldPixelList[i])
+        let purePixel = soldPixelList[i].toNumber()
+        if(walletAddress && owner === walletAddress){ 
+          ownPixels.push(purePixel)
         }
+        soldPixels.push(purePixel)
       }
       setSoldPixels(soldPixels)
       setOwnPixels(ownPixels)
     }
-
-    if(!soldPixels && readContract && readContract.CryptoPixels) updateCryptoPixels()
+    
+    if(soldPixels.length === 0 && updating === 0 && readContract && readContract.CryptoPixels && walletAddress !== ''){
+      setUpdating(1)
+      updateCryptoPixels()
+    }
   }, [readContract, walletAddress]); //, transferEvents
   
 
@@ -77,7 +83,7 @@ function App() {
     const provider = await web3Modal.connect();
     const wallet = new Web3Provider(provider)
     setWallet(wallet);
-  }, [setWallet]);
+  },[]);
 
   useEffect(() => {
     if (web3Modal.cachedProvider) {
@@ -99,9 +105,8 @@ function App() {
            web3Modal={web3Modal}
            loadWeb3Modal={loadWeb3Modal}
            logoutOfWeb3Modal={logoutOfWeb3Modal}
-           blockExplorer={blockExplorer}
+           blockExplorer={targetNetwork.blockExplorer}
          />
-         {/*faucetHint*/}
       </div>
 
       <BrowserRouter>

@@ -266,6 +266,16 @@ body{
   HEADER
 **/
 
+.sold{
+  background-color: orange;
+  border:none;
+  z-index:3;
+}
+.own{
+  background-color: red;
+  z-index:4;
+}
+
 
 /*.ant-menu{
     display:none !important;

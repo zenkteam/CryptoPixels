@@ -17,11 +17,11 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   using Strings for uint256;
 
   string public baseUri = "https://cryptopixels.org/api/pixel/";
-  uint256 centerPieceId = 40000;
-
+  
   uint256[] public soldPixels;
 
-  uint256 private pricePerPixel = 0.055066079 ether;
+  uint256 private centerPieceId = 40000;
+  uint256 private pricePerPixel = 0.0407094849029 ether;
 
   // For Sale (maps a token id to its availability)
   mapping (uint256 => bool) public notForSale;
@@ -92,11 +92,12 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   */
   function isReserved(uint256 pixelId) public view returns (bool){
     if(pixelId < 4040 || pixelId > 5961) {
+      if(pixelId == centerPieceId){
+        return true;
+      }
       return false;
     }
-    if(pixelId == centerPieceId){
-      return true;
-    }
+    
     uint256 rest = pixelId % 1000;
     if(rest > 100){
       rest = rest % 100;

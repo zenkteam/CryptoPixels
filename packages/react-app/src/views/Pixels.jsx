@@ -76,7 +76,7 @@ export default function Pixels(props) {
         let p = document.createElement('div')
         p.style.cssText = 'position:absolute;z-index:2;width:10px;height:10px;margin-left:' + pixel.x + 'px;margin-top:' + pixel.y + 'px'
         p.setAttribute('id', id)
-        p.setAttribute('class', 'p')
+        p.classList.add('p')
         return p
       }
 
@@ -92,15 +92,26 @@ export default function Pixels(props) {
     }
 
     useEffect(() => {
-        if(props.soldPixels && props.soldPixels.length > 0){
-            for(let i = 0; i < props.soldPixels.length; ++i){
-                let pixel = createPixel()
-                pixel.classList.add('sold')
-                document.getElementById('boxes').appendChild(pixel)
+        if(props.ownPixels && props.soldPixels){
+            let soldButNotMine = props.soldPixels.filter(value=>props.ownPixels.includes(props.soldPixels));
+            console.log(soldButNotMine)
+            if(soldButNotMine && soldButNotMine.length > 0){
+                for(let i = 0; i < soldButNotMine.length; ++i){
+                    let pixel = createPixel(soldButNotMine[i])
+                    pixel.classList.add('sold')
+                    document.getElementById('boxes').appendChild(pixel)
+                }
+            } 
+            if(props.ownPixels && props.ownPixels.length > 0){
+                for(let i = 0; i < props.ownPixels.length; ++i){
+                    let pixel = createPixel(props.ownPixels[i])
+                    pixel.classList.add('own')
+                    document.getElementById('boxes').appendChild(pixel)
+                }
             }
-        } 
-    }, [props.soldPixels])
-   
+        }
+    }, [props.soldPixels, props.ownPixels])
+
     return (
         <div className="Content" id="Content">
             {/* Only render pixels if they have already been generated */}
