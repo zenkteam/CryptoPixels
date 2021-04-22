@@ -85,18 +85,6 @@ export default function Pixels(props) {
         setZoom(zoom);
     }
 
-    function isReserved(id) {
-        if(id < 4040 || id > 5961) return false;
-        let t = id % 1000;
-        if(t > 100) t = t % 100;
-        return t > 40 && t < 61;
-    }
-
-    function isManipulatable(id){
-        // not reserved and not sold
-        return isReserved(id) === false && props.soldPixels.indexOf(id) === -1
-      }
-
     useEffect(() => {
         if(props.ownPixels && props.soldPixels){
             let soldButNotMine = props.soldPixels.filter((i) => props.ownPixels.indexOf(i) === -1)
@@ -122,14 +110,12 @@ export default function Pixels(props) {
             {/* Only render pixels if they have already been generated */}
             {
                 <SelectPlane
-                    isReserved={(val) => isReserved(val)}
-                    isManipulatable={(val) => isManipulatable(val)}
                     selection={selection}
                     zoom={zoom}
-                    onSelected={value => onSelected(value)}
+                    onSelected={ids => onSelected(ids)}
                     onZoomUpdate={value => onZoomUpdate(value)}
                     soldPixels={props.soldPixels}
-                    generatePixelData={(id) => generatePixelData(id)}
+                    generatePixelData={id => generatePixelData(id)}
                     createPixel={id => createPixel(id)}
                 ></SelectPlane>
             }

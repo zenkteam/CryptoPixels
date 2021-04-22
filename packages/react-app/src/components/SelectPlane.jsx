@@ -39,7 +39,7 @@ export default function SelectPlane(props) {
         for (let i = 0; i < amountRows; ++i){
             for (let j = 0; j < amountColumns; ++j){
                 const id = from.id + (i*100) + j
-                if (props.isManipulatable(id)){
+                if (isManipulatable(id)){
                     ids[count] = id
                     ++count
                 }else{
@@ -67,7 +67,7 @@ export default function SelectPlane(props) {
         overlay.appendChild(document.createElement('div'));
         container.current.appendChild(overlay);
       }
-  }, [newArea, props]) // the handling of a newArea changes when props.isManipulatable is updated
+  }, [newArea, isManipulatable]) // the handling of a newArea changes when props.isManipulatable is updated
 
   function initializeSelection() {  
     ds = new DragSelect({
@@ -187,6 +187,17 @@ export default function SelectPlane(props) {
       controlPressed = false;
     }
   }
+  function isManipulatable(id){
+    // not reserved and not sold
+    return isReserved(id) === false && props.soldPixels.indexOf(id) === -1
+  }
+
+  function isReserved(id) {
+    if(id < 4040 || id > 5961) return false;
+    let t = id % 1000;
+    if(t > 100) t = t % 100;
+    return t > 40 && t < 61;
+  }
   
   useEffect(() => {
     if(!effectsOn){
@@ -235,7 +246,7 @@ export default function SelectPlane(props) {
       for(let i = 0; i < amount; ++i){
         const r = ~~(Math.random() * 10000) + 1
         // Make sure it's not reserved, sold or selected already
-        if(props.isManipulatable(r) && selected.indexOf(r) === -1){
+        if(isManipulatable(r) && selected.indexOf(r) === -1){
           const el = props.createPixel(r)
           el.classList.add('animate__animated', effects[~~(Math.random() * effects.length)], speeds[~~(Math.random() * speeds.length)], 'animate__repeat-'+(~~(Math.random() * 3)+1))
           const color = getRandomColor()
