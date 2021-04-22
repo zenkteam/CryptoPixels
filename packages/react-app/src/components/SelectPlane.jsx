@@ -18,15 +18,26 @@ export default function SelectPlane(props) {
   const effectsOn = false
 
 
-  useEffect(() => {
-    function selectElements(ids){
-      if (typeof props.onSelected === 'function') {
-        props.onSelected(ids);
-      }
-      setSelected(ids)
+  function selectElements(ids){
+    if (typeof props.onSelected === 'function') {
+      props.onSelected(ids);
     }
+    setSelected(ids)
+  }
 
+  function isManipulatable(id){
+    // not reserved and not sold
+    return isReserved(id) === false && props.soldPixels.indexOf(id) === -1
+  }
 
+  function isReserved(id) {
+    if(id < 4040 || id > 5961) return false;
+    let t = id % 1000;
+    if(t > 100) t = t % 100;
+    return t > 40 && t < 61;
+  }
+
+  useEffect(() => {
     if (newArea) {
         const {to, from} = newArea;
         setNewArea(undefined) // reset area to avoid triggering effect multiple times
@@ -67,7 +78,7 @@ export default function SelectPlane(props) {
         overlay.appendChild(document.createElement('div'));
         container.current.appendChild(overlay);
       }
-  }, [newArea, isManipulatable]) // the handling of a newArea changes when props.isManipulatable is updated
+  }, [newArea]) // we only execute this when a newArea is selected, it then automatically accesses the current props
 
   function initializeSelection() {  
     ds = new DragSelect({
@@ -186,17 +197,6 @@ export default function SelectPlane(props) {
     if (e.key === 'Control') {
       controlPressed = false;
     }
-  }
-  function isManipulatable(id){
-    // not reserved and not sold
-    return isReserved(id) === false && props.soldPixels.indexOf(id) === -1
-  }
-
-  function isReserved(id) {
-    if(id < 4040 || id > 5961) return false;
-    let t = id % 1000;
-    if(t > 100) t = t % 100;
-    return t > 40 && t < 61;
   }
   
   useEffect(() => {
