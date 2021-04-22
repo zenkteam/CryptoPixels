@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Privacy({ }) {
+export default function Privacy() {
 
   return (
     <div className="textPage">

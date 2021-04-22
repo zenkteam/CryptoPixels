@@ -106,11 +106,6 @@ function App() {
     }
   }, [loadWeb3Modal]);
 
-  const [route, setRoute] = useState();
-  useEffect(() => {
-    setRoute(window.location.pathname)
-  }, [setRoute]);
-
   return (
     <div className="App">
       <BrowserRouter>
@@ -163,12 +158,8 @@ function App() {
         </Switch>
 
         <div className="links">
-          <Link onClick={()=>{setRoute("/")}} to="/">Home</Link> |&nbsp;
-          <Link onClick={()=>{setRoute("/trade")}} to="/trade">Trade</Link> |&nbsp;
-          <Link onClick={()=>{setRoute("/faq")}} to="/faq">FAQ</Link> |&nbsp;
-          <Link onClick={()=>{setRoute("/about")}} to="/about">About</Link> |&nbsp; 
-          <Link onClick={()=>{setRoute("/imprint")}} to="/imprint">Imprint</Link> |&nbsp; 
-          <Link onClick={()=>{setRoute("/privacy")}} to="/privacy">Privacy</Link>
+          <Link to="/imprint">Imprint</Link> |&nbsp; 
+          <Link to="/privacy">Privacy</Link>
         </div>
         
       </BrowserRouter>

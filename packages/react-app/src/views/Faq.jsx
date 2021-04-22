@@ -1,12 +1,14 @@
 import React from "react";
+import { Collapse } from 'antd';
+const { Panel } = Collapse;
 
-export default function Faq({ }) {
+export default function Faq() {
 
   const faqs = [
     {
       id: 1,
       question: "What is Cryptopixels?",
-      answer: "Cryptopixels is a NFT based Grid of 1 Million Pixels. When you buy Cryptopixels NFTs you actually own a dedicated area on cryptopixels.org There you can upload images with a hyperlink, for example to promote your artist page. The price for 1 Pixel is $1. Cryptopixel NFTs are sold in 10x10 Pixel Block (100 Pixels = 1NFT). When 990,000 Pixels have been sold an auction for the last 10,000 Pixels (Center Piece) starts. After the auction ends, all NFTs are revealed.",
+      answer: "Cryptopixels is a NFT based Grid of 1 Million Pixels. When you buy Cryptopixels NFTs you actually own a dedicated area on cryptopixels.org There you can upload images with a hyperlink, for example to promote your artist page. The price for 1 Pixel is $1. Cryptopixel NFTs are sold in 10x10 Pixel Block (100 Pixels = 1NFT). When 960,000 Pixels have been sold an auction for the last 10,000 Pixels (Center Piece) starts. After the auction ends, all NFTs are revealed.",
     },
     {
       id: 2,
@@ -99,14 +101,13 @@ export default function Faq({ }) {
     <div className="textPage">
         <h2>FAQ</h2>
 
-        <div className="faqs">
-          {faqs.map((faq) => (
-            <dl key={faq.id}>
-              <dt>{faq.question}</dt>
-              <dd>{faq.answer}</dd>
-            </dl>
+        <Collapse className="faq" accordion defaultActiveKey={['1']}>
+        {faqs.map((faq) => (
+            <Panel key={faq.id} header={faq.question}>
+              <p>{faq.answer}</p>
+            </Panel>
           ))}
-        </div>
+        </Collapse>
     </div>
   );
 }

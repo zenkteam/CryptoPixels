@@ -7,12 +7,15 @@ import { Link } from "react-router-dom";
 export default function Header() {
   
   return (
-    <Link to="/">
-      <PageHeader
-        title="CryptoPixels.org"
-        subTitle="Buy a piece of internet history and own it forever."
-        className="pageHeader"
-      />
-    </Link>
+    <div className="header">
+      <Link to="/">
+        <PageHeader
+          title="CryptoPixels.org"
+          subTitle="Buy a piece of internet history and own it forever."
+          className="pageHeader"
+        />
+      </Link>  
+      <Link to="/trade">Trade</Link>&nbsp;|&nbsp;<Link to="/faq">FAQ</Link>&nbsp;|&nbsp;<Link to="/about">About</Link>
+    </div>
   );
 }

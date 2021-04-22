@@ -78,8 +78,8 @@ export default function Pixels(props) {
         const pixel = generatePixelData(id)
         let p = document.createElement('div')
         p.className = 'p'
-        p.style.setProperty('margin-left', pixel.x + 'px')
-        p.style.setProperty('margin-top', pixel.y + 'px')
+        p.style.setProperty('left', pixel.x + 'px')
+        p.style.setProperty('top', pixel.y + 'px')
         p.setAttribute('id', id)
         return p
       }
@@ -112,18 +112,20 @@ export default function Pixels(props) {
     }, [props.soldPixels, props.ownPixels])
 
     return (
-        <div className="Content" id="Content">
+        <>
+            <div className="Content" id="Content">
 
-            <SelectPlane
-                selection={selection}
-                zoom={zoom}
-                onSelected={ids => onSelected(ids)}
-                onZoomUpdate={value => onZoomUpdate(value)}
-                soldPixels={props.soldPixels}
-                generatePixelData={id => generatePixelData(id)}
-                createPixel={id => createPixel(id)}
-                removeSelectedArea={removeSelectedArea}
-            ></SelectPlane>
+                <SelectPlane
+                    selection={selection}
+                    zoom={zoom}
+                    onSelected={ids => onSelected(ids)}
+                    onZoomUpdate={value => onZoomUpdate(value)}
+                    soldPixels={props.soldPixels}
+                    generatePixelData={id => generatePixelData(id)}
+                    createPixel={id => createPixel(id)}
+                    removeSelectedArea={removeSelectedArea}
+                ></SelectPlane>
+            </div>
            
             <div id="Overlays">
                 {/* Menu */}
@@ -136,7 +138,11 @@ export default function Pixels(props) {
                     </ol>
                     
                     <div>Rundown:</div>
-                    <div>Once all pixels apart from the centerpiece have been minted, we'll run a two week period in which pixels can be replaced with images and the centerpiece will be auctionized.</div>
+                    <div>
+                        Once 9600 Pixelblocks have been sold the the last Centerpiece of 400 Pixelblocks will be auctioned for 2 Weeks.
+                        After the auction closes Pixelblocks can be replaced with images.
+                        You can resell your blocks on our marketplace anytime.
+                    </div>
 
 
                     {selection.length > 0 && props.wallet &&
@@ -176,6 +182,6 @@ export default function Pixels(props) {
                 {/* Countdown */}
                 <Countdown soldPixels={props.soldPixels}/>
             </div>
-        </div>
+        </>
     );
 }
