@@ -215,6 +215,10 @@ body{
   margin-left:20px;
 }
 
+.main_box:hover {
+  cursor: pointer;
+}
+
 /**
   HEADER
 **/
