@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 import {  JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import "antd/dist/antd.css";
 import Web3Modal from "web3modal";
@@ -11,6 +11,11 @@ import { useContractLoader } from "./hooks";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
 import { Token, WETH, Fetcher, Route as URoute } from "@uniswap/sdk";
+import Trade from './views/Trade';
+import Faq from './views/Faq';
+import About from './views/About';
+import Imprint from './views/Imprint';
+import Privacy from './views/Privacy';
 
 // Switching to "mainnet" or "rinkeby" automatically changs the targetNetwork.rpcUrl
 const network = 'localhost'
@@ -93,6 +98,11 @@ function App() {
     }
   }, [loadWeb3Modal]);
 
+  const [route, setRoute] = useState();
+  useEffect(() => {
+    setRoute(window.location.pathname)
+  }, [setRoute]);
+
   return (
     <div className="App">
       <Header/>
@@ -113,6 +123,21 @@ function App() {
 
       <BrowserRouter>
         <Switch>
+          <Route path="/trade">
+            <Trade/>
+          </Route>
+          <Route path="/faq">
+            <Faq/>
+          </Route>
+          <Route path="/about">
+            <About/>
+          </Route>
+          <Route path="/imprint">
+            <Imprint/>
+          </Route>
+          <Route path="/privacy">
+            <Privacy/>
+          </Route>
           <Route path="/">
             <Pixels
               soldPixels={soldPixels}
@@ -128,10 +153,16 @@ function App() {
             />
           </Route>
         </Switch>
+
+        <div className="links">
+          <Link onClick={()=>{setRoute("/")}} to="/">Home</Link> |&nbsp;
+          <Link onClick={()=>{setRoute("/trade")}} to="/trade">Trade</Link> |&nbsp;
+          <Link onClick={()=>{setRoute("/faq")}} to="/faq">FAQ</Link> |&nbsp;
+          <Link onClick={()=>{setRoute("/about")}} to="/about">About</Link> |&nbsp; 
+          <Link onClick={()=>{setRoute("/imprint")}} to="/imprint">Imprint</Link> |&nbsp; 
+          <Link onClick={()=>{setRoute("/privacy")}} to="/privacy">Privacy</Link>
+        </div>
       </BrowserRouter>
-
-
-      <canvas id="world"></canvas>
     </div>
   );
 }

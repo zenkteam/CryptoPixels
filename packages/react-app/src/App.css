@@ -693,3 +693,20 @@ body{
 .right, .left {
 	animation-name: v-move;
 }
+
+.links {
+  background-color: white;
+  position: fixed;
+  bottom: 0;
+  padding: 10px 20px;
+  color: black;
+}
+
+.textPage {
+  color: white;
+  margin-top: 40px;
+}
+
+.textPage h2 {
+  color: white;
+}

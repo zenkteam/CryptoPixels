@@ -151,13 +151,13 @@ export default function Pixels(props) {
                         <div>
                             <div id="priceETH">Price for {selection.length*100} pixels: ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
                          
-                            <div class="box-outer hoverme" id="buyPixels">
-                                <div class="main_box" onClick={buyPixel}>
+                            <div className="box-outer hoverme" id="buyPixels">
+                                <div className="main_box" onClick={buyPixel}>
                                     Buy and own {selection.length*100} pixels ({selection.length} blocks)
-                                    <div class="bar top"></div>
-                                    <div class="bar right delay"></div>
-                                    <div class="bar bottom delay"></div>
-                                    <div class="bar left"></div>
+                                    <div className="bar top"></div>
+                                    <div className="bar right delay"></div>
+                                    <div className="bar bottom delay"></div>
+                                    <div className="bar left"></div>
                                 </div>
                                 <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
                             </div>
