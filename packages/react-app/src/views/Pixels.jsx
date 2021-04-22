@@ -52,7 +52,7 @@ export default function Pixels(props) {
         };
     }
 
-    function buyPixel(){
+    async function buyPixel(){
         console.log('Buying', selection)
         console.log('Price in Ether', priceToBuyInEther)
         console.log('Price in Ether BIGNUMBER', utils.parseEther(priceToBuyInEther))
@@ -64,12 +64,24 @@ export default function Pixels(props) {
         }
 
         const tx = Transactor(props.wallet, gasPrice)
-        tx( props.writeContract.CryptoPixels.buyPixels(pixels, {
+        let transaction = await tx( props.writeContract.CryptoPixels.buyPixels(pixels, {
                 gasPrice: gasPrice, 
                 value: parseEther(priceToBuyInEther)
             })
         )
+
+        if(transaction && transaction.hash){
+            props.updateCryptoPixels()
+            removeSelectedArea()
+        }
     }
+
+    function removeSelectedArea(){
+        let selectedArea = document.getElementById('selectedArea')
+          if(selectedArea){
+              selectedArea.remove()
+          }
+      }
 
     function createPixel(id){
         const pixel = generatePixelData(id)
@@ -117,6 +129,7 @@ export default function Pixels(props) {
                     soldPixels={props.soldPixels}
                     generatePixelData={id => generatePixelData(id)}
                     createPixel={id => createPixel(id)}
+                    removeSelectedArea={removeSelectedArea}
                 ></SelectPlane>
             }
             
@@ -149,7 +162,10 @@ export default function Pixels(props) {
                 {selection.length > 0 && props.wallet &&
                     <div>
                         <div id="priceETH">Price for {selection.length*100} pixels: ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
-                        <div id="buyPixels"><Button onClick={buyPixel}>Buy and own {selection.length*100} pixels ({selection.length} blocks)</Button></div>
+                        <div class="hoverme">
+                            <div id="buyPixels"><Button onClick={buyPixel}>Buy and own {selection.length*100} pixels ({selection.length} blocks)</Button></div>
+                            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                        </div>
                     </div>
                 }
                 

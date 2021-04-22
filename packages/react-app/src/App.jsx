@@ -51,33 +51,35 @@ function App() {
     
     setDappProvider(dappProvider)
     setMainnetProvider(mainnetProvider)
+
+    
   }, [])
 
   //const transferEvents = useEventListener(contract, "CryptoPixels", "Transfer", mainnetProvider, 1);
  // console.log("📟 Transfer events:",transferEvents)
 
   useEffect(()=>{
-    const updateCryptoPixels = async () => {
-      let ownPixels = [], soldPixels = []
-      let soldPixelList = await readContract.CryptoPixels.getSoldPixels()
-      for(let i = 0; i < soldPixelList.length; ++i){
-        const owner = await readContract.CryptoPixels.ownerOf(soldPixelList[i])
-        let purePixel = soldPixelList[i].toNumber()
-        if(walletAddress && owner === walletAddress){ 
-          ownPixels.push(purePixel)
-        }
-        soldPixels.push(purePixel)
-      }
-      setSoldPixels(soldPixels)
-      setOwnPixels(ownPixels)
-    }
-    
     if(soldPixels.length === 0 && updating === 0 && readContract && readContract.CryptoPixels && walletAddress !== ''){
       setUpdating(1)
       updateCryptoPixels()
     }
   }, [readContract, walletAddress]); //, transferEvents
   
+  const updateCryptoPixels = async () => {
+    let ownPixels = [], soldPixels = []
+    let soldPixelList = await readContract.CryptoPixels.getSoldPixels()
+    for(let i = 0; i < soldPixelList.length; ++i){
+      const owner = await readContract.CryptoPixels.ownerOf(soldPixelList[i])
+      let purePixel = soldPixelList[i].toNumber()
+      if(walletAddress && owner === walletAddress){ 
+        ownPixels.push(purePixel)
+      }
+      soldPixels.push(purePixel)
+    }
+
+    setSoldPixels(soldPixels)
+    setOwnPixels(ownPixels)
+  }
 
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
@@ -122,10 +124,14 @@ function App() {
               readContract={readContract}
               price={price}
               loadWeb3Modal={loadWeb3Modal}
+              updateCryptoPixels={updateCryptoPixels}
             />
           </Route>
         </Switch>
       </BrowserRouter>
+
+
+      <canvas id="world"></canvas>
     </div>
   );
 }

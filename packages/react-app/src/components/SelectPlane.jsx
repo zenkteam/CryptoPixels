@@ -26,7 +26,6 @@ export default function SelectPlane(props) {
       setSelected(ids)
     }
 
-
     if (newArea) {
         const {to, from} = newArea;
         setNewArea(undefined) // reset area to avoid triggering effect multiple times
@@ -45,7 +44,7 @@ export default function SelectPlane(props) {
                 }else{
                   // Reset
                   selectElements([])
-                  removeSelectedArea()
+                  props.removeSelectedArea()
                   return
                 }
             }
@@ -55,7 +54,7 @@ export default function SelectPlane(props) {
         selectElements(ids)
 
         // Remove existing overlay
-        removeSelectedArea()
+        props.removeSelectedArea()
 
         // Create new overlay
         let overlay = document.createElement('div')
@@ -123,13 +122,6 @@ export default function SelectPlane(props) {
 
         setNewArea({from, to});
     })
-  }
-
-  function removeSelectedArea(){
-    let selectedArea = document.getElementById('selectedArea')
-      if(selectedArea){
-          selectedArea.remove()
-      }
   }
 
   function zoom(zoom) {

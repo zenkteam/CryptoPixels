@@ -10,7 +10,7 @@ use(solidity);
 describe("CryptoPixels.org", function () {
    
   let cryptoPixels, owner, wallet2, wallet3, provider; 
-  let costPerPixel = 0.055066079;
+  let costPerPixel = 0.0407094849029;
   let buy = getRandomPixelsToBuy(3)
   let price = (amount) => utils.parseEther((costPerPixel * amount).toString()); // We're calculating Ether but save it as wei
   let wei = (bigNum) => utils.formatUnits(bigNum,'wei')
