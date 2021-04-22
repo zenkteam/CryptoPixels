@@ -703,10 +703,16 @@ body{
 }
 
 .textPage {
+  font-family: 'Roboto Slab', serif;
   color: white;
-  margin-top: 40px;
+  max-width: 800px;
+  height: calc(100vh - 72px);
+  overflow: scroll;
+  padding: 20px;
+  margin: 40px auto;
 }
 
 .textPage h2 {
   color: white;
+  font-family: 'Major Mono Display', monospace;
 }
