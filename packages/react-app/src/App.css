@@ -27,6 +27,25 @@ body{
 /**
 * HEADER
 */
+.pageHeader {
+  background: url('./assets/logo_header.png') no-repeat;
+  background-size: 50px;
+  background-position: 12px 12px;
+  padding-left: 74px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  color: white;
+}
+.header a {
+  color: white;
+}
+.header a:hover {
+  color: orange;
+}
+
 #headerConnect,
 #menuConnect{
   animation: pulse 2s ease-in-out 1s infinite;
@@ -135,7 +154,7 @@ body{
 **/
 #menu {
   position: fixed;
-  top: 140px;
+  top: 110px;
   left: 40px;
   padding: 30px 30px;
   text-align: left;
@@ -210,8 +229,8 @@ body{
 .sold, .own{
   border:none;
   z-index: 200; /* on top of selected area */
-  animation: pulse 2s ease-in-out 1s infinite;
-  -webkit-animation: pulse 2s ease-in-out 1s infinite;
+  /* animation: pulse 2s ease-in-out 1s infinite;
+  -webkit-animation: pulse 2s ease-in-out 1s infinite; */
 }
 
 .sold{
@@ -621,4 +640,119 @@ body{
   right: 40px;
   background-color: white;
   padding: 5px 10px;
+}
+
+/* Buy Button */
+.box-outer {
+	overflow: hidden;
+	margin: 10px auto;
+	width: 290px;
+	height: 50px;
+}
+.main_box {
+	width: 290px;
+	height: 50px;
+	position: relative;
+	background: orange;
+	border: 5px solid white;
+  text-align: center;
+  color: white;
+  padding: 9px 5px;
+}
+.bar {
+	position: absolute;
+	width: 50px;
+	height: 5px;
+	background: #20f592;
+	transition: all 1s linear;
+	animation-duration: 1s;
+	animation-fill-mode: both;
+	animation-iteration-count: infinite;
+}
+.bar.delay {
+	animation-delay: 0.5s;
+}
+.top {
+	top: -5px;
+	left: -5px;
+}
+.right {
+	top: 18px;
+	right: -28px;
+	transform: rotate(90deg);
+}
+.bottom {
+	bottom: -5px;
+	left: -5px;
+}
+.left {
+	top: 18px;
+	left: -28px;
+	transform: rotate(90deg);
+}
+@keyframes h-move {
+  0% {
+    left: -5px;
+  }
+  100% {
+    left: 290px;
+  }
+}
+.top, .bottom {
+	animation-name: h-move;
+}
+@keyframes v-move {
+  0% {
+    top: -5px;
+  }
+  100% {
+    top: 68px;
+  }
+}
+.right, .left {
+	animation-name: v-move;
+}
+
+.links {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  font-family: 'Roboto Slab', serif;
+  padding: 10px 20px;
+  color: gray;
+}
+.links a {
+  color: gray;
+}
+
+.textPage {
+  font-family: 'Roboto Slab', serif;
+  color: white;
+  max-width: 800px;
+  height: calc(100vh - 72px);
+  overflow: scroll;
+  padding: 20px;
+  margin: 40px auto;
+}
+
+.textPage h2 {
+  color: white;
+  font-family: 'Major Mono Display', monospace;
+}
+
+.faq {
+  text-align: left;
+}
+/* ant-collapse dark theme */
+.ant-collapse{box-sizing:border-box;margin:0;padding:0;color:rgba(255,255,255,.85);font-size:14px;font-variant:tabular-nums;line-height:1.5715;list-style:none;font-feature-settings:'tnum';background-color:rgba(255,255,255,.04);border:1px solid #6f6c6c;border-bottom:0;border-radius:4px}.ant-collapse>.ant-collapse-item{border-bottom:1px solid #6f6c6c}.ant-collapse>.ant-collapse-item:last-child,.ant-collapse>.ant-collapse-item:last-child>.ant-collapse-header{border-radius:0 0 4px 4px}.ant-collapse>.ant-collapse-item>.ant-collapse-header{position:relative;padding:12px 16px 12px 40px;color:rgba(255,255,255,.85);line-height:1.5715;cursor:pointer;transition:all .3s}.ant-collapse>.ant-collapse-item>.ant-collapse-header::before{display:table;content:''}.ant-collapse>.ant-collapse-item>.ant-collapse-header::after{display:table;clear:both;content:''}.ant-collapse>.ant-collapse-item>.ant-collapse-header .ant-collapse-arrow{padding:0;color:orange;font-style:normal;line-height:0;text-align:center;text-transform:none;vertical-align:-.125em;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;position:absolute;top:50%;left:16px;display:inline-block;font-size:12px;transform:translateY(-50%)}.ant-collapse>.ant-collapse-item>.ant-collapse-header .ant-collapse-arrow>*{line-height:1}.ant-collapse>.ant-collapse-item>.ant-collapse-header .ant-collapse-arrow .ant-collapse>.ant-collapse-item>.ant-collapse-header .ant-collapse-arrow-icon{display:block}.ant-collapse>.ant-collapse-item>.ant-collapse-header .ant-collapse-arrow svg{transition:transform .24s}.ant-collapse>.ant-collapse-item>.ant-collapse-header .ant-collapse-extra{float:right}.ant-collapse>.ant-collapse-item>.ant-collapse-header:focus,.ant-rate-star>div:focus{outline:0}.ant-collapse>.ant-collapse-item.ant-collapse-no-arrow>.ant-collapse-header{padding-left:12px}.ant-collapse-icon-position-right>.ant-collapse-item>.ant-collapse-header{padding:12px 40px 12px 16px}.ant-collapse-icon-position-right>.ant-collapse-item>.ant-collapse-header .ant-collapse-arrow{right:16px;left:auto}.ant-collapse-anim-active{transition:height .2s cubic-bezier(.215,.61,.355,1)}.ant-collapse-content{overflow:hidden;color:rgba(255,255,255,.85);background-color:#212121;border-top:1px solid #6f6c6c}.ant-collapse-content>.ant-collapse-content-box{padding:16px}.ant-collapse-content-inactive{display:none}.ant-collapse-item:last-child>.ant-collapse-content{border-radius:0 0 4px 4px}.ant-collapse-borderless{background-color:rgba(255,255,255,.04);border:0}.ant-collapse-borderless>.ant-collapse-item{border-bottom:1px solid #6f6c6c}.ant-collapse-borderless>.ant-collapse-item:last-child,.ant-collapse-borderless>.ant-collapse-item:last-child .ant-collapse-header{border-radius:0}.ant-collapse-borderless>.ant-collapse-item>.ant-collapse-content,.ant-collapse-ghost>.ant-collapse-item>.ant-collapse-content{background-color:transparent;border-top:0}.ant-collapse-borderless>.ant-collapse-item>.ant-collapse-content>.ant-collapse-content-box{padding-top:4px}.ant-collapse-ghost{background-color:transparent;border:0}.ant-collapse-ghost>.ant-collapse-item{border-bottom:0}.ant-collapse-ghost>.ant-collapse-item>.ant-collapse-content>.ant-collapse-content-box{padding-top:12px;padding-bottom:12px}.ant-collapse .ant-collapse-item-disabled>.ant-collapse-header,.ant-collapse .ant-collapse-item-disabled>.ant-collapse-header>.arrow,.ant-picker-header button{color:rgba(255,255,255,.3);cursor:not-allowed}.ant-collapse-rtl{direction:rtl}.ant-collapse-rtl .ant-collapse>.ant-collapse-item>.ant-collapse-header{padding:12px 40px 12px 16px}.ant-collapse-rtl.ant-collapse>.ant-collapse-item>.ant-collapse-header .ant-collapse-arrow svg{transform:rotate(180deg)}.ant-collapse-rtl.ant-collapse>.ant-collapse-item>.ant-collapse-header .ant-collapse-extra{float:left}.ant-collapse-rtl.ant-collapse>.ant-collapse-item.ant-collapse-no-arrow>.ant-collapse-header{padding-right:12px;padding-left:0}
+
+.ant-collapse{
+  border-radius: 0;
+}
+
+.about {
+  border: 1px solid #6f6c6c;
+  background-color: rgba(255,255,255,.04);
+  color: rgba(255,255,255,.85);
+  padding: 12px 16px;
 }

@@ -1,16 +1,16 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
-import {  JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
+import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
+import { Fetcher, Route as URoute, Token, WETH } from "@uniswap/sdk";
+import WalletConnectProvider from "@walletconnect/web3-provider";
 import "antd/dist/antd.css";
+import { useUserAddress } from "eth-hooks";
+import React, { useCallback, useEffect, useState } from "react";
+import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
 import Web3Modal from "web3modal";
 import "./App.css";
-import { Header, Account } from "./components";
-import { Pixels } from "./views";
+import { Account, Header } from "./components";
 import { INFURA_ID, NETWORKS } from "./constants";
 import { useContractLoader } from "./hooks";
-import WalletConnectProvider from "@walletconnect/web3-provider";
-import { useUserAddress } from "eth-hooks";
-import { Token, WETH, Fetcher, Route as URoute } from "@uniswap/sdk";
+import { About, Faq, Imprint, Pixels, Privacy, Trade } from "./views";
 
 // Switching to "mainnet" or "rinkeby" automatically changs the targetNetwork.rpcUrl
 const network = 'localhost'
@@ -18,9 +18,13 @@ const targetNetwork = NETWORKS[network]; // <------- select your target frontend
 
 function App() {
   const [ soldPixels, setSoldPixels ] = useState([])
+  const [ ownPixels, setOwnPixels ] = useState([])
   const [ updating, setUpdating ] = useState(0)
+<<<<<<< HEAD
   const [ ownPixels, setOwnPixels ] = useState()
   const [ centerPieceOwner, setCenterPieceOwner ] = useState(false)
+=======
+>>>>>>> 720a90a4992586875932c7487285f9693d97c425
   const [ mainnetProvider, setMainnetProvider ] = useState()
   const [ dappProvider, setDappProvider ] = useState()
   const [ price, setPrice ] = useState(0)
@@ -56,15 +60,12 @@ function App() {
     
   }, [])
 
-  //const transferEvents = useEventListener(contract, "CryptoPixels", "Transfer", mainnetProvider, 1);
- // console.log("📟 Transfer events:",transferEvents)
-
   useEffect(()=>{
     if(soldPixels.length === 0 && updating === 0 && readContract && readContract.CryptoPixels && walletAddress !== ''){
       setUpdating(1)
       updateCryptoPixels()
     }
-  }, [readContract, walletAddress]); //, transferEvents
+  }, [readContract, walletAddress]);
   
   const updateCryptoPixels = async () => {
     let ownPixels = [], soldPixels = []
@@ -88,6 +89,22 @@ function App() {
     setSoldPixels(soldPixels)
     setOwnPixels(ownPixels)
   }
+  
+  // Request SoldPixels from contract
+  async function getSoldPixels() {
+    const soldPixels = []
+    const soldPixelList = await readContract.CryptoPixels.getSoldPixels()
+    for (let i = 0; i < soldPixelList.length; ++i) {
+      let purePixel = soldPixelList[i].toNumber()
+      soldPixels.push(purePixel)
+    }
+    setSoldPixels(soldPixels)
+  }
+  useEffect(() => {
+    if (readContract) {
+      getSoldPixels()
+    }
+  }, [readContract])
 
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
@@ -103,24 +120,39 @@ function App() {
 
   return (
     <div className="App">
-      <Header/>
-
-      {/* 👨‍💼 Your account is in the top right with a wallet at connect options */}
-      <div className="Account">
-         <Account
-           walletAddress={walletAddress}
-           wallet={wallet}
-           mainnetProvider={mainnetProvider}
-           price={price}
-           web3Modal={web3Modal}
-           loadWeb3Modal={loadWeb3Modal}
-           logoutOfWeb3Modal={logoutOfWeb3Modal}
-           blockExplorer={targetNetwork.blockExplorer}
-         />
-      </div>
-
       <BrowserRouter>
+        <Header/>
+
+        {/* 👨‍💼 Your account is in the top right with a wallet at connect options */}
+        <div className="Account">
+          <Account
+            walletAddress={walletAddress}
+            wallet={wallet}
+            mainnetProvider={mainnetProvider}
+            price={price}
+            web3Modal={web3Modal}
+            loadWeb3Modal={loadWeb3Modal}
+            logoutOfWeb3Modal={logoutOfWeb3Modal}
+            blockExplorer={targetNetwork.blockExplorer}
+          />
+        </div>
+
         <Switch>
+          <Route path="/trade">
+            <Trade/>
+          </Route>
+          <Route path="/faq">
+            <Faq/>
+          </Route>
+          <Route path="/about">
+            <About/>
+          </Route>
+          <Route path="/imprint">
+            <Imprint/>
+          </Route>
+          <Route path="/privacy">
+            <Privacy/>
+          </Route>
           <Route path="/">
             <Pixels
               soldPixels={soldPixels}
@@ -136,10 +168,13 @@ function App() {
             />
           </Route>
         </Switch>
+
+        <div className="links">
+          <Link to="/imprint">Imprint</Link> |&nbsp; 
+          <Link to="/privacy">Privacy</Link>
+        </div>
+        
       </BrowserRouter>
-
-
-      <canvas id="world"></canvas>
     </div>
   );
 }

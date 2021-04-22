@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { SelectPlane } from "../components";
 import { Button } from "antd";
 import { Transactor } from "../helpers";
-import { utils, BigNumber } from "ethers";
+import { utils, BigNumber, constants } from "ethers";
 import { parseEther } from "@ethersproject/units";
 import { useGasPrice } from "../hooks/index.js";
 import Countdown from '../components/Countdown';
@@ -31,18 +31,9 @@ export default function Pixels(props) {
     }
 
     function generatePixelData(id){
-        let column = id
-        const row = parseInt((id-1)/100) + 1
-        if(id > 999){
-            column = id % 1000; // ignore thousand-digit
-            if(column > 99){
-                column = column % 100; // ignore hundred digit
-            }
-        } else if (id > 100){
-            column = id % 100;
-        } else if(column === 0){
-            column = 100;
-        }
+        const column = id % 100 === 0 ? 100 : id % 100
+        const row = Math.floor((id - 1) / 100) + 1
+
         return {
             id: id,
             column: column,
@@ -89,8 +80,8 @@ export default function Pixels(props) {
         const pixel = generatePixelData(id)
         let p = document.createElement('div')
         p.className = 'p'
-        p.style.setProperty('margin-left', pixel.x + 'px')
-        p.style.setProperty('margin-top', pixel.y + 'px')
+        p.style.setProperty('left', pixel.x + 'px')
+        p.style.setProperty('top', pixel.y + 'px')
         p.setAttribute('id', id)
         return p
       }
@@ -100,38 +91,43 @@ export default function Pixels(props) {
     }
 
     useEffect(() => {
-        if(props.ownPixels && props.soldPixels){
-            let soldButNotMine = props.soldPixels.filter((i) => props.ownPixels.indexOf(i) === -1)
-            if(soldButNotMine && soldButNotMine.length > 0){
-                for(let i = 0; i < soldButNotMine.length; ++i){
-                    let pixel = createPixel(soldButNotMine[i])
-                    pixel.classList.add('sold')
-                    document.getElementById('boxes').appendChild(pixel)
-                }
-            } 
-            if(props.ownPixels && props.ownPixels.length > 0){
-                for(let i = 0; i < props.ownPixels.length; ++i){
-                    let pixel = createPixel(props.ownPixels[i])
-                    pixel.classList.add('own')
-                    document.getElementById('boxes').appendChild(pixel)
-                }
+        const soldButNotMine = props.soldPixels.filter((i) => props.ownPixels.indexOf(i) === -1)
+        const boxes = document.getElementById('boxes')
+
+        // draw sold pixels
+        if (soldButNotMine.length) {
+            for (let i = 0; i < soldButNotMine.length; ++i) {
+                const pixel = createPixel(soldButNotMine[i])
+                pixel.classList.add('sold')
+                boxes.appendChild(pixel)
+            }
+        }
+
+        // draw own pixels
+        if (props.ownPixels.length) {
+            for (let i = 0; i < props.ownPixels.length; ++i) {
+                const pixel = createPixel(props.ownPixels[i])
+                pixel.classList.add('own')
+                boxes.appendChild(pixel)
             }
         }
     }, [props.soldPixels, props.ownPixels])
 
     return (
-        <div className="Content" id="Content">
+        <>
+            <div className="Content" id="Content">
 
-            <SelectPlane
-                selection={selection}
-                zoom={zoom}
-                onSelected={ids => onSelected(ids)}
-                onZoomUpdate={value => onZoomUpdate(value)}
-                soldPixels={props.soldPixels}
-                generatePixelData={id => generatePixelData(id)}
-                createPixel={id => createPixel(id)}
-                removeSelectedArea={removeSelectedArea}
-            ></SelectPlane>
+                <SelectPlane
+                    selection={selection}
+                    zoom={zoom}
+                    onSelected={ids => onSelected(ids)}
+                    onZoomUpdate={value => onZoomUpdate(value)}
+                    soldPixels={props.soldPixels}
+                    generatePixelData={id => generatePixelData(id)}
+                    createPixel={id => createPixel(id)}
+                    removeSelectedArea={removeSelectedArea}
+                ></SelectPlane>
+            </div>
            
             <div id="Overlays">
                 {/* Menu */}
@@ -144,13 +140,25 @@ export default function Pixels(props) {
                     </ol>
                     
                     <div>Rundown:</div>
-                    <div>Once all pixels apart from the centerpiece have been minted, we'll run a two week period in which pixels can be replaced with images and the centerpiece will be auctionized.</div>
+                    <div>
+                        Once 9600 Pixelblocks have been sold the the last Centerpiece of 400 Pixelblocks will be auctioned for 2 Weeks.
+                        After the auction closes Pixelblocks can be replaced with images.
+                        You can resell your blocks on our marketplace anytime.
+                    </div>
+
 
                     {selection.length > 0 && props.wallet &&
                         <div>
                             <div id="priceETH">Price for {selection.length*100} pixels: ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
-                            <div className="hoverme">
-                                <div id="buyPixels"><Button onClick={buyPixel}>Buy and own {selection.length*100} pixels ({selection.length} blocks)</Button></div>
+                         
+                            <div className="box-outer hoverme" id="buyPixels">
+                                <div className="main_box" onClick={buyPixel}>
+                                    Buy and own {selection.length*100} pixels ({selection.length} blocks)
+                                    <div className="bar top"></div>
+                                    <div className="bar right delay"></div>
+                                    <div className="bar bottom delay"></div>
+                                    <div className="bar left"></div>
+                                </div>
                                 <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
                             </div>
                         </div>
@@ -176,6 +184,6 @@ export default function Pixels(props) {
                 {/* Countdown */}
                 <Countdown soldPixels={props.soldPixels}/>
             </div>
-        </div>
+        </>
     );
 }

@@ -12,10 +12,9 @@ export default function SelectPlane(props) {
   let ds;
 
   const [selected, setSelected] = useState([])
-  const [changeEffects, setChangeEffects] = useState(0)
-  const [amountAnimatedPixels, setAmountAnimatedPixels] = useState(0)
+  const [changeEffects, setChangeEffects] = useState(true)
   const [newArea, setNewArea] = useState();
-  const effectsOn = false
+  const effectsOn = true
 
 
   function selectElements(ids){
@@ -155,6 +154,9 @@ export default function SelectPlane(props) {
   function calculatePostion(zoom) {
     // Todo: when positions would be less than 0, try to scroll view
     let calculatedLeft = Math.max(0, (window.innerWidth - initialSize * zoom) / 2);
+    if (window.innerWidth > 900 && window.innerWidth <= 1500) {
+      calculatedLeft += 50;
+    }
     let calculatedTop = Math.max(0, (window.innerHeight - headerHeight - initialSize * zoom) / 2);
     position(calculatedLeft,calculatedTop)
   }
@@ -188,70 +190,66 @@ export default function SelectPlane(props) {
     }
   }
   
+  // Execute change effects
   useEffect(() => {
-    if(!effectsOn){
+    if (!effectsOn) {
       return
     }
     
-    if(changeEffects === 0){
-      container.current = document.getElementById('boxes');
-      // Effects
-      function getRandomColor() {
-        return '#'+('0123456789ABCDEF'.split('').sort(()=>{return 0.5-Math.random()}).join('')).substring(0,6);
-      }
-
-      let effects = [
-        'animate__pulse', 'animate__bounce', 'animate__tada', 'animate__shakeX', 'animate__shakeY', 
-        'animate__backInDown', 'animate__backInLeft', 'animate__backInRight', 'animate__backInUp',
-        'animate__fadeIn', 'animate__fadeInDown', 'animate__fadeInUp', 'animate__fadeInTopLeft', 'animate__fadeInTopRight', 'animate__fadeInBottomLeft', 'animate__fadeInBottomRight',
-        'animate__flip', 'animate__flipInX', 'animate__flipInY',
-        'animate__rotateIn', 'animate__rotateInDownLeft', 'animate__rotateInDownRight','animate__rotateInUpLeft','animate__rotateInUpRight',
-        'animate__zoomIn', 'animate__zoomInDown', 'animate__zoomInUp', 'animate__zoomInLeft', 'animate__zoomInRight'
-      ]
-      let speeds = ['animate__slow', 'animate__fast', 'animate__faster']
-      let amount = 30
-
-      // Slow down / Clean up
-      // Clean up
-      if(amountAnimatedPixels > 120){
-        let el = document.getElementsByClassName('animate__animated')
-        while(el.length > 0){
-          el[0].remove() 
-        }
-
-        setAmountAnimatedPixels(0)
-      // Slow down
-      } else if(amountAnimatedPixels > 100){
-        amount = 3
-      } else if(amountAnimatedPixels > 70){
-        amount = 5
-      } else if(amountAnimatedPixels > 50){
-        amount = 10
-      } else if (amount > 30){
-        amount = 15
-      }
-
-      // Generate random
-      for(let i = 0; i < amount; ++i){
-        const r = ~~(Math.random() * 10000) + 1
-        // Make sure it's not reserved, sold or selected already
-        if(isManipulatable(r) && selected.indexOf(r) === -1){
-          const el = props.createPixel(r)
-          el.classList.add('animate__animated', effects[~~(Math.random() * effects.length)], speeds[~~(Math.random() * speeds.length)], 'animate__repeat-'+(~~(Math.random() * 3)+1))
-          const color = getRandomColor()
-          el.style.setProperty('background-color', color)
-          el.style.setProperty('border-color', color)
-          container.current.appendChild(el);
-        }
-      }
-      setAmountAnimatedPixels(amountAnimatedPixels+amount)
-      
-      // Change effects
-      setChangeEffects(1)
-      setTimeout(()=> { setChangeEffects(0) }, 4000);
+    if (!changeEffects) {
+      return
     }
+     
+    container.current = document.getElementById('boxes');
+
+    // Effects
+    function getRandomColor() {
+      return '#'+('0123456789ABCDEF'.split('').sort(()=>{return 0.5-Math.random()}).join('')).substring(0,6);
+    }
+    const effects = [
+      'animate__pulse', 'animate__bounce', 'animate__tada', 'animate__shakeX', 'animate__shakeY', 
+      'animate__backInDown', 'animate__backInLeft', 'animate__backInRight', 'animate__backInUp',
+      'animate__fadeIn', 'animate__fadeInDown', 'animate__fadeInUp', 'animate__fadeInTopLeft', 'animate__fadeInTopRight', 'animate__fadeInBottomLeft', 'animate__fadeInBottomRight',
+      'animate__flip', 'animate__flipInX', 'animate__flipInY',
+      'animate__rotateIn', 'animate__rotateInDownLeft', 'animate__rotateInDownRight','animate__rotateInUpLeft','animate__rotateInUpRight',
+      'animate__zoomIn', 'animate__zoomInDown', 'animate__zoomInUp', 'animate__zoomInLeft', 'animate__zoomInRight'
+    ]
+    const speeds = ['animate__slow', 'animate__fast', 'animate__faster']
+
+    const el = document.getElementsByClassName('animate__animated')
+    for (var i = el.length - 1; i >= 0; i--) {
+      el[i].remove();
+    }
+
+    // Generate random
+    let amount = 30
+    while (amount > 0) {
+      const r = ~~(Math.random() * 10000) + 1
+      // Make sure it's not reserved, sold or selected already
+      if (isManipulatable(r) && selected.indexOf(r) === -1) {
+        const el = props.createPixel(r)
+        el.classList.add('animate__animated', effects[~~(Math.random() * effects.length)], speeds[~~(Math.random() * speeds.length)], 'animate__repeat-'+(~~(Math.random() * 3)+1))
+        const color = getRandomColor()
+        el.style.setProperty('background-color', color)
+        el.style.setProperty('border-color', color)
+        container.current.appendChild(el);
+        amount--;
+      }
+    }
+    setChangeEffects(false)
   }, [changeEffects])
 
+  // Trigger change effects
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setChangeEffects(true) 
+    }, 4000);
+
+    // ensure iterval is canceled when component is destroyed
+    return () => clearInterval(interval);
+  }, [])
+
+  // Initialize plane
   useEffect(() => {
     container.current = document.getElementById('boxes');
     overlays.current = document.getElementById('Overlays')
