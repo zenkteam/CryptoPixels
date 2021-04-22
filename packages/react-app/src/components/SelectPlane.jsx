@@ -53,11 +53,6 @@ export default function SelectPlane(props) {
                 if (isManipulatable(id)){
                     ids[count] = id
                     ++count
-                }else{
-                  // Reset
-                  selectElements([])
-                  removeSelectedArea()
-                  return
                 }
             }
         }
