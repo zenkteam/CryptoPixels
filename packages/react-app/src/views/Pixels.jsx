@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { SelectPlane } from "../components";
 import { Button } from "antd";
 import { Transactor } from "../helpers";
-import { utils, BigNumber } from "ethers";
+import { utils, BigNumber, constants } from "ethers";
 import { parseEther } from "@ethersproject/units";
 import { useGasPrice } from "../hooks/index.js";
 import Countdown from '../components/Countdown';
@@ -31,18 +31,9 @@ export default function Pixels(props) {
     }
 
     function generatePixelData(id){
-        let column = id
-        const row = parseInt((id-1)/100) + 1
-        if(id > 999){
-            column = id % 1000; // ignore thousand-digit
-            if(column > 99){
-                column = column % 100; // ignore hundred digit
-            }
-        } else if (id > 100){
-            column = id % 100;
-        } else if(column === 0){
-            column = 100;
-        }
+        const column = id % 100 === 0 ? 100 : id % 100
+        const row = Math.floor((id - 1) / 100) + 1
+
         return {
             id: id,
             column: column,

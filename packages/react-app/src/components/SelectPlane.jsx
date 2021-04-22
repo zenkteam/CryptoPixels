@@ -12,10 +12,10 @@ export default function SelectPlane(props) {
   let ds;
 
   const [selected, setSelected] = useState([])
-  const [changeEffects, setChangeEffects] = useState(0)
+  const [changeEffects, setChangeEffects] = useState(true)
   const [amountAnimatedPixels, setAmountAnimatedPixels] = useState(0)
   const [newArea, setNewArea] = useState();
-  const effectsOn = false
+  const effectsOn = true
 
 
   function selectElements(ids){
@@ -192,11 +192,11 @@ export default function SelectPlane(props) {
   }
   
   useEffect(() => {
-    if(!effectsOn){
+    if (!effectsOn) {
       return
     }
     
-    if(changeEffects === 0){
+    if (changeEffects) {
       container.current = document.getElementById('boxes');
       // Effects
       function getRandomColor() {
@@ -250,8 +250,10 @@ export default function SelectPlane(props) {
       setAmountAnimatedPixels(amountAnimatedPixels+amount)
       
       // Change effects
-      setChangeEffects(1)
-      setTimeout(()=> { setChangeEffects(0) }, 4000);
+      setChangeEffects(false)
+      setTimeout(() => {
+        setChangeEffects(true) 
+      }, 4000);
     }
   }, [changeEffects])
 
