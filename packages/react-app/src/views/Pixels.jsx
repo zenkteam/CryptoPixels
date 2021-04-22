@@ -32,7 +32,7 @@ export default function Pixels(props) {
 
     function generatePixelData(id){
         const column = id % 100 === 0 ? 100 : id % 100
-        const row = Math.floor((id - 1) / 100) + 1
+        const row = ~~((id - 1) / 100) + 1
 
         return {
             id: id,
@@ -112,10 +112,12 @@ export default function Pixels(props) {
                     ++adjacentCount
                 }
 
+                // Create row
                 if(!adjacents[adjacentCount]){
-                    adjacents.push([])
+                    adjacents[adjacentCount] = []
                 }
-
+                
+                // Push id into row
                 adjacents[adjacentCount].push(ids[i])
             }
             
