@@ -133,102 +133,22 @@ body{
 /**
   MENU
 **/
-.corner{
-  width:10px;
-  height:10px;
-  background-color: #181818;
-  position: absolute;
-}
-
-#topleft-1{
-  width:20px;
-  left:0px;
-  top:0px;
-}
-#topright-1{
-  width:20px;
-  top:0px;
-  right:0px;
-}
-#bottomleft-1{
-  width:20px;
-  bottom:0px;
-  left:0px;
-}
-#bottomright-1{
-  width:20px;
-  bottom:0px;
-  right:0px;
-}
-
-#topleft-2{
-  height:40px;
-  left:0px;
-  top:10px;
-}
-#topright-2{
-  top:10px;
-  right:0px;
-}
-#bottomleft-2{
-  bottom:10px;
-  left:0px;
-}
-#bottomright-2{
-  bottom:10px;
-  right:0px;
-}
-
-#topmiddle-1{
-  width:30px;
-  left:140px;
-  top:0px;
-}
-#topmiddle-2{
-  left:150px;
-  top:10px;
-}
-
-#rightmiddle-1{
-  top:80px;
-  right:0px;
-}
-#rightmiddle-2{
-  height:20px;
-  top:170px;
-  right:0px;
-}
-
-#bottommiddle-1{
-  left:50px;
-  bottom:0px;
-}
-#bottommiddle-2{
-  height:20px;
-  left:60px;
-  bottom:0px;
-}
-#bottommiddle-3{
-  height:30px;
-  bottom:0px;
-  right:40px;
-}
-
 #menu {
   position: fixed;
   top: 140px;
   left: 40px;
-  background: white;
-  padding: 30px 10px;
+  padding: 30px 30px;
   text-align: left;
   font-family: 'Roboto Slab', serif;
   width: 350px;
-  font-weight:bold;
+  height: 400px;
+  background: url('./assets/menu.png') no-repeat;
   color: #000; 
 }
 
 #menu > ol {
   list-style-type: none;
+  padding-left: 20px;
 }
 
 #menu > ol li::before {

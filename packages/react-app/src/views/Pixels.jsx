@@ -120,22 +120,6 @@ export default function Pixels(props) {
             <div id="Overlays">
                 {/* Menu */}
                 <div id="menu">
-                    <div className="corner" id="topleft-1"></div>
-                    <div className="corner" id="topleft-2"></div>
-                    <div className="corner" id="topright-1"></div>
-                    <div className="corner" id="topright-2"></div>
-                    <div className="corner" id="bottomleft-1"></div>
-                    <div className="corner" id="bottomleft-2"></div>
-                    <div className="corner" id="bottomright-1"></div>
-                    <div className="corner" id="bottomright-2"></div>
-                    <div className="corner" id="topmiddle-1"></div>
-                    <div className="corner" id="topmiddle-2"></div>
-                    <div className="corner" id="rightmiddle-1"></div>
-                    <div className="corner" id="rightmiddle-2"></div>
-                    <div className="corner" id="bottommiddle-1"></div>
-                    <div className="corner" id="bottommiddle-2"></div>
-                    <div className="corner" id="bottommiddle-3"></div>
-
                     <ol>
                         <li>1 Pixel = $1</li>
                         <li>1 Block = 10x10 Pixels = 100$</li>
@@ -145,7 +129,6 @@ export default function Pixels(props) {
                     
                     <div>Rundown:</div>
                     <div>Once all pixels apart from the centerpiece have been minted, we'll run a two week period in which pixels can be replaced with images and the centerpiece will be auctionized.</div>
-                    <div><a href="">FAQ</a></div>
 
                     {selection.length > 0 && props.wallet &&
                         <div>
