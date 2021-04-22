@@ -1,7 +1,7 @@
 {
-  "short_name": "🏗 Scaffold-Eth App",
+  "short_name": "CryptoPixels",
   "start_url": ".",
-  "name": "🏗 Scaffold-Eth App",
+  "name": "CryptoPixels",
   "icons": [
     {
       "src": "favicon.ico",
@@ -19,8 +19,7 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#000000"
 }

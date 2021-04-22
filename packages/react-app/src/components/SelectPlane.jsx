@@ -6,7 +6,7 @@ export default function SelectPlane(props) {
   const initialSize = 1000; // Overall pixel-matrix dimension
 
   let container = useRef();
-  let menu = useRef();
+  let overlays = useRef();
   let currentZoom;
   let controlPressed;
   let ds;
@@ -18,14 +18,15 @@ export default function SelectPlane(props) {
   const effectsOn = false
 
 
-  useEffect(() => {
-    function selectElements(ids){
-      if (typeof props.onSelected === 'function') {
-        props.onSelected(ids);
-      }
-      setSelected(ids)
+  function selectElements(ids){
+    if (typeof props.onSelected === 'function') {
+      props.onSelected(ids);
     }
+    setSelected(ids)
+  }
 
+
+  useEffect(() => {
     if (newArea) {
         const {to, from} = newArea;
         setNewArea(undefined) // reset area to avoid triggering effect multiple times
@@ -41,11 +42,6 @@ export default function SelectPlane(props) {
                 if (isManipulatable(id)){
                     ids[count] = id
                     ++count
-                }else{
-                  // Reset
-                  selectElements([])
-                  props.removeSelectedArea()
-                  return
                 }
             }
         }
@@ -66,7 +62,7 @@ export default function SelectPlane(props) {
         overlay.appendChild(document.createElement('div'));
         container.current.appendChild(overlay);
       }
-  }, [newArea, isManipulatable]) // the handling of a newArea changes when props.isManipulatable is updated
+  }, [newArea]) // we only execute this when a newArea is selected, it then automatically accesses the current props
 
   function initializeSelection() {  
     ds = new DragSelect({
@@ -78,12 +74,12 @@ export default function SelectPlane(props) {
 
     ds.subscribe('dragstart', () => {
       // hide menu
-      menu.current.classList.add('hovering');
+      overlays.current.classList.add('hovering');
     });
 
     ds.subscribe('callback',async () => {
         // reset menu  
-        menu.current.classList.remove('hovering');
+        overlays.current.classList.remove('hovering');
         
         const start = ds.getInitialCursorPositionArea()
         const end = ds.getCurrentCursorPositionArea()
@@ -179,17 +175,6 @@ export default function SelectPlane(props) {
       controlPressed = false;
     }
   }
-  function isManipulatable(id){
-    // not reserved and not sold
-    return isReserved(id) === false && props.soldPixels.indexOf(id) === -1
-  }
-
-  function isReserved(id) {
-    if(id < 4040 || id > 5961) return false;
-    let t = id % 1000;
-    if(t > 100) t = t % 100;
-    return t > 40 && t < 61;
-  }
   
   useEffect(() => {
     if(!effectsOn){
@@ -257,7 +242,7 @@ export default function SelectPlane(props) {
 
   useEffect(() => {
     container.current = document.getElementById('boxes');
-    menu.current = document.getElementById('menu')
+    overlays.current = document.getElementById('Overlays')
 
     if (!props.zoom || props.zoom === 'auto') {
       calculateZoom();

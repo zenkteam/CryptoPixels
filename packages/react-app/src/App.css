@@ -118,110 +118,37 @@ body{
 
 
 /**
+  OVERLAYS
+**/
+#Overlays {
+  opacity: 1;
+  transition: opacity 200ms;
+  user-select: none; /* to avoid text selection when drawing box */
+}
+
+#Overlays.hovering {
+  opacity: 0.1;
+}
+
+/**
   MENU
 **/
-
-.corner{
-  width:10px;
-  height:10px;
-  background-color: #181818;
-  position: absolute;
-}
-
-#topleft-1{
-  width:20px;
-  left:0px;
-  top:0px;
-}
-#topright-1{
-  width:20px;
-  top:0px;
-  right:0px;
-}
-#bottomleft-1{
-  width:20px;
-  bottom:0px;
-  left:0px;
-}
-#bottomright-1{
-  width:20px;
-  bottom:0px;
-  right:0px;
-}
-
-#topleft-2{
-  height:40px;
-  left:0px;
-  top:10px;
-}
-#topright-2{
-  top:10px;
-  right:0px;
-}
-#bottomleft-2{
-  bottom:10px;
-  left:0px;
-}
-#bottomright-2{
-  bottom:10px;
-  right:0px;
-}
-
-#topmiddle-1{
-  width:30px;
-  left:140px;
-  top:0px;
-}
-#topmiddle-2{
-  left:150px;
-  top:10px;
-}
-
-#rightmiddle-1{
-  top:80px;
-  right:0px;
-}
-#rightmiddle-2{
-  height:20px;
-  top:170px;
-  right:0px;
-}
-
-#bottommiddle-1{
-  left:50px;
-  bottom:0px;
-}
-#bottommiddle-2{
-  height:20px;
-  left:60px;
-  bottom:0px;
-}
-#bottommiddle-3{
-  height:30px;
-  bottom:0px;
-  right:40px;
-}
-
 #menu {
   position: fixed;
   top: 140px;
   left: 40px;
-  background: white;
-  padding: 30px 10px;
+  padding: 30px 30px;
   text-align: left;
   font-family: 'Roboto Slab', serif;
   width: 350px;
-  font-weight:bold;
-  color: #000;
-  transition: opacity 200ms;
-  user-select: none;
-}
-#menu.hovering {
-  opacity: 0.1;
+  height: 400px;
+  background: url('./assets/menu.png') no-repeat;
+  color: #000; 
 }
 
 #menu > ol {
   list-style-type: none;
+  padding-left: 20px;
 }
 
 #menu > ol li::before {
@@ -235,18 +162,25 @@ body{
   margin-right:10px;
 }
 
-
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
 #menu > ol li:nth-child(1)::before{
   background-color:aqua;
 }
 #menu > ol li:nth-child(2)::before{
   background-color:green;
+  transform: rotate(45deg);
 }
 #menu > ol li:nth-child(3)::before{
   background-color:blue;
 }
-#menu > ol li:nth-child(4){
-  font-weight: bold;
+#menu > ol li:nth-child(4)::before{
+  background-color:red;
+  animation: spin 800ms linear infinite;
+
 }
 
 #priceETH{
@@ -275,7 +209,7 @@ body{
 
 .sold, .own{
   border:none;
-  z-index:4;
+  z-index: 200; /* on top of selected area */
   animation: pulse 2s ease-in-out 1s infinite;
   -webkit-animation: pulse 2s ease-in-out 1s infinite;
 }
@@ -361,7 +295,6 @@ body{
 .ant-page-header-heading-sub-title {
   color:#ffffff
 }
-
 
 .hoverme i {
   position: absolute;
@@ -680,4 +613,12 @@ body{
     transform: translate3d(0, 0, 0);
     opacity: 1;
   }
+}
+/* Countdown */
+.countdown {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  background-color: white;
+  padding: 5px 10px;
 }
