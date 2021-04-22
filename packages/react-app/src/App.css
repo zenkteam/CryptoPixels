@@ -27,6 +27,13 @@ body{
 /**
 * HEADER
 */
+.pageHeader {
+  background: url('./assets/logo_header.png') no-repeat;
+  background-size: 50px;
+  background-position: 12px 12px;
+  padding-left: 74px;
+}
+
 #headerConnect,
 #menuConnect{
   animation: pulse 2s ease-in-out 1s infinite;

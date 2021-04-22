@@ -11,7 +11,7 @@ export default function Header() {
       <PageHeader
         title="CryptoPixels.org"
         subTitle="Buy a piece of internet history and own it forever."
-        style={{ cursor: "pointer" }}
+        className="pageHeader"
       />
     </Link>
   );
