@@ -20,11 +20,7 @@ function App() {
   const [ soldPixels, setSoldPixels ] = useState([])
   const [ ownPixels, setOwnPixels ] = useState([])
   const [ updating, setUpdating ] = useState(0)
-<<<<<<< HEAD
-  const [ ownPixels, setOwnPixels ] = useState()
   const [ centerPieceOwner, setCenterPieceOwner ] = useState(false)
-=======
->>>>>>> 720a90a4992586875932c7487285f9693d97c425
   const [ mainnetProvider, setMainnetProvider ] = useState()
   const [ dappProvider, setDappProvider ] = useState()
   const [ price, setPrice ] = useState(0)

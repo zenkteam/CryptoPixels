@@ -29,7 +29,7 @@ export default function SelectPlane(props) {
     return isReserved(id) === false && props.soldPixels.indexOf(id) === -1
   }
 
-  function isReserved(id) {
+  function isReserved(id, topLeft, bottomRight) {
     if(id < 4040 || id > 5961) return false;
     let t = id % 1000;
     if(t > 100) t = t % 100;

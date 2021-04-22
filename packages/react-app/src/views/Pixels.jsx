@@ -92,26 +92,68 @@ export default function Pixels(props) {
 
     useEffect(() => {
         const soldButNotMine = props.soldPixels.filter((i) => props.ownPixels.indexOf(i) === -1)
-        const boxes = document.getElementById('boxes')
-
-        // draw sold pixels
-        if (soldButNotMine.length) {
-            for (let i = 0; i < soldButNotMine.length; ++i) {
-                const pixel = createPixel(soldButNotMine[i])
-                pixel.classList.add('sold')
-                boxes.appendChild(pixel)
-            }
-        }
-
-        // draw own pixels
-        if (props.ownPixels.length) {
-            for (let i = 0; i < props.ownPixels.length; ++i) {
-                const pixel = createPixel(props.ownPixels[i])
-                pixel.classList.add('own')
-                boxes.appendChild(pixel)
-            }
-        }
+        drawSoldAndOwnedAreas(soldButNotMine, 'sold')
+        drawSoldAndOwnedAreas(props.ownPixels, 'own')
     }, [props.soldPixels, props.ownPixels])
+
+    function drawSoldAndOwnedAreas(ids, classType){
+        const boxes = document.getElementById('boxes')
+        // We start with the 2nd (i = 1)
+        if(ids.length > 2){
+            let adjacents = [[ids[0]]]
+            let stacked = []
+            
+            ids.sort()
+            let adjacentCount = 0
+            for(let i = 1; i < ids.length; ++i){
+                // If not adjacent, start new row
+                if(ids[i] !== ids[i - 1]+1){
+                    ++adjacentCount
+                }
+
+                if(!adjacents[adjacentCount]){
+                    adjacents.push([])
+                }
+
+                adjacents[adjacentCount].push(ids[i])
+            }
+            
+            if(adjacents.length > 1){
+                let stackedCount = 0;
+                for(let j = 1; j < adjacents.length; ++j){
+                    if(!stacked[stackedCount]){
+                        // startId, width, rows
+                        stacked[stackedCount] = [adjacents[j-1][0], adjacents[j-1].length, 1]
+                    }
+                    // Check if two columns have the same length
+                    if(adjacents[j-1].length === adjacents[j].length
+                    && adjacents[j][0] === (adjacents[j-1][0] + 100)){
+                        // Check if adjacents are above
+                        ++stacked[stackedCount][2]
+                    } else {
+                        ++stackedCount 
+                    }
+                }
+            }
+
+            for(let i = 0; i < stacked.length; ++i) {
+                const el = document.getElementById('a' + stacked[i][0])
+                if(el){
+                    el.remove()
+                }
+                const p = createPixel(stacked[i][0])
+                p.classList.add(classType)
+                p.style.setProperty('width', stacked[i][1] * 10 + 'px')
+                p.style.setProperty('height', stacked[i][2] * 10 + 'px')
+                p.setAttribute('id', 'a' + stacked[i][0])
+                boxes.appendChild(p)
+            }
+        }else if (ids.length === 1){
+            const p = createPixel(ids[0])
+            p.classList.add(classType)
+            boxes.appendChild(p)
+        }
+      }
 
     return (
         <>
