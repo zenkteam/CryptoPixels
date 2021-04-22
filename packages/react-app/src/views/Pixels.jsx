@@ -89,21 +89,24 @@ export default function Pixels(props) {
     }
 
     useEffect(() => {
-        if(props.ownPixels && props.soldPixels){
-            let soldButNotMine = props.soldPixels.filter((i) => props.ownPixels.indexOf(i) === -1)
-            if(soldButNotMine && soldButNotMine.length > 0){
-                for(let i = 0; i < soldButNotMine.length; ++i){
-                    let pixel = createPixel(soldButNotMine[i])
-                    pixel.classList.add('sold')
-                    document.getElementById('boxes').appendChild(pixel)
-                }
-            } 
-            if(props.ownPixels && props.ownPixels.length > 0){
-                for(let i = 0; i < props.ownPixels.length; ++i){
-                    let pixel = createPixel(props.ownPixels[i])
-                    pixel.classList.add('own')
-                    document.getElementById('boxes').appendChild(pixel)
-                }
+        const soldButNotMine = props.soldPixels.filter((i) => props.ownPixels.indexOf(i) === -1)
+        const boxes = document.getElementById('boxes')
+
+        // draw sold pixels
+        if (soldButNotMine.length) {
+            for (let i = 0; i < soldButNotMine.length; ++i) {
+                const pixel = createPixel(soldButNotMine[i])
+                pixel.classList.add('sold')
+                boxes.appendChild(pixel)
+            }
+        }
+
+        // draw own pixels
+        if (props.ownPixels.length) {
+            for (let i = 0; i < props.ownPixels.length; ++i) {
+                const pixel = createPixel(props.ownPixels[i])
+                pixel.classList.add('own')
+                boxes.appendChild(pixel)
             }
         }
     }, [props.soldPixels, props.ownPixels])

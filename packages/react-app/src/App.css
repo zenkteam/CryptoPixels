@@ -217,8 +217,8 @@ body{
 .sold, .own{
   border:none;
   z-index: 200; /* on top of selected area */
-  animation: pulse 2s ease-in-out 1s infinite;
-  -webkit-animation: pulse 2s ease-in-out 1s infinite;
+  /* animation: pulse 2s ease-in-out 1s infinite;
+  -webkit-animation: pulse 2s ease-in-out 1s infinite; */
 }
 
 .sold{

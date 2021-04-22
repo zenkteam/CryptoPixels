@@ -18,8 +18,8 @@ const targetNetwork = NETWORKS[network]; // <------- select your target frontend
 
 function App() {
   const [ soldPixels, setSoldPixels ] = useState([])
+  const [ ownPixels, setOwnPixels ] = useState([])
   const [ updating, setUpdating ] = useState(0)
-  const [ ownPixels, setOwnPixels ] = useState()
   const [ mainnetProvider, setMainnetProvider ] = useState()
   const [ dappProvider, setDappProvider ] = useState()
   const [ price, setPrice ] = useState(0)
@@ -77,6 +77,22 @@ function App() {
     setSoldPixels(soldPixels)
     setOwnPixels(ownPixels)
   }
+  
+  // Request SoldPixels from contract
+  async function getSoldPixels() {
+    const soldPixels = []
+    const soldPixelList = await readContract.CryptoPixels.getSoldPixels()
+    for (let i = 0; i < soldPixelList.length; ++i) {
+      let purePixel = soldPixelList[i].toNumber()
+      soldPixels.push(purePixel)
+    }
+    setSoldPixels(soldPixels)
+  }
+  useEffect(() => {
+    if (readContract) {
+      getSoldPixels()
+    }
+  }, [readContract])
 
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
