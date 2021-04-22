@@ -21,8 +21,9 @@ const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 //
 // Select the network you want to deploy to here:
 //
-const defaultNetwork = "localhost"; // localhost, mainnet, rinkeby
+const defaultNetwork = "rinkeby"; // localhost, mainnet, rinkeby
 const INFURA_ID = "32d5cc1a92d84314919fa8b495765071";
+const RINKEBY_PRIVATE_KEY = "b119ee39a768e5463ec3c602207e96a1e060f9f19fa788eda4e43288c35614b4";
 
 function mnemonic() {
   try {
@@ -54,9 +55,10 @@ module.exports = {
     },
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/" + INFURA_ID, //<---- YOUR INFURA ID! (or it won't work)
-      accounts: {
-        mnemonic: mnemonic(),
-      },
+      accounts: [`0x${RINKEBY_PRIVATE_KEY}`]
+     // {
+     //   mnemonic: mnemonic(),
+     // },
     },
     kovan: {
       url: "https://kovan.infura.io/v3/" + INFURA_ID, //<---- YOUR INFURA ID! (or it won't work)

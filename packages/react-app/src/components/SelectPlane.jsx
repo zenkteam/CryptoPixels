@@ -191,6 +191,7 @@ export default function SelectPlane(props) {
   }
   
   // Execute change effects
+  const [aniColors, setAniColors] = useState([])
   useEffect(() => {
     if (!effectsOn) {
       return
@@ -202,10 +203,16 @@ export default function SelectPlane(props) {
      
     container.current = document.getElementById('boxes');
 
-    // Effects
-    function getRandomColor() {
-      return '#'+('0123456789ABCDEF'.split('').sort(()=>{return 0.5-Math.random()}).join('')).substring(0,6);
+    const amountColors = 100
+    if(aniColors.length === 0){
+      let colors = new Array(amountColors)
+      for(let i = 0; i < amountColors; ++i){
+        colors[i] = '#'+('0123456789ABCDEF'.split('').sort(()=>0.5-Math.random()).join('')).substring(0,6);
+      }
+      setAniColors(colors)
     }
+  
+    // Effects
     const effects = [
       'animate__pulse', 'animate__bounce', 'animate__tada', 'animate__shakeX', 'animate__shakeY', 
       'animate__backInDown', 'animate__backInLeft', 'animate__backInRight', 'animate__backInUp',
@@ -217,19 +224,25 @@ export default function SelectPlane(props) {
     const speeds = ['animate__slow', 'animate__fast', 'animate__faster']
 
     const el = document.getElementsByClassName('animate__animated')
-    for (var i = el.length - 1; i >= 0; i--) {
+    for (let i = el.length - 1; i >= 0; i--) {
       el[i].remove();
     }
 
-    // Generate random
+    // Generate random amount of effects
     let amount = 30
     while (amount > 0) {
       const r = ~~(Math.random() * 10000) + 1
       // Make sure it's not reserved, sold or selected already
       if (isManipulatable(r) && selected.indexOf(r) === -1) {
         const el = props.createPixel(r)
-        el.classList.add('animate__animated', effects[~~(Math.random() * effects.length)], speeds[~~(Math.random() * speeds.length)], 'animate__repeat-'+(~~(Math.random() * 3)+1))
-        const color = getRandomColor()
+        const x = Math.random()
+        el.classList.add(
+          'animate__animated',
+          effects[~~(x * effects.length)],
+          speeds[~~(x * 3)],
+          'animate__repeat-'+(~~(x * 3)+1)
+        )
+        const color = aniColors[~~(x * amountColors)]
         el.style.setProperty('background-color', color)
         el.style.setProperty('border-color', color)
         container.current.appendChild(el);
