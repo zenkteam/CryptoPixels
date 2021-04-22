@@ -25,6 +25,18 @@ export default function SelectPlane(props) {
     setSelected(ids)
   }
 
+  function isManipulatable(id){
+    // not reserved and not sold
+    return isReserved(id) === false && props.soldPixels.indexOf(id) === -1
+  }
+
+  function isReserved(id) {
+    if(id < 4040 || id > 5961) return false;
+    let t = id % 1000;
+    if(t > 100) t = t % 100;
+    return t > 40 && t < 61;
+  }
+
 
   useEffect(() => {
     if (newArea) {

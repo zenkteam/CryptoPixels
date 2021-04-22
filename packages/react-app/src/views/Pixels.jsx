@@ -144,11 +144,21 @@ export default function Pixels(props) {
                     <div>Rundown:</div>
                     <div>Once all pixels apart from the centerpiece have been minted, we'll run a two week period in which pixels can be replaced with images and the centerpiece will be auctionized.</div>
 
+                    
+
+
                     {selection.length > 0 && props.wallet &&
                         <div>
                             <div id="priceETH">Price for {selection.length*100} pixels: ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
-                            <div class="hoverme">
-                                <div id="buyPixels"><Button onClick={buyPixel}>Buy and own {selection.length*100} pixels ({selection.length} blocks)</Button></div>
+                         
+                            <div class="box-outer hoverme" id="buyPixels">
+                                <div class="main_box" onClick={buyPixel}>
+                                    Buy and own {selection.length*100} pixels ({selection.length} blocks)
+                                    <div class="bar top"></div>
+                                    <div class="bar right delay"></div>
+                                    <div class="bar bottom delay"></div>
+                                    <div class="bar left"></div>
+                                </div>
                                 <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
                             </div>
                         </div>

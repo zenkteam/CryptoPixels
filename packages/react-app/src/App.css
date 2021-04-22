@@ -135,7 +135,7 @@ body{
 **/
 #menu {
   position: fixed;
-  top: 140px;
+  top: 40px;
   left: 40px;
   padding: 30px 30px;
   text-align: left;
@@ -621,4 +621,75 @@ body{
   right: 40px;
   background-color: white;
   padding: 5px 10px;
+}
+
+/* Buy Button */
+.box-outer {
+	overflow: hidden;
+	margin: 10px auto;
+	width: 290px;
+	height: 50px;
+}
+.main_box {
+	width: 290px;
+	height: 50px;
+	position: relative;
+	background: orange;
+	border: 5px solid white;
+  text-align: center;
+  color: white;
+  padding: 9px 5px;
+}
+.bar {
+	position: absolute;
+	width: 50px;
+	height: 5px;
+	background: #20f592;
+	transition: all 1s linear;
+	animation-duration: 1s;
+	animation-fill-mode: both;
+	animation-iteration-count: infinite;
+}
+.bar.delay {
+	animation-delay: 0.5s;
+}
+.top {
+	top: -5px;
+	left: -5px;
+}
+.right {
+	top: 18px;
+	right: -28px;
+	transform: rotate(90deg);
+}
+.bottom {
+	bottom: -5px;
+	left: -5px;
+}
+.left {
+	top: 18px;
+	left: -28px;
+	transform: rotate(90deg);
+}
+@keyframes h-move {
+  0% {
+    left: -5px;
+  }
+  100% {
+    left: 290px;
+  }
+}
+.top, .bottom {
+	animation-name: h-move;
+}
+@keyframes v-move {
+  0% {
+    top: -5px;
+  }
+  100% {
+    top: 68px;
+  }
+}
+.right, .left {
+	animation-name: v-move;
 }
