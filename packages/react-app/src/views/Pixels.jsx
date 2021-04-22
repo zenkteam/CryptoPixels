@@ -53,9 +53,11 @@ export default function Pixels(props) {
     }
 
     async function buyPixel(){
+        const etherPriceAsString = priceToBuyInEther.toString()
+
         console.log('Buying', selection)
         console.log('Price in Ether', priceToBuyInEther)
-        console.log('Price in Ether BIGNUMBER', utils.parseEther(priceToBuyInEther))
+        console.log('Price in Ether BIGNUMBER', utils.parseEther(etherPriceAsString))
         console.log('Gas', gasPrice)
 
         let pixels = new Array(selection.length)
@@ -66,7 +68,7 @@ export default function Pixels(props) {
         const tx = Transactor(props.wallet, gasPrice)
         let transaction = await tx( props.writeContract.CryptoPixels.buyPixels(pixels, {
                 gasPrice: gasPrice, 
-                value: parseEther(priceToBuyInEther)
+                value: parseEther(etherPriceAsString)
             })
         )
 
@@ -147,7 +149,7 @@ export default function Pixels(props) {
                     {selection.length > 0 && props.wallet &&
                         <div>
                             <div id="priceETH">Price for {selection.length*100} pixels: ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
-                            <div class="hoverme">
+                            <div className="hoverme">
                                 <div id="buyPixels"><Button onClick={buyPixel}>Buy and own {selection.length*100} pixels ({selection.length} blocks)</Button></div>
                                 <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
                             </div>

@@ -20,6 +20,7 @@ function App() {
   const [ soldPixels, setSoldPixels ] = useState([])
   const [ updating, setUpdating ] = useState(0)
   const [ ownPixels, setOwnPixels ] = useState()
+  const [ centerPieceOwner, setCenterPieceOwner ] = useState(false)
   const [ mainnetProvider, setMainnetProvider ] = useState()
   const [ dappProvider, setDappProvider ] = useState()
   const [ price, setPrice ] = useState(0)
@@ -67,16 +68,23 @@ function App() {
   
   const updateCryptoPixels = async () => {
     let ownPixels = [], soldPixels = []
+
     let soldPixelList = await readContract.CryptoPixels.getSoldPixels()
     for(let i = 0; i < soldPixelList.length; ++i){
-      const owner = await readContract.CryptoPixels.ownerOf(soldPixelList[i])
-      let purePixel = soldPixelList[i].toNumber()
-      if(walletAddress && owner === walletAddress){ 
-        ownPixels.push(purePixel)
-      }
-      soldPixels.push(purePixel)
+      soldPixels[i] = soldPixelList[i].toNumber()
     }
 
+    if(walletAddress){
+      let ownedPixelList = await readContract.CryptoPixels.getMyPixels()
+      for(let i = 0; i < ownedPixelList.length; ++i){
+        ownPixels[i] = ownedPixelList[i].toNumber()
+        if(ownPixels[i] === 40000){
+          setCenterPieceOwner(true)
+          console.log("LAWL CRAZY OWNING THE CENTERPIECE")
+        }
+      }
+    }
+    
     setSoldPixels(soldPixels)
     setOwnPixels(ownPixels)
   }
