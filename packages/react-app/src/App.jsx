@@ -1,21 +1,16 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
-import {  JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
+import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
+import { Fetcher, Route as URoute, Token, WETH } from "@uniswap/sdk";
+import WalletConnectProvider from "@walletconnect/web3-provider";
 import "antd/dist/antd.css";
+import { useUserAddress } from "eth-hooks";
+import React, { useCallback, useEffect, useState } from "react";
+import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
 import Web3Modal from "web3modal";
 import "./App.css";
-import { Header, Account } from "./components";
-import { Pixels } from "./views";
+import { Account, Header } from "./components";
 import { INFURA_ID, NETWORKS } from "./constants";
 import { useContractLoader } from "./hooks";
-import WalletConnectProvider from "@walletconnect/web3-provider";
-import { useUserAddress } from "eth-hooks";
-import { Token, WETH, Fetcher, Route as URoute } from "@uniswap/sdk";
-import Trade from './views/Trade';
-import Faq from './views/Faq';
-import About from './views/About';
-import Imprint from './views/Imprint';
-import Privacy from './views/Privacy';
+import { About, Faq, Imprint, Pixels, Privacy, Trade } from "./views";
 
 // Switching to "mainnet" or "rinkeby" automatically changs the targetNetwork.rpcUrl
 const network = 'localhost'
@@ -60,15 +55,12 @@ function App() {
     
   }, [])
 
-  //const transferEvents = useEventListener(contract, "CryptoPixels", "Transfer", mainnetProvider, 1);
- // console.log("📟 Transfer events:",transferEvents)
-
   useEffect(()=>{
     if(soldPixels.length === 0 && updating === 0 && readContract && readContract.CryptoPixels && walletAddress !== ''){
       setUpdating(1)
       updateCryptoPixels()
     }
-  }, [readContract, walletAddress]); //, transferEvents
+  }, [readContract, walletAddress]);
   
   const updateCryptoPixels = async () => {
     let ownPixels = [], soldPixels = []
@@ -105,23 +97,23 @@ function App() {
 
   return (
     <div className="App">
-      <Header/>
-
-      {/* 👨‍💼 Your account is in the top right with a wallet at connect options */}
-      <div className="Account">
-         <Account
-           walletAddress={walletAddress}
-           wallet={wallet}
-           mainnetProvider={mainnetProvider}
-           price={price}
-           web3Modal={web3Modal}
-           loadWeb3Modal={loadWeb3Modal}
-           logoutOfWeb3Modal={logoutOfWeb3Modal}
-           blockExplorer={targetNetwork.blockExplorer}
-         />
-      </div>
-
       <BrowserRouter>
+        <Header/>
+
+        {/* 👨‍💼 Your account is in the top right with a wallet at connect options */}
+        <div className="Account">
+          <Account
+            walletAddress={walletAddress}
+            wallet={wallet}
+            mainnetProvider={mainnetProvider}
+            price={price}
+            web3Modal={web3Modal}
+            loadWeb3Modal={loadWeb3Modal}
+            logoutOfWeb3Modal={logoutOfWeb3Modal}
+            blockExplorer={targetNetwork.blockExplorer}
+          />
+        </div>
+
         <Switch>
           <Route path="/trade">
             <Trade/>
@@ -162,6 +154,7 @@ function App() {
           <Link onClick={()=>{setRoute("/imprint")}} to="/imprint">Imprint</Link> |&nbsp; 
           <Link onClick={()=>{setRoute("/privacy")}} to="/privacy">Privacy</Link>
         </div>
+        
       </BrowserRouter>
     </div>
   );

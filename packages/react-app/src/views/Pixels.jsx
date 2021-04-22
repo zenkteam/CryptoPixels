@@ -144,8 +144,6 @@ export default function Pixels(props) {
                     <div>Rundown:</div>
                     <div>Once all pixels apart from the centerpiece have been minted, we'll run a two week period in which pixels can be replaced with images and the centerpiece will be auctionized.</div>
 
-                    
-
 
                     {selection.length > 0 && props.wallet &&
                         <div>
