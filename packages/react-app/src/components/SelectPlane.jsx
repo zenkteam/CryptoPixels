@@ -6,7 +6,7 @@ export default function SelectPlane(props) {
   const initialSize = 1000; // Overall pixel-matrix dimension
 
   let container = useRef();
-  let menu = useRef();
+  let overlays = useRef();
   let currentZoom;
   let controlPressed;
   let ds;
@@ -85,12 +85,12 @@ export default function SelectPlane(props) {
 
     ds.subscribe('dragstart', () => {
       // hide menu
-      menu.current.classList.add('hovering');
+      overlays.current.classList.add('hovering');
     });
 
     ds.subscribe('callback',async () => {
         // reset menu  
-        menu.current.classList.remove('hovering');
+        overlays.current.classList.remove('hovering');
         
         const start = ds.getInitialCursorPositionArea()
         const end = ds.getCurrentCursorPositionArea()
@@ -260,7 +260,7 @@ export default function SelectPlane(props) {
 
   useEffect(() => {
     container.current = document.getElementById('boxes');
-    menu.current = document.getElementById('menu')
+    overlays.current = document.getElementById('Overlays')
 
     if (!props.zoom || props.zoom === 'auto') {
       calculateZoom();

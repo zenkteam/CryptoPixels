@@ -3,9 +3,9 @@ import { SelectPlane } from "../components";
 import { Button } from "antd";
 import { Transactor } from "../helpers";
 import { utils, BigNumber } from "ethers";
-import { parseEther, formatEther } from "@ethersproject/units";
+import { parseEther } from "@ethersproject/units";
 import { useGasPrice } from "../hooks/index.js";
-import axios from "axios";
+import Countdown from '../components/Countdown';
 
 export default function Pixels(props) {
     
@@ -107,71 +107,72 @@ export default function Pixels(props) {
 
     return (
         <div className="Content" id="Content">
-            {/* Only render pixels if they have already been generated */}
-            {
-                <SelectPlane
-                    selection={selection}
-                    zoom={zoom}
-                    onSelected={ids => onSelected(ids)}
-                    onZoomUpdate={value => onZoomUpdate(value)}
-                    soldPixels={props.soldPixels}
-                    generatePixelData={id => generatePixelData(id)}
-                    createPixel={id => createPixel(id)}
-                ></SelectPlane>
-            }
+            <SelectPlane
+                selection={selection}
+                zoom={zoom}
+                onSelected={ids => onSelected(ids)}
+                onZoomUpdate={value => onZoomUpdate(value)}
+                soldPixels={props.soldPixels}
+                generatePixelData={id => generatePixelData(id)}
+                createPixel={id => createPixel(id)}
+            ></SelectPlane>
             
-            <div id="menu">
-                <div className="corner" id="topleft-1"></div>
-                <div className="corner" id="topleft-2"></div>
-                <div className="corner" id="topright-1"></div>
-                <div className="corner" id="topright-2"></div>
-                <div className="corner" id="bottomleft-1"></div>
-                <div className="corner" id="bottomleft-2"></div>
-                <div className="corner" id="bottomright-1"></div>
-                <div className="corner" id="bottomright-2"></div>
-                <div className="corner" id="topmiddle-1"></div>
-                <div className="corner" id="topmiddle-2"></div>
-                <div className="corner" id="rightmiddle-1"></div>
-                <div className="corner" id="rightmiddle-2"></div>
-                <div className="corner" id="bottommiddle-1"></div>
-                <div className="corner" id="bottommiddle-2"></div>
-                <div className="corner" id="bottommiddle-3"></div>
+            <div id="Overlays">
+                {/* Menu */}
+                <div id="menu">
+                    <div className="corner" id="topleft-1"></div>
+                    <div className="corner" id="topleft-2"></div>
+                    <div className="corner" id="topright-1"></div>
+                    <div className="corner" id="topright-2"></div>
+                    <div className="corner" id="bottomleft-1"></div>
+                    <div className="corner" id="bottomleft-2"></div>
+                    <div className="corner" id="bottomright-1"></div>
+                    <div className="corner" id="bottomright-2"></div>
+                    <div className="corner" id="topmiddle-1"></div>
+                    <div className="corner" id="topmiddle-2"></div>
+                    <div className="corner" id="rightmiddle-1"></div>
+                    <div className="corner" id="rightmiddle-2"></div>
+                    <div className="corner" id="bottommiddle-1"></div>
+                    <div className="corner" id="bottommiddle-2"></div>
+                    <div className="corner" id="bottommiddle-3"></div>
 
-                <ol>
-                    <li>1 Pixel = $1</li>
-                    <li>10.000 blocks of 10x10 pixels: $100</li>
-                    <li>Select your pixels, connect and mint</li>
-                    <li>Rundown:</li>
-                    <li>Once all pixels apart from the centerpiece have been minted, we'll run a two week period in which pixels can be replaced with images and the centerpiece will be auctionized.</li>
-                    <li><a href="">FAQ</a></li>
-                </ol>
+                    <ol>
+                        <li>1 Pixel = $1</li>
+                        <li>1 Block = 10x10 Pixels = 100$</li>
+                        <li>10.000 Blocks in total</li>
+                        <li>Select your pixels, connect and mint</li>
+                    </ol>
+                    
+                    <div>Rundown:</div>
+                    <div>Once all pixels apart from the centerpiece have been minted, we'll run a two week period in which pixels can be replaced with images and the centerpiece will be auctionized.</div>
+                    <div><a href="">FAQ</a></div>
+
+                    {selection.length > 0 && props.wallet &&
+                        <div>
+                            <div id="priceETH">Price for {selection.length*100} pixels: ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
+                            <div id="buyPixels"><Button onClick={buyPixel}>Buy and own {selection.length*100} pixels ({selection.length} blocks)</Button></div>
+                        </div>
+                    }
+                    
+                    {selection.length > 0 && !props.wallet &&
+                        <div>
+                            <p>You selected <b>{selection.length} pixelblocks</b> but you need to connect your wallet first.</p>
+                            <p>
+                                <Button
+                                key="loginbutton"
+                                size="large"
+                                id="menuConnect"
+                                onClick={props.loadWeb3Modal}
+                                >
+                                Connect
+                                </Button>
+                            </p>
+                        </div>
+                    }
+                </div>
                 
-                {selection.length > 0 && props.wallet &&
-                    <div>
-                        <div id="priceETH">Price for {selection.length*100} pixels: ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
-                        <div id="buyPixels"><Button onClick={buyPixel}>Buy and own {selection.length*100} pixels ({selection.length} blocks)</Button></div>
-                    </div>
-                }
-                
-                {selection.length > 0 && !props.wallet &&
-                    <div>
-                        <p>You selected <b>{selection.length} pixelblocks</b> but you need to connect your wallet first.</p>
-                        <p>
-                            <Button
-                            key="loginbutton"
-                            size="large"
-                            id="menuConnect"
-                            onClick={props.loadWeb3Modal}
-                            >
-                            Connect
-                            </Button>
-                        </p>
-                    </div>
-                }
-            </div>
-            
-            <div className="imageUpload">
-                
+                {/* Countdown */}
+                <Countdown soldPixels={props.soldPixels}/>
             </div>
         </div>
     );

@@ -118,9 +118,21 @@ body{
 
 
 /**
+  OVERLAYS
+**/
+#Overlays {
+  opacity: 1;
+  transition: opacity 200ms;
+  user-select: none; /* to avoid text selection when drawing box */
+}
+
+#Overlays.hovering {
+  opacity: 0.1;
+}
+
+/**
   MENU
 **/
-
 .corner{
   width:10px;
   height:10px;
@@ -212,12 +224,7 @@ body{
   font-family: 'Roboto Slab', serif;
   width: 350px;
   font-weight:bold;
-  color: #000;
-  transition: opacity 200ms;
-  user-select: none;
-}
-#menu.hovering {
-  opacity: 0.1;
+  color: #000; 
 }
 
 #menu > ol {
@@ -235,18 +242,25 @@ body{
   margin-right:10px;
 }
 
-
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
 #menu > ol li:nth-child(1)::before{
   background-color:aqua;
 }
 #menu > ol li:nth-child(2)::before{
   background-color:green;
+  transform: rotate(45deg);
 }
 #menu > ol li:nth-child(3)::before{
   background-color:blue;
 }
-#menu > ol li:nth-child(4){
-  font-weight: bold;
+#menu > ol li:nth-child(4)::before{
+  background-color:red;
+  animation: spin 800ms linear infinite;
+
 }
 
 #priceETH{
@@ -360,4 +374,13 @@ body{
 .ant-page-header-heading-title,
 .ant-page-header-heading-sub-title {
   color:#ffffff
+}
+
+/* Countdown */
+.countdown {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  background-color: white;
+  padding: 5px 10px;
 }
