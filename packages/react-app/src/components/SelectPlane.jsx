@@ -143,6 +143,9 @@ export default function SelectPlane(props) {
   function calculatePostion(zoom) {
     // Todo: when positions would be less than 0, try to scroll view
     let calculatedLeft = Math.max(0, (window.innerWidth - initialSize * zoom) / 2);
+    if (window.innerWidth > 900 && window.innerWidth <= 1500) {
+      calculatedLeft += 50;
+    }
     let calculatedTop = Math.max(0, (window.innerHeight - headerHeight - initialSize * zoom) / 2);
     position(calculatedLeft,calculatedTop)
   }
