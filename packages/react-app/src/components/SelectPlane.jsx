@@ -295,7 +295,7 @@ export default function SelectPlane(props) {
             <div className="flip-box-inner">
               <div className="flip-box-front"></div>
               <div className="flip-box-back">
-                <h2>Back Side</h2>
+                <span>This one and only centerpiece will be auctioned when all remaining blocks have been sold.</span>
               </div>
             </div>
           </div>

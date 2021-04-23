@@ -7,7 +7,7 @@ export default function Countdown({ soldPixels }) {
 
   return (
     <div className="countdown">
-        Remaining 100px-blocks: { initialPixels - soldPixels.length}
+        Remaining<span className="countdown-blocks"> 100px-blocks</span>: { initialPixels - soldPixels.length}
     </div>
   );
 }
