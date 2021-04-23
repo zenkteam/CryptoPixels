@@ -27,7 +27,7 @@ describe("CryptoPixels.org", function () {
 
   beforeEach(async () => {
     const CryptoPixels = await ethers.getContractFactory("CryptoPixels");
-    cryptoPixels = await CryptoPixels.deploy();
+    cryptoPixels = await CryptoPixels.deploy([baseUri]);
     [owner, wallet2, wallet3] = await ethers.getSigners()
     provider = ethers.getDefaultProvider()
   });
@@ -38,9 +38,10 @@ describe("CryptoPixels.org", function () {
     it("Should lazy mint pixels", async function(){
     
       
-      let actualPrice = price(2) // bignumber / wei
+      const actualPrice = price(2) // bignumber / wei
       
-      expect(await cryptoPixels.connect(wallet2).buyPixels([buy[0], buy[1]], {value: actualPrice}))
+      expect(await cryptoPixels.connect(wallet2)
+                .buyPixels([buy[0], buy[1]], {value: actualPrice}))
                 .to.emit(cryptoPixels, 'Transfer')
 
 
@@ -83,13 +84,14 @@ describe("CryptoPixels.org", function () {
       expect(await cryptoPixels.isReserved(4461)).to.be.equal(false);
       expect(await cryptoPixels.isReserved(5656)).to.be.equal(true);
       expect(await cryptoPixels.isReserved(8000)).to.be.equal(false);
+      expect(await cryptoPixels.isReserved(40000)).to.be.equal(true);
 
       //  Adjust pixel price
       let newPrice = '2'
-      expect(await cryptoPixels.getPricePerPixel()).to.be.equal(utils.parseEther(costPerPixel.toString()))
-      await cryptoPixels.connect(owner).changeEtherPricePerPixel(utils.parseEther(newPrice));
-      await expect(cryptoPixels.connect(wallet2).changeEtherPricePerPixel(utils.parseEther(newPrice))).to.be.revertedWith('Ownable: caller is not the owner');
-      expect(await cryptoPixels.getPricePerPixel()).to.be.equal(utils.parseEther(newPrice))
+      expect(await cryptoPixels.getEtherPricePerPixel()).to.be.equal(utils.parseEther(costPerPixel.toString()))
+      await cryptoPixels.connect(owner).setEtherPricePerPixel(utils.parseEther(newPrice));
+      await expect(cryptoPixels.connect(wallet2).setEtherPricePerPixel(utils.parseEther(newPrice))).to.be.revertedWith('Ownable: caller is not the owner');
+      expect(await cryptoPixels.getEtherPricePerPixel()).to.be.equal(utils.parseEther(newPrice))
 
       // Try to withdraw money
       let currentBalance = await owner.getBalance()

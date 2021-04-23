@@ -16,19 +16,19 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 contract CryptoPixels is Ownable, PullPayment, ERC721 {
   using Strings for uint256;
 
-  string public baseUri = "https://cryptopixels.org/api/pixel/";
+  string public baseUri;
   
   uint256[] public soldPixels;
 
-  uint256 private centerPieceId = 40000;
-  uint256 private pricePerPixel = 0.0407094849029 ether;
+  uint256 public centerPieceId = 40000;
+
+  uint256 public pricePerPixel = 0.0407094849029 ether;
 
   // For Sale (maps a token id to its availability)
   mapping (uint256 => bool) public notForSale;
 
-  constructor() ERC721("CryptoPixels", "CPX") payable {
-    _mint(msg.sender, centerPieceId);
-    notForSale[centerPieceId] = true;
+  constructor(string memory newBaseUri) ERC721("CryptoPixelsOrg", "CPX") {
+    baseUri = newBaseUri;
   }
 
   /**
@@ -38,11 +38,11 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
       require(_pixels.length > 0, 'not enough pixels');
 
       // Minium price
-      uint256 minPrice = (pricePerPixel / 10 * 9) * _pixels.length;
+      uint256 minPrice = (pricePerPixel / 10 * 8) * _pixels.length;
       require(msg.value >= minPrice, 'more $ pls');
 
       // Check each pixels availability
-      for (uint8 i = 0; i < _pixels.length; i++) {
+      for (uint16 i = 0; i < _pixels.length; i++) {
         require(_pixels[i] > 0 && _pixels[i] < 10001, "not valid");
         require(!notForSale[_pixels[i]], "already minted");
         require(!isReserved(_pixels[i]), "reserved");
@@ -53,7 +53,7 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
       _asyncTransfer(owner(), msg.value);
 
       // Mint
-      for (uint8 i = 0; i < _pixels.length; i++) {
+      for (uint16 i = 0; i < _pixels.length; i++) {
 
         // Mint the NFT and attach the token with the current ID to the message sender
         _mint(msg.sender, _pixels[i]);
@@ -67,25 +67,6 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
 
       return _pixels;
   }
-
-/* NOT FINISHED
-  function setForSale(uint256 pixelId, address forAddress) public {
-    approve(forAddress, pixelId);
-  }
-
-  function buyFromSomeone(uint256 pixelId) public {
-    // Split
-    uint256 foundersShare = msg.value / 100 * 15;
-    uint256 pixelOwnerShare = msg.value - founderShare;
-
-    // Pay
-    _asyncTransfer(pixelOwner, pixelOwner);
-    _asyncTransfer(owner(), foundersShare);
-
-    // Transfer
-    safeTransferFrom(pixelOwner, msg.sender, pixelId);
-  }
-*/
 
   /**
   * Checks if id is within reserved range
@@ -110,9 +91,7 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   * @dev See {IERC721Metadata-tokenURI}.
   */
   function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-      require(!isReserved(tokenId), "not minted, yet");
-      require(notForSale[tokenId], 'ERC721Metadata: URI query for nonexistent token');
-      require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token - exists");
+      require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
       return string(abi.encodePacked(_baseURI(), tokenId.toString()));
   }
 
@@ -124,27 +103,21 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
       return baseUri;
   }
 
+  function mintCenterpiece() public onlyOwner {
+    _mint(msg.sender, centerPieceId);
+  }
+
   /**
-    * @dev Base URI for computing {tokenURI}. Empty by default, can be overriden
-    * in child contracts.
+    * @dev Set price per pixel
     */
-  function changeEtherPricePerPixel(uint256 newPricePerPixel) public onlyOwner {
+  function setEtherPricePerPixel(uint256 newPricePerPixel) public onlyOwner {
       pricePerPixel = newPricePerPixel;
   }
 
   /**
-    * @dev Base URI for computing {tokenURI}. Empty by default, can be overriden
-    * in child contracts.
+    * @dev Get current price per pixel
     */
-  function changeBaseUri(string memory newBaseUri) public onlyOwner {
-      baseUri = newBaseUri;
-  }
-
-  /**
-    * @dev Base URI for computing {tokenURI}. Empty by default, can be overriden
-    * in child contracts.
-    */
-  function getPricePerPixel() public view onlyOwner returns (uint256) {
+  function getEtherPricePerPixel() public view onlyOwner returns (uint256) {
       return pricePerPixel;
   }
 
@@ -156,21 +129,21 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   }
 
   /**
-  * @dev Get ids and their owner address
+  * @dev Get all of an owners pixels
   */
-  function getMyPixels() public view returns (uint256[] memory) {
+  function getMyPixels() public view returns (uint16[] memory) {
     uint256[] memory ownedPixels = new uint256[](soldPixels.length);
-    uint256 count = 0;
-    for (uint256 i = 0; i < soldPixels.length; i++) {
+    uint16 count = 0;
+    for (uint16 i = 0; i < soldPixels.length; i++) {
       if(msg.sender == ownerOf(soldPixels[i])){
         ownedPixels[count] = soldPixels[i];
         ++count;
       }
     }
 
-    uint256[] memory myPixels = new uint256[](count);   
-    for (uint256 i = 0; i < count; i++) {
-      myPixels[i] = ownedPixels[i];
+    uint16[] memory myPixels = new uint16[](count);   
+    for (uint16 i = 0; i < count; i++) {
+      myPixels[i] = uint16(ownedPixels[i]);
     }
     
     return myPixels; 

@@ -73,15 +73,11 @@ function App() {
   // Request OwnPixels from contract | Seems like we need a 
   async function getOwnPixels() {
     if(walletAddress && readWriteContractViaWallet){
-      const ownedPixelList = await readWriteContractViaWallet.CryptoPixels.getMyPixels()
-      const ownPixels = new Array(ownedPixelList.length)
-      for(let i = 0; i < ownedPixelList.length; ++i){
-        ownPixels[i] = ownedPixelList[i].toNumber()
-        if(ownPixels[i] === 40000){
-          setCenterPieceOwner(true)
-        }
+      const ownPixels = await readWriteContractViaWallet.CryptoPixels.getMyPixels()
+      if(ownPixels.indexOf(40000) !== -1){
+        setCenterPieceOwner(true)
       }
-      setOwnPixels(ownPixels)
+      setOwnPixels(Array.from(ownPixels))
     }
   }
   
@@ -144,6 +140,7 @@ function App() {
               wallet={wallet}
               targetNetwork={targetNetwork}
               readWriteContractViaWallet={readWriteContractViaWallet}
+              readContract={readContract}
               walletAddress={walletAddress}
             />
           </Route>

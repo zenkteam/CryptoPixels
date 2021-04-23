@@ -10,6 +10,7 @@ export default function Trade(props) {
 
   const [ transferToAddresses, setTransferToAddresses ] = useState()
   const [ pixelIdToTransfer, setPixelIdToTransfer ] = useState()
+  const [ newEtherPrice, setNewEtherPrice ] = useState()
 
   const gasPrice = useGasPrice(props.targetNetwork, "fast");
   const tx = Transactor(props.wallet, gasPrice)
@@ -48,6 +49,41 @@ export default function Trade(props) {
             tx( props.readWriteContractViaWallet.CryptoPixels.withdrawPayments(props.walletAddress) )
           }}>
             WITHDRAW OWNER CASH
+          </Button>
+        </div>
+
+        <div>
+          <h3>Set Ether Price in Contract</h3>
+          <Input
+            value={newEtherPrice}
+            placeholder={"Pixel-ID"}
+            onChange={(e)=>{
+              setNewEtherPrice(e.target.value)
+            }}
+          />
+          <Button onClick={()=>{
+            tx( props.readWriteContractViaWallet.CryptoPixels.setEtherPricePerPixel(utils.parseEther(newEtherPrice) ) )
+          }}>
+            REFRESH CURRENT ETHER PRICE
+          </Button>
+        </div>
+
+        <div>
+          <h3>Get Ether Price from Contract</h3>
+          <Button onClick={async ()=>{
+            let price = await props.readWriteContractViaWallet.CryptoPixels.getEtherPricePerPixel()
+            console.log("CURRENT PRICE IN CONTRACT", utils.formatEther(price))
+          }}>
+            Get CURRENT ETHER PRICE
+          </Button>
+        </div>
+
+        <div>
+          <h3>Set Ether Price</h3>
+          <Button onClick={()=>{
+            tx( props.readWriteContractViaWallet.CryptoPixels.mintCenterpiece() )
+          }}>
+            MINT CENTERPIECE
           </Button>
         </div>
         
