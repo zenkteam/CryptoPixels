@@ -1,6 +1,7 @@
 const { utils } = require("ethers");
 const fs = require("fs");
 const chalk = require("chalk");
+require('dotenv').config();
 
 require("@nomiclabs/hardhat-waffle");
 require("@tenderly/hardhat-tenderly")
@@ -20,8 +21,9 @@ const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 
 //
 // Select the network you want to deploy to here:
+// Define the the variable REACT_APP_NETWORK in your .env file
 //
-const defaultNetwork = "localhost"; // localhost, mainnet, rinkeby
+const defaultNetwork = process.env.REACT_APP_NETWORK || "localhost"; // localhost, mainnet, rinkeby
 const INFURA_ID = "32d5cc1a92d84314919fa8b495765071";
 const RINKEBY_PRIVATE_KEY = "b119ee39a768e5463ec3c602207e96a1e060f9f19fa788eda4e43288c35614b4";
 

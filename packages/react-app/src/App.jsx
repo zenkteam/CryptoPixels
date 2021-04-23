@@ -13,7 +13,8 @@ import { useContractLoader } from "./hooks";
 import { About, Faq, Imprint, Pixels, Privacy, Trade } from "./views";
 
 // Switching to "mainnet" or "rinkeby" automatically changs the targetNetwork.rpcUrl
-const network = 'localhost'
+// Define the the variable REACT_APP_NETWORK in your .env file
+const network = process.env.REACT_APP_NETWORK || 'localhost'
 const targetNetwork = NETWORKS[network]; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 function App() {

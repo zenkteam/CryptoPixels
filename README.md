@@ -5,6 +5,10 @@
 Deployer pays around (0.283719 ETH ~$500 at todays gas and price) for the initial contract but then NFTs are only minted once a buyer wants them. (The buyer of the NFT pays the gas to mint. ~$55)
 
 ---
+## Configuration
+
+Copy the `.env.sample` file in the root folder to `.env` and set the environment variables as you like.
+
 
 ## 🏃‍♀️ Quick Start
 
