@@ -318,6 +318,23 @@ export default function SelectPlane(props) {
     setIsCenterToggled(!isCenterToggled);
   }
 
+  const [linkedPixel, setLinkedPixel] = useState();
+  const hash = window.location.hash;
+  if (hash.startsWith('#CryptoPixel-')) {
+      const num = parseInt(hash.substr(13));
+      if (!isReserved(num) && (!linkedPixel || linkedPixel.id !== num)) {
+        const pixel = props.generatePixelData(num)
+        setLinkedPixel(pixel);
+      }
+  }
+
+  useEffect(() => {
+    if (selected.length && linkedPixel) {
+      window.location.hash = '';
+      setLinkedPixel(null);
+    }
+  }, [selected])
+
   return (
     <div>
       <section id="boxes">
@@ -332,6 +349,16 @@ export default function SelectPlane(props) {
             </div>
           </div>
         </div>
+
+        { linkedPixel &&
+          <div id="linked" style={{top: linkedPixel.y, left: linkedPixel.x}}>
+            <div className="linked1"></div>
+            <div className="linked2"></div>
+            <div className="linked3"></div>
+            <div className="linked4"></div>
+            <div className="linked5"></div>
+          </div>
+        }
 
       </section>
 

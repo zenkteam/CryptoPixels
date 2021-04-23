@@ -137,7 +137,7 @@ function App() {
           <Route path="/trade">
             <Trade/>
           </Route>
-          <Route path="/manaage">
+          <Route path="/manage">
             <Manage
               mainnetProvider={mainnetProvider}
               wallet={wallet}
