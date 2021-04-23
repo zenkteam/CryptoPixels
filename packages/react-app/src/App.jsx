@@ -135,7 +135,10 @@ function App() {
 
         <Switch>
           <Route path="/trade">
-            <Trade
+            <Trade/>
+          </Route>
+          <Route path="/manaage">
+            <Manage
               mainnetProvider={mainnetProvider}
               wallet={wallet}
               targetNetwork={targetNetwork}
