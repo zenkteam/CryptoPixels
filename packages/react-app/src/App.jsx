@@ -1,5 +1,5 @@
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
-import { Fetcher, Route as URoute, Token, WETH, getDefaultProvider, getNetwork } from "@uniswap/sdk";
+import { Fetcher, Route as URoute, Token, WETH } from "@uniswap/sdk";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import "antd/dist/antd.css";
 import { useUserAddress } from "eth-hooks";
@@ -12,8 +12,8 @@ import { INFURA_ID, NETWORKS } from "./constants";
 import { useContractLoader } from "./hooks";
 import { About, Faq, Imprint, Pixels, Privacy, Trade } from "./views";
 
-// Switching to "mainnet" or "rinkeby" automatically changs the targetNetwork.rpcUrl
-const network = 'localhost'
+// Switching to "localhost", "mainnet" or "rinkeby" automatically changes the targetNetwork.rpcUrl
+const network = 'rinkeby'
 const targetNetwork = NETWORKS[network]; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 function App() {
@@ -50,59 +50,42 @@ function App() {
       setPrice(price)
     }
     fetchPrice()
-    
+
     setDappProvider(dappProvider)
     setMainnetProvider(mainnetProvider)
   }, [])
 
   useEffect(()=>{
-    if(soldPixels.length === 0 && updating === 0 && readContract && readContract.CryptoPixels && walletAddress !== ''){
+    if(updating === 0 && ownPixels.length === 0 && walletAddress && writeContract){
       setUpdating(1)
-      updateCryptoPixels()
+      getSoldPixels()
+      getOwnPixels()
     }
-  }, [readContract, walletAddress]);
+  }, [writeContract, readContract]);
   
-  const updateCryptoPixels = async () => {
-    let ownPixels = [], soldPixels = []
-
-    let soldPixelList = await readContract.CryptoPixels.getSoldPixels()
-    for(let i = 0; i < soldPixelList.length; ++i){
-      soldPixels[i] = soldPixelList[i].toNumber()
-    }
-
-    if(walletAddress){
-      console.log("I'M HERE")
-      let ownedPixelList = await readContract.CryptoPixels.getMyPixels()
-      console.log("owned", ownedPixelList)
+  async function getOwnPixels() {
+    if(walletAddress && writeContract){
+      const ownedPixelList = await writeContract.CryptoPixels.getMyPixels()
+      const ownPixels = new Array(ownedPixelList.length)
       for(let i = 0; i < ownedPixelList.length; ++i){
         ownPixels[i] = ownedPixelList[i].toNumber()
         if(ownPixels[i] === 40000){
           setCenterPieceOwner(true)
-          console.log("LAWL CRAZY OWNING THE CENTERPIECE")
         }
       }
-
       setOwnPixels(ownPixels)
     }
-    
-    setSoldPixels(soldPixels)
   }
   
   // Request SoldPixels from contract
   async function getSoldPixels() {
-    const soldPixels = []
     const soldPixelList = await readContract.CryptoPixels.getSoldPixels()
+    const soldPixels = new Array(soldPixelList.length)
     for (let i = 0; i < soldPixelList.length; ++i) {
-      let purePixel = soldPixelList[i].toNumber()
-      soldPixels.push(purePixel)
+      soldPixels[i] = soldPixelList[i].toNumber()
     }
     setSoldPixels(soldPixels)
   }
-  useEffect(() => {
-    if (readContract) {
-      getSoldPixels()
-    }
-  }, [readContract])
 
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
@@ -169,7 +152,7 @@ function App() {
               readContract={readContract}
               price={price}
               loadWeb3Modal={loadWeb3Modal}
-              updateCryptoPixels={updateCryptoPixels}
+              getOwnPixels={getOwnPixels}
             />
           </Route>
         </Switch>

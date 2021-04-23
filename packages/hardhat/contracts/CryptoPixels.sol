@@ -159,7 +159,7 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
   * @dev Get ids and their owner address
   */
   function getMyPixels() public view returns (uint256[] memory) {
-    uint256[] memory ownedPixels = new uint256[](9000);
+    uint256[] memory ownedPixels = new uint256[](soldPixels.length);
     uint256 count = 0;
     for (uint256 i = 0; i < soldPixels.length; i++) {
       if(msg.sender == ownerOf(soldPixels[i])){

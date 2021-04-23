@@ -75,7 +75,7 @@ export default function Pixels(props) {
         )
 
         if(transaction && transaction.hash){
-            props.updateCryptoPixels()
+            props.getOwnPixels()
             removeSelectedArea()
             setSelection([])
         }
