@@ -222,6 +222,12 @@ export default function Pixels(props) {
                                 After the auction closes Pixelblocks can be replaced with images.
                                 You can resell your blocks on our marketplace anytime.
                             </div>
+
+                            { props.walletAddress &&
+                                <div className="connected">
+                                    Connected with: { props.walletAddress.substr(0, 6)}
+                                </div>
+                            }
                         </>
                     }
                     {menuToggled && 

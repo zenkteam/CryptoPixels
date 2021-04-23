@@ -114,8 +114,8 @@ function App() {
           />
         </Link>
 
-        <div>
-          <a href="https://opensea.io/collection/cryptopixelsorg" rel="nofollow" title="Trade on OpenSea" target="_blank">Trade</a>&nbsp;|&nbsp;<Link to="/faq">FAQ</Link>&nbsp;|&nbsp;<Link to="/about">About</Link>&nbsp;|&nbsp;<a href="https://twitter.com/CryptoPixelsOrg" rel="nofollow" title="Follow us for Updates and Drops">Twitter</a>&nbsp;|&nbsp;<a href="https://discord.gg/7SWWSTyJj4" target="_blank"></a><a title="Join our community and trade" rel="nofollow" target="_blank" id="discord"></a>
+        <div className="headerLinks">
+          <a href="https://opensea.io/collection/cryptopixelsorg" rel="nofollow" title="Trade on OpenSea" target="_blank">Trade</a>&nbsp;|&nbsp;<Link to="/faq">FAQ</Link>&nbsp;|&nbsp;<Link to="/about">About</Link>&nbsp;|&nbsp;<a href="https://twitter.com/CryptoPixelsOrg" rel="nofollow" title="Follow us for Updates and Drops" id="twitter"></a>&nbsp;|&nbsp;<a href="https://discord.gg/7SWWSTyJj4" target="_blank"></a><a title="Join our community and trade" rel="nofollow" target="_blank" id="discord"></a>
         </div>
         
         <div className="Account">
@@ -171,6 +171,7 @@ function App() {
               price={price}
               loadWeb3Modal={loadWeb3Modal}
               getOwnPixels={getOwnPixels}
+              walletAddress={walletAddress}
             />
           </Route>
         </Switch>

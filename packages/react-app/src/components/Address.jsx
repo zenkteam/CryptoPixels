@@ -60,9 +60,9 @@ export default function Address(props) {
   if (props.minimized) {
     return (
       <span style={{ verticalAlign: "middle" }}>
-        <a /*style={{ color: "#222222" }}*/ target={"_blank"} href={etherscanLink} rel="noopener noreferrer">
+        {/* <a target={"_blank"} href={etherscanLink} rel="noopener noreferrer">
           <Blockies seed={address.toLowerCase()} size={8} scale={2} />
-        </a>
+        </a> */}
       </span>
     );
   }
@@ -88,9 +88,9 @@ export default function Address(props) {
 
   return (
     <span>
-      <span style={{ verticalAlign: "middle" }}>
+      {/* <span style={{ verticalAlign: "middle" }}>
         <Blockies seed={address.toLowerCase()} size={8} scale={props.fontSize?props.fontSize/7:4} />
-      </span>
+      </span> */}
       <span className="walletKey">{text}</span>
     </span>
   );

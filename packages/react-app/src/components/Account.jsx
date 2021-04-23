@@ -80,15 +80,15 @@ export default function Account({
     <span>
       {walletAddress ? <Address address={walletAddress} ensProvider={mainnetProvider} blockExplorer={blockExplorer} /> : ""}
       
-      <Wallet address={walletAddress} provider={wallet} ensProvider={mainnetProvider} price={price} />
+      {/* <Wallet address={walletAddress} provider={wallet} ensProvider={mainnetProvider} price={price} /> */}
     </span>
   );
 
   // <Balance address={walletAddress} provider={localProvider} price={price} />
   return (
     <div>
-      {display}
       {modalButtons}
+      {/* {display} */}
     </div>
   );
 }
