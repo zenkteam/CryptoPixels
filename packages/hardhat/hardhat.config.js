@@ -24,8 +24,9 @@ const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 // Define the the variable REACT_APP_NETWORK in your .env file
 //
 const defaultNetwork = process.env.REACT_APP_NETWORK || "localhost"; // localhost, mainnet, rinkeby
-const INFURA_ID = "32d5cc1a92d84314919fa8b495765071";
-const RINKEBY_PRIVATE_KEY = "b119ee39a768e5463ec3c602207e96a1e060f9f19fa788eda4e43288c35614b4";
+const INFURA_ID = process.env.INFURA_ID;
+const RINKEBY_PRIVATE_KEY = process.env.RINKEBY_PRIVATE_KEY;
+const HARDHAT_MAINNET_PRIVATE_KEY = process.env.HARDHAT_MAINNET_PRIVATE_KEY;
 
 function mnemonic() {
   try {
@@ -55,6 +56,10 @@ module.exports = {
         (you can put in a mnemonic here to set the deployer locally)
       */
     },
+    mainnet: {
+      url: "https://mainnet.infura.io/v3/" + INFURA_ID, //<---- YOUR INFURA ID! (or it won't work)
+      accounts: [`0x${HARDHAT_MAINNET_PRIVATE_KEY}`],
+    },
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/" + INFURA_ID, //<---- YOUR INFURA ID! (or it won't work)
       accounts: [`0x${RINKEBY_PRIVATE_KEY}`]
@@ -64,12 +69,6 @@ module.exports = {
     },
     kovan: {
       url: "https://kovan.infura.io/v3/" + INFURA_ID, //<---- YOUR INFURA ID! (or it won't work)
-      accounts: {
-        mnemonic: mnemonic(),
-      },
-    },
-    mainnet: {
-      url: "https://mainnet.infura.io/v3/" + INFURA_ID, //<---- YOUR INFURA ID! (or it won't work)
       accounts: {
         mnemonic: mnemonic(),
       },

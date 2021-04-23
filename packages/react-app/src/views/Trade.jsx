@@ -9,8 +9,6 @@ import { useGasPrice } from "../hooks/index.js";
 export default function Trade(props) {
 
  
-  
-
   return (
     <div className="textPage">
         <h2>Trade</h2>
