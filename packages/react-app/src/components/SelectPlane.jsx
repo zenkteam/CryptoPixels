@@ -289,9 +289,28 @@ export default function SelectPlane(props) {
     };
   }, []);
 
+  // toggle Center on mobile
+  const [isCenterToggled, setIsCenterToggled] = useState(false);
+  function toggleCenter() {
+    setIsCenterToggled(!isCenterToggled);
+  }
+
   return (
     <div>
-        <section id="boxes"><div id="c"></div></section>
+      <section id="boxes">
+        
+        <div id="center" onTouchStart={toggleCenter}>
+          <div className={ isCenterToggled ? 'flip-box isToggled' : 'flip-box' }>
+            <div className="flip-box-inner">
+              <div className="flip-box-front"></div>
+              <div className="flip-box-back">
+                <h2>Back Side</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
     </div>
   );
 }
