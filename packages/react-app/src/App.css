@@ -83,7 +83,9 @@ body{
     margin-left: auto;
     margin-right: auto;
     display: block;
-    background: url('./assets/grid.png') no-repeat;
+    /* background: url('./assets/grid.png') no-repeat; */
+    background: url('./assets/block.png') repeat;
+    background-size: 10px;
     transform-origin: 0px 0px;
 }
 
@@ -124,17 +126,16 @@ body{
   animation: pulse 2s ease-in-out 1s infinite;
 }
 
-#c{
-  position:absolute !important;
-  width:200px !important;
-  height:200px !important;
-  top:400px !important;
-  left:400px !important;
-  z-index: 110 !important;
-  padding: 0 0 !important;
-  background: url('./assets/pepe200.jpg') no-repeat !important;
-  display: block !important;
-  border:none !important;
+#c {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  top: 400px;
+  left: 400px;
+  z-index: 110;
+  background: url('./assets/pepe500.png'), url('./assets/block_white.png');
+  background-size: contain, 10px;
+  background-repeat: no-repeat, repeat;
 }
 
 
