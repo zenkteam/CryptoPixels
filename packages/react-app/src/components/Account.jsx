@@ -78,7 +78,7 @@ export default function Account({
     ""
   ) : (
     <span>
-      {walletAddress ? <Address address={walletAddress} ensProvider={mainnetProvider} blockExplorer={blockExplorer} /> : "Connecting..."}
+      {walletAddress ? <Address address={walletAddress} ensProvider={mainnetProvider} blockExplorer={blockExplorer} /> : ""}
       
       <Wallet address={walletAddress} provider={wallet} ensProvider={mainnetProvider} price={price} />
     </span>

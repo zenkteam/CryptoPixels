@@ -17,7 +17,6 @@ export { default as Swap } from "./Swap";
 export { default as ThemeSwitch } from "./ThemeSwitch";*/
 
 export { default as AddressInput } from "./AddressInput";
-export { default as Header } from "./Header";
 export { default as Account } from "./Account";
 export { default as SelectPlane } from "./SelectPlane";
 export { default as Bought } from "./Bought";
