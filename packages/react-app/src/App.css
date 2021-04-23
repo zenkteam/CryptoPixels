@@ -335,6 +335,20 @@ body{
   background-color: #20f592;
 }
 
+#discord {
+  background:url("./assets/discord.png") no-repeat;
+  width:30px;
+  height:30px;
+  display:inline-block;
+  line-height:30px;
+}
+
+#twitter {
+  background:url("./assets/twitter.png") no-repeat;
+  width:30px;
+  height:30px;
+  display:inline-block;
+}
 
 /*.ant-menu{
     display:none !important;
