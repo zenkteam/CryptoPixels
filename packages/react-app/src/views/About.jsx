@@ -17,7 +17,7 @@ export default function About() {
       <h2 style={{marginTop:'30px'}}>Who are we?</h2>
 
       <div className="textBlock">
-        We're Oskar, Max and Philipp - three entrepreneurs. Oskar has been a Youtuber for over ten years and started several channels like MadeMyDay. Max and Philipp have been working together for over 8 years and are the developers of stomt.com. 
+        We're Oskar, Max and Philipp - three entrepreneurs. Oskar has been a Youtuber for over ten years and started several channels. Max and Philipp have been working together for over 8 years and are the developers of stomt.com. 
       </div>
 
       <h2 style={{marginTop:'30px'}}>What are you going to do with all the money?</h2>
