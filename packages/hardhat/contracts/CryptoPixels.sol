@@ -22,7 +22,7 @@ contract CryptoPixels is Ownable, PullPayment, ERC721 {
 
   uint256 public centerPieceId = 40000;
 
-  uint256 public pricePerPixel = 0.0407094849029 ether;
+  uint256 public pricePerPixel = 0.042 ether;
 
   // For Sale (maps a token id to its availability)
   mapping (uint256 => bool) public notForSale;
