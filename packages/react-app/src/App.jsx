@@ -1,19 +1,21 @@
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import { Fetcher, Route as URoute, Token, WETH } from "@uniswap/sdk";
 import WalletConnectProvider from "@walletconnect/web3-provider";
+import { PageHeader } from "antd";
 import "antd/dist/antd.css";
 import { useUserAddress } from "eth-hooks";
 import React, { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
 import Web3Modal from "web3modal";
 import "./App.css";
-import { Account, Header } from "./components";
+import { Account } from "./components";
 import { INFURA_ID, NETWORKS } from "./constants";
 import { useContractLoader } from "./hooks";
 import { About, Faq, Imprint, Pixels, Privacy, Trade } from "./views";
 
-// Switching to "localhost", "mainnet" or "rinkeby" automatically changes the targetNetwork.rpcUrl
-const network = 'rinkeby'
+// Switching to "localhost", "mainnet" or "rinkeby" automatically changs the targetNetwork.rpcUrl
+// Define the the variable REACT_APP_NETWORK in your .env file
+const network = process.env.REACT_APP_NETWORK || 'localhost'
 const targetNetwork = NETWORKS[network]; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 function App() {
@@ -105,9 +107,19 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Header/>
+      <div className="header">
+        <Link to="/">
+          <PageHeader
+            title="CryptoPixels.org"
+            subTitle="Buy a piece of internet history and own it forever."
+            className="pageHeader"
+          />
+        </Link>
 
-        {/* 👨‍💼 Your account is in the top right with a wallet at connect options */}
+        <div>
+          <Link to="/trade">Trade</Link>&nbsp;|&nbsp;<Link to="/faq">FAQ</Link>&nbsp;|&nbsp;<Link to="/about">About</Link>
+        </div>
+        
         <div className="Account">
           <Account
             walletAddress={walletAddress}
@@ -120,6 +132,7 @@ function App() {
             blockExplorer={targetNetwork.blockExplorer}
           />
         </div>
+      </div>
 
         <Switch>
           <Route path="/trade">

@@ -191,25 +191,15 @@ export default function SelectPlane(props) {
   }
   
   // Execute change effects
-  const [aniColors, setAniColors] = useState([])
+  const aniColors = ["#652D09","#ED95C4","#5D794E","#8C40FE","#0124C5","#381A06","#0E58FC","#23AB8E","#05127B","#21074C","#327FE5","#6F75B8","#3E08C6","#5B6879","#37A259","#26A931","#4F327B","#801C3D","#E0F17D","#F40CA8","#37592B","#125BAC","#D7419E","#324A1E","#2D1537","#789014","#80B162","#4F018E","#470F12","#D5C387","#2A3D41","#5A4FB0","#964710","#6D7329","#3D0A18","#47A8D0","#F362E1","#0F19BA","#018A64","#50361F","#5F0978","#A17E49","#0F598E","#9DA501","#79241A","#2C185A","#5F019C","#A2419F","#B3258A","#0751DF","#DEC508","#01CAF6","#AB3069","#B90185","#E64BA8","#215830","#743CEF","#A032C1","#7F1809","#97012A","#4F05D6"]
+  const amountColors = aniColors.length;
   useEffect(() => {
-    if (!effectsOn) {
+    if (!effectsOn || !changeEffects) {
       return
     }
-    
-    if (!changeEffects) {
-      return
-    }
-     
-    container.current = document.getElementById('boxes');
-
-    const amountColors = 100
-    if(aniColors.length === 0){
-      let colors = new Array(amountColors)
-      for(let i = 0; i < amountColors; ++i){
-        colors[i] = '#'+('0123456789ABCDEF'.split('').sort(()=>0.5-Math.random()).join('')).substring(0,6);
-      }
-      setAniColors(colors)
+ 
+    if (!container.current) {
+      container.current = document.getElementById('boxes')
     }
   
     // Effects
@@ -289,9 +279,28 @@ export default function SelectPlane(props) {
     };
   }, []);
 
+  // toggle Center on mobile
+  const [isCenterToggled, setIsCenterToggled] = useState(false);
+  function toggleCenter() {
+    setIsCenterToggled(!isCenterToggled);
+  }
+
   return (
     <div>
-        <section id="boxes"><div id="c"></div></section>
+      <section id="boxes">
+        
+        <div id="center" onTouchStart={toggleCenter}>
+          <div className={ isCenterToggled ? 'flip-box isToggled' : 'flip-box' }>
+            <div className="flip-box-inner">
+              <div className="flip-box-front"></div>
+              <div className="flip-box-back">
+                <h2>Back Side</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
     </div>
   );
 }
