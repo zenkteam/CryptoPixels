@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import DragSelect from "dragselect";
+import { Popover } from "antd";
 
 export default function SelectPlane(props) {
   const headerHeight = 120;
@@ -11,6 +12,8 @@ export default function SelectPlane(props) {
   let ds = useRef();
 
   const [selected, setSelected] = useState([])
+  const [selectedCryptoPixel, setSelectedCryptoPixel] = useState()
+  const [selectedCryptoPixelTitle, setSelectedCryptoPixelTitle] = useState()
   const [changeEffects, setChangeEffects] = useState(true)
   const [newArea, setNewArea] = useState();
   const effectsOn = true
@@ -57,6 +60,34 @@ export default function SelectPlane(props) {
             }
         }
 
+        // Check if it's just one id, that has already been sold but is not mine
+        // Display info-popup
+        // https://ant.design/components/popover/
+        if(ids.length === 1 && props.soldPixels.indexOf(ids[0]) !== -1){
+
+          // If not mine
+          if(props.ownPixels.indexOf(ids[0]) === -1) {
+            console.log("THIS IS NOT MY PIXEL", ids[0])
+            const content = (
+              <div>
+                <p>Content</p>
+                <p>Content</p>
+              </div>
+            )
+          } else {
+          // If it's mine
+            console.log("THIS IS MY PIXEL", ids[0])
+            const content = (
+              <div>
+                <p>Content</p>
+                <p>Content</p>
+              </div>
+            )
+          }
+
+          setSelectedCryptoPixel()
+        }
+
         // Set selected pixels
         selectElements(ids)
 
@@ -88,7 +119,7 @@ export default function SelectPlane(props) {
       overlays.current.classList.add('hovering');
     });
 
-    ds.current.subscribe('callback',async () => {
+    ds.current.subscribe('callback', async () => {
         // reset menu  
         overlays.current.classList.remove('hovering');
         
@@ -303,6 +334,13 @@ export default function SelectPlane(props) {
         </div>
 
       </section>
+
+      { selectedCryptoPixel && 
+        <Popover 
+          content={selectedCryptoPixel} 
+          title={selectedCryptoPixelTitle}>
+        </Popover>
+      }
     </div>
   );
 }

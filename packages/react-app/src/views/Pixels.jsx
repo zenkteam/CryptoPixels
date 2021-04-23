@@ -196,6 +196,7 @@ export default function Pixels(props) {
                     onSelected={ids => onSelected(ids)}
                     onZoomUpdate={value => onZoomUpdate(value)}
                     soldPixels={props.soldPixels}
+                    ownPixels={props.ownPixels}
                     generatePixelData={id => generatePixelData(id)}
                     createPixel={id => createPixel(id)}
                     removeSelectedArea={removeSelectedArea}
