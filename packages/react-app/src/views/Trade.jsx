@@ -36,7 +36,7 @@ export default function Trade(props) {
             }}
           />
           <Button onClick={()=>{
-            tx( props.writeContracts.CryptoPixels.transferFrom(props.walletAddress, transferToAddresses, pixelIdToTransfer) )
+            tx( props.readWriteContractViaWallet.CryptoPixels.transferFrom(props.walletAddress, transferToAddresses, pixelIdToTransfer) )
           }}>
             Transfer
           </Button>
@@ -45,7 +45,7 @@ export default function Trade(props) {
         <div>
           <h3>WITHDRAW</h3>
           <Button onClick={()=>{
-            tx( props.writeContracts.CryptoPixels.withdrawPayments(props.walletAddress) )
+            tx( props.readWriteContractViaWallet.CryptoPixels.withdrawPayments(props.walletAddress) )
           }}>
             WITHDRAW OWNER CASH
           </Button>

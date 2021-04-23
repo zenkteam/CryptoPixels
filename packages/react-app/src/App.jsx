@@ -62,7 +62,7 @@ function App() {
     if(ownPixels.length === 0 && readWriteContractViaWallet){
       getOwnPixels()
     }
-  }, [readWriteContractViaWallet, readContract]);
+  }, [readWriteContractViaWallet]);
 
   useEffect(()=>{
     if(soldPixels.length === 0 && readContract){
