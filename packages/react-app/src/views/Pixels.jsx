@@ -182,10 +182,9 @@ export default function Pixels(props) {
 
       const [menuToggled, setMenuToggled] = useState(false);
       function toggleMenu() {
-          console.log('toggle Menu');
           setMenuToggled(!menuToggled);
       }
-
+    
     return (
         <>
             <div className="Content" id="Content">

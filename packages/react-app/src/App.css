@@ -881,6 +881,7 @@ body{
   margin: 40px auto;
 }
 
+.textPage h1,
 .textPage h2 {
   color: white;
   font-family: 'Major Mono Display', monospace;
@@ -928,4 +929,53 @@ body{
   .ant-page-header-heading-sub-title {
     display: none;
   }
+}
+
+/* Link to a specific pixel */
+@keyframes reduce {
+  0% {
+    transform: scale(200);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes pump {
+  0% {
+    transform: scale(2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+#linked {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: white;
+}
+#linked div {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+}
+.linked5 {
+  animation: reduce 800ms ease-out;
+  background: green;
+}
+.linked4 {
+  animation: reduce 800ms 200ms ease-out;
+  background: blue;
+}
+.linked3 {
+  animation: reduce 800ms 400ms ease-out;
+  background: yellow;
+}
+.linked4 {
+  animation: reduce 800ms 600ms ease-out;
+  background: pink;
+}
+.linked1 {
+  animation: pump 400ms 600ms linear infinite;
+  background: green;
 }
