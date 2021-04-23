@@ -159,7 +159,7 @@ function App() {
           <Route path="/privacy">
             <Privacy/>
           </Route>
-          <Route path="/">
+          <Route path="*">
             <Pixels
               soldPixels={soldPixels}
               ownPixels={ownPixels}
