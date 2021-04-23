@@ -12,6 +12,7 @@ export default function Pixels(props) {
     
     const pricePerPixelBlockInDollar = 100
     const [zoom, setZoom] = useState('auto');
+    const [initialZoom, setInitialZoom] = useState();
     const [selection, setSelection] = useState([]);
     const [priceToBuyInDollar, setPriceToBuyInDollar] = useState(0);
     const [priceToBuyInEther, setPriceToBuyInEther] = useState(0);
@@ -99,8 +100,17 @@ export default function Pixels(props) {
         return p
       }
 
-    function onZoomUpdate(zoom) {
-        setZoom(zoom);
+    // zomm Update from Plane
+    function onZoomUpdate(z) {
+        setZoom(z);
+        if (!initialZoom) {
+            setInitialZoom(z);
+        }
+    }
+
+    // update Zoom in UI
+    function selectZoom(z) {
+        setZoom(initialZoom * z);
     }
 
     useEffect(() => {
@@ -174,10 +184,6 @@ export default function Pixels(props) {
       function toggleMenu() {
           console.log('toggle Menu');
           setMenuToggled(!menuToggled);
-      }
-
-      function selectZoom(z) {
-          console.log('set', z);
       }
 
     return (
@@ -264,7 +270,7 @@ export default function Pixels(props) {
 
                 {/* Zoom */}
                 <div className="zoomLevel">
-                    <span onClick={() => selectZoom(0.5)}>0.5x</span> | <span onClick={() => selectZoom(1.0)}>1.0x</span> | <span onClick={() => selectZoom(2.0)}>2.0x</span>
+                    <span onClick={() => selectZoom(1.0)}>1.0x</span>|<span onClick={() => selectZoom(2.0)}>2.0x</span>|<span onClick={() => selectZoom(4.0)}>4.0x</span>
                 </div>
                 
                 {/* Countdown */}

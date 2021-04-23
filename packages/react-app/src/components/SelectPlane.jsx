@@ -7,9 +7,8 @@ export default function SelectPlane(props) {
 
   let container = useRef();
   let overlays = useRef();
-  let currentZoom;
   let controlPressed;
-  let ds;
+  let ds = useRef();
 
   const [selected, setSelected] = useState([])
   const [changeEffects, setChangeEffects] = useState(true)
@@ -77,30 +76,30 @@ export default function SelectPlane(props) {
   }, [newArea]) // we only execute this when a newArea is selected, it then automatically accesses the current props
 
   function initializeSelection() {  
-    ds = new DragSelect({
+    ds.current = new DragSelect({
       customStyles: true,
       draggability: false,
       immediateDrag: false,
       area: container.current,
     });
 
-    ds.subscribe('dragstart', () => {
+    ds.current.subscribe('dragstart', () => {
       // hide menu
       overlays.current.classList.add('hovering');
     });
 
-    ds.subscribe('callback',async () => {
+    ds.current.subscribe('callback',async () => {
         // reset menu  
         overlays.current.classList.remove('hovering');
         
-        const start = ds.getInitialCursorPositionArea()
-        const end = ds.getCurrentCursorPositionArea()
+        const start = ds.current.getInitialCursorPositionArea()
+        const end = ds.current.getCurrentCursorPositionArea()
 
         // transform position based on zoom
-        start.x = start.x / currentZoom;
-        start.y = start.y / currentZoom;
-        end.x = end.x / currentZoom;
-        end.y = end.y / currentZoom;
+        start.x = start.x / ds.current.Area._zoom;
+        start.y = start.y / ds.current.Area._zoom;
+        end.x = end.x / ds.current.Area._zoom;
+        end.y = end.y / ds.current.Area._zoom;
 
         // ensure position are in the area
         start.x = Math.max(0, Math.min(999, start.x));
@@ -139,8 +138,7 @@ export default function SelectPlane(props) {
 
     window.requestAnimationFrame(() => {
       container.current.style.setProperty('transform', `scale(${zoom})`);
-      currentZoom = zoom;
-      ds.Area._zoom = zoom;
+      ds.current.Area._zoom = zoom;
       calculatePostion(zoom);
     });
   }
@@ -169,7 +167,7 @@ export default function SelectPlane(props) {
 
   function onWheel(e) {
     if (controlPressed) {
-      const currentZoom = parseFloat(container.current.style.transform.replace('scale(', ''))
+      const currentZoom = ds.current.Area._zoom;
       const scale = currentZoom - e.deltaY * 0.01;
       if (scale > 0.5 && scale < 5) {
         zoom(scale);
@@ -258,12 +256,6 @@ export default function SelectPlane(props) {
     container.current = document.getElementById('boxes');
     overlays.current = document.getElementById('Overlays')
 
-    if (!props.zoom || props.zoom === 'auto') {
-      calculateZoom();
-    } else {
-      zoom(props.zoom);
-    }
-
     initializeSelection();
     
     window.addEventListener('wheel', onWheel, {passive: false});
@@ -279,6 +271,15 @@ export default function SelectPlane(props) {
       window.removeEventListener('keyup', onKeyUp);
     };
   }, []);
+
+  // Listen to zoom changes
+  useEffect(() => {
+    if (!props.zoom || props.zoom === 'auto') {
+      calculateZoom();
+    } else {
+      zoom(props.zoom);
+    }
+  }, [props.zoom]);
 
   // toggle Center on mobile
   const [isCenterToggled, setIsCenterToggled] = useState(false);
