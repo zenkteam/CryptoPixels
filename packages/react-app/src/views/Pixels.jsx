@@ -67,7 +67,7 @@ export default function Pixels(props) {
         }
 
         const tx = Transactor(props.wallet, gasPrice)
-        let transaction = await tx( props.writeContract.CryptoPixels.buyPixels(pixels, {
+        let transaction = await tx( props.readWriteContractViaWallet.CryptoPixels.buyPixels(pixels, {
                 gasPrice: gasPrice,
                 gasLimit: block.gasLimit,
                 value: parseEther(etherPriceAsString)

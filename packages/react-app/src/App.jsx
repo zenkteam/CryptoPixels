@@ -31,8 +31,9 @@ function App() {
   const readContract = useContractLoader(dappProvider)
   // Obviusly only set if wallet is connected and a wallet is also needed to write to the blockchain
   const walletAddress = useUserAddress(wallet)
-  const writeContract = useContractLoader(wallet)
+  const readWriteContractViaWallet = useContractLoader(wallet)
 
+  // Called once during first time render
   useEffect(() => {
     const mainnetProvider = new JsonRpcProvider(targetNetwork.rpcUrl);
     const dappProvider = new JsonRpcProvider(network === 'localhost' ? 'http://localhost:8545' : targetNetwork.rpcUrl)
@@ -55,17 +56,19 @@ function App() {
     setMainnetProvider(mainnetProvider)
   }, [])
 
+  // Called one time once read/write contract is available
   useEffect(()=>{
-    if(updating === 0 && ownPixels.length === 0 && walletAddress && writeContract){
+    if(updating === 0 && ownPixels.length === 0 && walletAddress && readWriteContractViaWallet){
       setUpdating(1)
       getSoldPixels()
       getOwnPixels()
     }
-  }, [writeContract, readContract]);
+  }, [readWriteContractViaWallet, readContract]);
   
+  // Request OwnPixels from contract | Seems like we need a 
   async function getOwnPixels() {
-    if(walletAddress && writeContract){
-      const ownedPixelList = await writeContract.CryptoPixels.getMyPixels()
+    if(walletAddress && readWriteContractViaWallet){
+      const ownedPixelList = await readWriteContractViaWallet.CryptoPixels.getMyPixels()
       const ownPixels = new Array(ownedPixelList.length)
       for(let i = 0; i < ownedPixelList.length; ++i){
         ownPixels[i] = ownedPixelList[i].toNumber()
@@ -124,7 +127,7 @@ function App() {
               mainnetProvider={mainnetProvider}
               wallet={wallet}
               targetNetwork={targetNetwork}
-              writeContract={writeContract}
+              readWriteContractViaWallet={readWriteContractViaWallet}
               walletAddress={walletAddress}
             />
           </Route>
@@ -148,7 +151,7 @@ function App() {
               targetNetwork={targetNetwork}
               mainnetProvider={mainnetProvider}
               dappProvider={dappProvider}
-              writeContract={writeContract}
+              readWriteContractViaWallet={readWriteContractViaWallet}
               readContract={readContract}
               price={price}
               loadWeb3Modal={loadWeb3Modal}
