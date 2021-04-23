@@ -12,6 +12,7 @@ export default function Pixels(props) {
     
     const pricePerPixelBlockInDollar = 100
     const [zoom, setZoom] = useState('auto');
+    const [initialZoom, setInitialZoom] = useState();
     const [selection, setSelection] = useState([]);
     const [priceToBuyInDollar, setPriceToBuyInDollar] = useState(0);
     const [priceToBuyInEther, setPriceToBuyInEther] = useState(0);
@@ -28,6 +29,7 @@ export default function Pixels(props) {
     },[props.price, selection])
     
     function onSelected(selection) {
+        setMenuToggled(true)
         setSelection(selection)
     }
 
@@ -98,8 +100,17 @@ export default function Pixels(props) {
         return p
       }
 
-    function onZoomUpdate(zoom) {
-        setZoom(zoom);
+    // zomm Update from Plane
+    function onZoomUpdate(z) {
+        setZoom(z);
+        if (!initialZoom) {
+            setInitialZoom(z);
+        }
+    }
+
+    // update Zoom in UI
+    function selectZoom(z) {
+        setZoom(initialZoom * z);
     }
 
     useEffect(() => {
@@ -169,6 +180,12 @@ export default function Pixels(props) {
         }
       }
 
+      const [menuToggled, setMenuToggled] = useState(false);
+      function toggleMenu() {
+          console.log('toggle Menu');
+          setMenuToggled(!menuToggled);
+      }
+
     return (
         <>
             <div className="Content" id="Content">
@@ -187,23 +204,34 @@ export default function Pixels(props) {
            
             <div id="Overlays">
                 {/* Menu */}
-                <div id="menu">
-                    <ol>
-                        <li>1 Pixel = $1</li>
-                        <li>1 Block = 10x10 Pixels = 100$</li>
-                        <li>10.000 Blocks in total</li>
-                        <li>Select your pixels, connect and mint</li>
-                    </ol>
-                    
-                    <div>Rundown:</div>
-                    <div>
-                        Once 9600 Pixelblocks have been sold the the last Centerpiece of 400 Pixelblocks will be auctioned for 2 Weeks.
-                        After the auction closes Pixelblocks can be replaced with images.
-                        You can resell your blocks on our marketplace anytime.
-                    </div>
+                <div id="menu" className={menuToggled ? 'isToggled' : null } onClick={toggleMenu}>
+                    {!menuToggled &&
+                        <>
+                            <div className="close">
+                            </div>
+                            <ol>
+                                <li>1 Pixel = $1</li>
+                                <li>1 Block = 10x10 Pixels = 100$</li>
+                                <li>10.000 Blocks in total</li>
+                                <li>Select your pixels, connect and mint</li>
+                            </ol>
+                            
+                            <div>Rundown:</div>
+                            <div>
+                                Once 9600 Pixelblocks have been sold the the last Centerpiece of 400 Pixelblocks will be auctioned for 2 Weeks.
+                                After the auction closes Pixelblocks can be replaced with images.
+                                You can resell your blocks on our marketplace anytime.
+                            </div>
+                        </>
+                    }
+                    {menuToggled && 
+                        <>Info</>
+                    }
+                </div>
 
-
-                    {selection.length > 0 && props.wallet &&
+                {selection.length &&
+                <div className="buy">
+                    {props.wallet &&
                         <div>
                             <div id="priceETH">Price for {selection.length*100} pixels: ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
                          
@@ -220,7 +248,7 @@ export default function Pixels(props) {
                         </div>
                     }
                     
-                    {selection.length > 0 && !props.wallet &&
+                    {!props.wallet &&
                         <div>
                             <p>You selected <b>{selection.length} pixelblocks</b> but you need to connect your wallet first.</p>
                             <p>
@@ -235,6 +263,14 @@ export default function Pixels(props) {
                             </p>
                         </div>
                     }
+
+                    <div onClick={() => setSelection([])}>(Reset)</div>
+                </div>
+                }
+
+                {/* Zoom */}
+                <div className="zoomLevel">
+                    <span onClick={() => selectZoom(1.0)}>1.0x</span>|<span onClick={() => selectZoom(2.0)}>2.0x</span>|<span onClick={() => selectZoom(4.0)}>4.0x</span>
                 </div>
                 
                 {/* Countdown */}

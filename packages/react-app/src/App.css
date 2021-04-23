@@ -168,6 +168,9 @@ body{
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
+  padding: 12px;
+  display: flex;
+  align-items: center;
 }
 .flip-box-front {
   background: url('./assets/pepe500.png'), url('./assets/block_white.png');
@@ -205,8 +208,54 @@ body{
   font-family: 'Roboto Slab', serif;
   width: 350px;
   height: 400px;
-  background: url('./assets/menu.png') no-repeat;
-  color: #000; 
+  background: url('./assets/menu.png');
+  background-size: contain;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 800ms;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+#menu.isToggled {
+  top: 92px;
+  left: 40px;
+  margin-left: 0;
+  height: 80px;
+  width: 70px;
+  display: flex;
+  padding: 10px;
+  align-items: center;
+  opacity: 0.8;
+  font-family: 'Major Mono Display', monospace;
+}
+
+.close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  height: 30px;
+  width: 30px;
+  background: url('./assets/close.png');
+}
+
+@media only screen and (max-width: 700px) {
+  #menu {
+    top: 92px;
+    margin-left: -200px;
+    left: 50%;
+    width: 400px;
+    height: 350px;
+    background: url('./assets/menu_mobile.png') no-repeat;
+    background-size: contain;
+  }
+
+  #menu.isToggled {
+    height: 70px;
+    width: 80px;
+  }
 }
 
 #menu > ol {
@@ -703,8 +752,40 @@ body{
   position: fixed;
   bottom: 40px;
   right: 40px;
-  background-color: white;
+  background-color: #fff;
   padding: 5px 10px;
+  opacity: 0.8;
+}
+@media only screen and (max-width: 700px) {
+  .countdown-blocks {
+    display: none;
+  }
+}
+.zoomLevel {
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  background-color: white;
+  opacity: 0.8;
+}
+.zoomLevel span {
+  padding: 5px 10px;
+  display: inline-block;
+  cursor: pointer;
+}
+.zoomLevel span:hover {
+  background: orange;
+}
+
+.buy {
+  background: white;
+  font-family: 'Roboto Slab', serif;
+  padding: 12px;
+  position: absolute;
+  bottom: 150px;
+  left: 50%;
+  width: 400px;
+  margin-left: -200px;
 }
 
 /* Buy Button */
@@ -815,9 +896,36 @@ body{
   border-radius: 0;
 }
 
-.about {
+.textBlock {
   border: 1px solid #6f6c6c;
   background-color: rgba(255,255,255,.04);
   color: rgba(255,255,255,.85);
   padding: 12px 16px;
+}
+
+.textBlock ul {
+  text-align: left;
+}
+
+.walletKey {
+  vertical-align: middle;
+  padding-left: 5px;
+  font-size: 28px;
+}
+
+/* MOBILE */
+@media only screen and (max-width: 700px) {
+  .ant-page-header {
+    height: 72px;
+  }
+  .walletKey {
+    font-size: 20px;
+    padding-right: 10px;
+  }
+  .identicon,
+  .anticon-wallet,
+  .ant-page-header-heading-left,
+  .ant-page-header-heading-sub-title {
+    display: none;
+  }
 }

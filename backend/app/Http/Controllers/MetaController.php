@@ -12,14 +12,16 @@ class MetaController extends Controller
     public function getPixel($id){
         if($id === 'center'){
             return $this->getCenterpiece();
+        } else {
+            $id = (int) $id;
         }
 
         $pixelData = $this->getPixelData($id);
         return [
             "name" => "CryptoPixel#" . $id,
-            "description" => "This CryptoPixel lives " + $pixelData['x'] + "px to the right and " + $pixelData['y'] + "px down south.",
+            "description" => "This CryptoPixel lives " . $pixelData['x'] . "px to the right and " . $pixelData['y'] . "px down south.",
             "external_url"=> "https://cryptopixels.org/#CryptoPixel-" . $id,
-            "image"=> "https://cryptopixels.org/pixels/" . $id . ".jpg",
+            "image"=> "https://cryptopixels.org/pixels/" . $id . ".png",
             "attributes"=> [
                 [
                     "trait_type"=> "nr",
@@ -46,46 +48,7 @@ class MetaController extends Controller
                     "value"=> 100
                 ]
             ]
-        ]; 
-    }
-
-    /**
-     * Returns meta information for multiple pixels
-     */
-    public function getMetadataByPixelId(Request $request){
-        $ids = $request->input('p');
-        $code = 200;
-        $data = [];
-        $error = '';
-
-        foreach($ids as $id){
-            $id = intval($id);
-
-            if($id < 1 || $id > 10000){
-                $code = 400;
-                $error = 'Invalid pixel';
-                break;
-            }
-
-            if($this->isReserved($id)){
-                $code = 400;
-                $error = 'Reserved pixel';
-                break;
-            }
-        } 
-
-        if($error !== ''){
-            $data['error'] = $error;
-        }else{
-            
-            $data['pixel'] = [];
-            foreach($ids as $id){
-                $data['pixel'][] = $this->getPixelData($id);
-            }
-            
-        }
-
-        return response()->json($data, $code);
+        ];
     }
 
     /**
@@ -110,14 +73,14 @@ class MetaController extends Controller
         ];
     }
 
-    /** 
+    /**
      * Calculates columns, rows, x- & y-coordinate based on the id
      */
     private function getPixelData($id){
 
         // There are 100 columns and 100 Rows
         // To determine the column we just want to break down the id to ten-digits
-        // If the id is smaller 100, column is automatically id 
+        // If the id is smaller 100, column is automatically id
             // as e.g. id 3 points to the third pixel in the first row
         if($id > 999){
             $column = $id % 1000; // ignore thousand-digit
@@ -128,10 +91,10 @@ class MetaController extends Controller
         } else if ($id > 100){
             $column = $id % 100;
         } else {
-            $column = $id; 
+            $column = $id;
         }
         // If %-rest equals zero, it has to be a full hundred and column = 100
-        if($column === 0){ 
+        if($column === 0){
             $column = 100;
         }
 
@@ -158,15 +121,52 @@ class MetaController extends Controller
         ];
     }
 
-    private function isReserved($id) {
-        if($id < 4040 || $id > 5961) {
-            return false;
-        }
-        $t = $id % 1000;
-        if($t > 100){
-            $t = $t % 100;
-        } 
-        return $t > 40 && $t < 61;
-    }
+    /**
+     * Returns meta information for multiple pixels
+     */
+    // public function getMetadataByPixelId(Request $request){
+    //     $ids = $request->input('p');
+    //     $code = 200;
+    //     $data = [];
+    //     $error = '';
+
+    //     foreach($ids as $id){
+    //         $id = intval($id);
+
+    //         if($id < 1 || $id > 10000){
+    //             $code = 400;
+    //             $error = 'Invalid pixel';
+    //             break;
+    //         }
+
+    //         if($this->isReserved($id)){
+    //             $code = 400;
+    //             $error = 'Reserved pixel';
+    //             break;
+    //         }
+    //     }
+
+    //     if($error !== ''){
+    //         $data['error'] = $error;
+    //     }else{
+    //         $data['pixel'] = [];
+    //         foreach($ids as $id){
+    //             $data['pixel'][] = $this->getPixelData($id);
+    //         }
+    //     }
+
+    //     return response()->json($data, $code);
+    // }
+
+    // private function isReserved($id) {
+    //     if($id < 4040 || $id > 5961) {
+    //         return false;
+    //     }
+    //     $t = $id % 1000;
+    //     if($t > 100){
+    //         $t = $t % 100;
+    //     }
+    //     return $t > 40 && $t < 61;
+    // }
 
 }
