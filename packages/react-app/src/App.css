@@ -112,11 +112,13 @@ body{
 #selectedArea {
   border: solid 2px transparent;
   position: absolute;
+  opacity: 0.95;
   z-index: 100;
 }
 
 #selectedArea div {
   background-color: #f58420;
+  opacity: 0.95;
   height: 100%;
   width: 100%;
   animation: pulse 2s ease-in-out 1s infinite;

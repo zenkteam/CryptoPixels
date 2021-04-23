@@ -1,5 +1,5 @@
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
-import { Fetcher, Route as URoute, Token, WETH } from "@uniswap/sdk";
+import { Fetcher, Route as URoute, Token, WETH, getDefaultProvider, getNetwork } from "@uniswap/sdk";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import "antd/dist/antd.css";
 import { useUserAddress } from "eth-hooks";
@@ -13,7 +13,7 @@ import { useContractLoader } from "./hooks";
 import { About, Faq, Imprint, Pixels, Privacy, Trade } from "./views";
 
 // Switching to "mainnet" or "rinkeby" automatically changs the targetNetwork.rpcUrl
-const network = 'rinkeby'
+const network = 'localhost'
 const targetNetwork = NETWORKS[network]; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 function App() {
@@ -35,7 +35,7 @@ function App() {
 
   useEffect(() => {
     const mainnetProvider = new JsonRpcProvider(targetNetwork.rpcUrl);
-    const dappProvider = new JsonRpcProvider(network === 'localhost' ? 'http://localhost:8545' : process.env.REACT_APP_PROVIDER)
+    const dappProvider = new JsonRpcProvider(network === 'localhost' ? 'http://localhost:8545' : targetNetwork.rpcUrl)
 
     const fetchPrice = async () => {
       const DAI = new Token(
@@ -43,17 +43,16 @@ function App() {
           "0x6B175474E89094C44Da98b954EedeAC495271d0F",
           18,
       );
-      const pair = await Fetcher.fetchPairData(DAI, WETH[DAI.chainId], mainnetProvider);
+      const pair = await Fetcher.fetchPairData(DAI, WETH[DAI.chainId], mainnetProvider.chainId);
       const route = new URoute([pair], WETH[DAI.chainId]);
       const price = parseFloat(route.midPrice.toSignificant(6));
+      console.log("price", price)
       setPrice(price)
     }
     fetchPrice()
     
     setDappProvider(dappProvider)
     setMainnetProvider(mainnetProvider)
-
-    
   }, [])
 
   useEffect(()=>{
@@ -72,7 +71,9 @@ function App() {
     }
 
     if(walletAddress){
+      console.log("I'M HERE")
       let ownedPixelList = await readContract.CryptoPixels.getMyPixels()
+      console.log("owned", ownedPixelList)
       for(let i = 0; i < ownedPixelList.length; ++i){
         ownPixels[i] = ownedPixelList[i].toNumber()
         if(ownPixels[i] === 40000){
@@ -80,10 +81,11 @@ function App() {
           console.log("LAWL CRAZY OWNING THE CENTERPIECE")
         }
       }
+
+      setOwnPixels(ownPixels)
     }
     
     setSoldPixels(soldPixels)
-    setOwnPixels(ownPixels)
   }
   
   // Request SoldPixels from contract
@@ -135,7 +137,13 @@ function App() {
 
         <Switch>
           <Route path="/trade">
-            <Trade/>
+            <Trade
+              mainnetProvider={mainnetProvider}
+              wallet={wallet}
+              targetNetwork={targetNetwork}
+              writeContract={writeContract}
+              walletAddress={walletAddress}
+            />
           </Route>
           <Route path="/faq">
             <Faq/>
@@ -156,6 +164,7 @@ function App() {
               wallet={wallet}
               targetNetwork={targetNetwork}
               mainnetProvider={mainnetProvider}
+              dappProvider={dappProvider}
               writeContract={writeContract}
               readContract={readContract}
               price={price}

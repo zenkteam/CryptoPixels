@@ -6,6 +6,7 @@ import { utils, BigNumber, constants } from "ethers";
 import { parseEther } from "@ethersproject/units";
 import { useGasPrice } from "../hooks/index.js";
 import Countdown from '../components/Countdown';
+import { notification } from "antd";
 
 export default function Pixels(props) {
     
@@ -45,12 +46,21 @@ export default function Pixels(props) {
 
     async function buyPixel(){
         const etherPriceAsString = priceToBuyInEther.toString()
+        const block = await props.dappProvider.getBlock('latest')
 
         console.log('Buying', selection)
         console.log('Price in Ether', priceToBuyInEther)
         console.log('Price in Ether BIGNUMBER', utils.parseEther(etherPriceAsString))
         console.log('Gas', gasPrice)
+    
+        if(etherPriceAsString === '0'){
+            notification.error({
+                message: "Could not calculate ether",
+                description: 'Check the gas station',
+            });
+        }
 
+        // Transform pixelIds into bignumbers
         let pixels = new Array(selection.length)
         for(let i = 0; i < selection.length; ++i){
             pixels[i] = BigNumber.from(selection[i])
@@ -58,7 +68,8 @@ export default function Pixels(props) {
 
         const tx = Transactor(props.wallet, gasPrice)
         let transaction = await tx( props.writeContract.CryptoPixels.buyPixels(pixels, {
-                gasPrice: gasPrice, 
+                gasPrice: gasPrice,
+                gasLimit: block.gasLimit,
                 value: parseEther(etherPriceAsString)
             })
         )

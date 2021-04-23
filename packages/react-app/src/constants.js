@@ -50,7 +50,7 @@ export const NETWORKS = {
         chainId: 4,
         rpcUrl: `https://rinkeby.infura.io/v3/${INFURA_ID}`,
         faucet: "https://faucet.rinkeby.io/",
-        blockExplorer: "https://rinkeby.etherscan.io/",
+        blockExplorer: `https://rinkeby.infura.io/v3/${INFURA_ID}`,
     },
     ropsten: {
         name: "ropsten",
