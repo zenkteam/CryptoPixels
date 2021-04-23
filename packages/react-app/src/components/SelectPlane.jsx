@@ -29,8 +29,9 @@ export default function SelectPlane(props) {
     return isReserved(id) === false && props.soldPixels.indexOf(id) === -1
   }
 
-  function isReserved(id, topLeft, bottomRight) {
+  function isReserved(id) {
     if(id < 4040 || id > 5961) return false;
+    if(id === 40000) return true;
     let t = id % 1000;
     if(t > 100) t = t % 100;
     return t > 40 && t < 61;
@@ -45,7 +46,7 @@ export default function SelectPlane(props) {
         // Calculate all ids
         const amountRows = to.row - from.row + 1
         const amountColumns = to.column - from.column + 1
-        let ids = [];
+        const ids = [];
         let count = 0;
         for (let i = 0; i < amountRows; ++i){
             for (let j = 0; j < amountColumns; ++j){
@@ -64,7 +65,7 @@ export default function SelectPlane(props) {
         props.removeSelectedArea()
 
         // Create new overlay
-        let overlay = document.createElement('div')
+        const overlay = document.createElement('div')
         overlay.style.setProperty('width', (amountColumns) * 10 + 'px');
         overlay.style.setProperty('height', (amountRows) * 10 + 'px');
         overlay.style.setProperty('margin-left', (from.column - 1) * 10 + 'px');

@@ -21,7 +21,6 @@ const targetNetwork = NETWORKS[network]; // <------- select your target frontend
 function App() {
   const [ soldPixels, setSoldPixels ] = useState([])
   const [ ownPixels, setOwnPixels ] = useState([])
-  const [ updating, setUpdating ] = useState(0)
   const [ centerPieceOwner, setCenterPieceOwner ] = useState(false)
   const [ mainnetProvider, setMainnetProvider ] = useState()
   const [ dappProvider, setDappProvider ] = useState()
@@ -60,12 +59,16 @@ function App() {
 
   // Called one time once read/write contract is available
   useEffect(()=>{
-    if(updating === 0 && ownPixels.length === 0 && walletAddress && readWriteContractViaWallet){
-      setUpdating(1)
-      getSoldPixels()
+    if(ownPixels.length === 0 && readWriteContractViaWallet){
       getOwnPixels()
     }
   }, [readWriteContractViaWallet, readContract]);
+
+  useEffect(()=>{
+    if(soldPixels.length === 0 && readContract){
+      getSoldPixels()
+    }
+  }, [readContract]);
   
   // Request OwnPixels from contract | Seems like we need a 
   async function getOwnPixels() {
