@@ -48,7 +48,6 @@ function App() {
       const pair = await Fetcher.fetchPairData(DAI, WETH[DAI.chainId], mainnetProvider.chainId);
       const route = new URoute([pair], WETH[DAI.chainId]);
       const price = parseFloat(route.midPrice.toSignificant(6));
-      console.log("price", price)
       setPrice(price)
     }
     fetchPrice()

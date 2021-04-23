@@ -48,12 +48,12 @@ export default function Pixels(props) {
 
     async function buyPixel(){
         const etherPriceAsString = priceToBuyInEther.toString()
-        const block = await props.dappProvider.getBlock('latest')
+        // const block = await props.dappProvider.getBlock('latest')
 
-        console.log('Buying', selection)
-        console.log('Price in Ether', priceToBuyInEther)
-        console.log('Price in Ether BIGNUMBER', utils.parseEther(etherPriceAsString))
-        console.log('Gas', gasPrice)
+        // console.log('Buying', selection)
+        // console.log('Price in Ether', priceToBuyInEther)
+        // console.log('Price in Ether BIGNUMBER', utils.parseEther(etherPriceAsString))
+        // console.log('Gas', gasPrice)
     
         if(etherPriceAsString === '0'){
             notification.error({
@@ -71,7 +71,7 @@ export default function Pixels(props) {
         const tx = Transactor(props.wallet, gasPrice)
         let transaction = await tx( props.readWriteContractViaWallet.CryptoPixels.buyPixels(pixels, {
                 gasPrice: gasPrice,
-                gasLimit: block.gasLimit,
+                gasLimit: 220000 * pixels.length,
                 value: parseEther(etherPriceAsString)
             })
         )
