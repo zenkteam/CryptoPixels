@@ -116,7 +116,7 @@ function App() {
         </Link>
 
         <div>
-          <Link to="/trade">Trade</Link>&nbsp;|&nbsp;<Link to="/faq">FAQ</Link>&nbsp;|&nbsp;<Link to="/about">About</Link>
+          <Link to="/trade">Trade</Link>&nbsp;|&nbsp;<Link to="/faq">FAQ</Link>&nbsp;|&nbsp;<Link to="/about">About</Link>&nbsp;|&nbsp;<a href="https://twitter.com/CryptoPixelsOrg" rel="nofollow">Twitter</a>&nbsp;|&nbsp;<a href="https://discord.gg/7SWWSTyJj4" rel="nofollow">Discord</a>
         </div>
         
         <div className="Account">
