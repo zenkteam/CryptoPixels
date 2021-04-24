@@ -48,30 +48,30 @@ body{
   padding-right: 20px;
 }
 
-#headerConnect,
-#menuConnect {
+#headerConnect {
   animation: pulse 2s ease-in-out 1s infinite;
   -webkit-animation: pulse 2s ease-in-out 1s infinite;
   transition: background-color,transform 200ms;
-  font-family: 'Major Mono Display', monospace !important;
-  font-weight: bold !important;
+  font-family: 'Major Mono Display', monospace;
   vertical-align: "top";
   margin-left: 8px;
   margin-top: 4px;
   border-radius: 0;
 }
 
-#headerConnect:hover,
-#menuConnect {
+#headerConnect:hover {
   background: #f58420;
   color: #fff;
   border-color: #fff;
 }
 
-#menuConnect:hover {
+.menuConnect {
+  font-family: 'Major Mono Display', monospace;
+  transition: transform 200ms;
+}
+.menuConnect:hover {
   transform: scale(1.2);
 }
-
 
 /**
 * PIXEL FIELD

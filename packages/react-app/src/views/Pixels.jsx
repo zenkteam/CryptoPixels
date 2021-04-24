@@ -284,16 +284,15 @@ export default function Pixels(props) {
                     {!props.wallet &&
                         <div>
                             <p>You selected <b>{selection.length} pixelblocks</b> but you need to connect your wallet first.</p>
-                            <p>
-                                <Button
-                                key="loginbutton"
-                                size="large"
-                                id="menuConnect"
-                                onClick={props.loadWeb3Modal}
-                                >
-                                Connect
-                                </Button>
-                            </p>
+                            <div className="box-outer hoverme menuConnect">
+                                <div className="main_box" onClick={props.loadWeb3Modal}>
+                                    Connect
+                                    <div className="bar top"></div>
+                                    <div className="bar right delay"></div>
+                                    <div className="bar bottom delay"></div>
+                                    <div className="bar left"></div>
+                                </div>
+                            </div>
                         </div>
                     }
 
