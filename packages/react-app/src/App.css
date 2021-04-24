@@ -984,3 +984,7 @@ body{
 .connected {
   margin: 10px 0;
 }
+
+.ds-selector {
+  display: none;
+}

@@ -11,7 +11,7 @@ import "./App.css";
 import { Account } from "./components";
 import { INFURA_ID, NETWORKS } from "./constants";
 import { useContractLoader } from "./hooks";
-import { About, Faq, Imprint, Pixels, Privacy, Trade, Manage } from "./views";
+import { About, Faq, Imprint, Manage, Pixels, Privacy, Trade } from "./views";
 
 // Switching to "localhost", "mainnet" or "rinkeby" automatically changs the targetNetwork.rpcUrl
 // Define the the variable REACT_APP_NETWORK in your .env file

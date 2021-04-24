@@ -1,20 +1,13 @@
-import React, { useEffect, useState } from "react";
 import { Button, Input } from "antd";
-import { AddressInput } from "../components";
-import { utils, BigNumber, constants } from "ethers";
-import { parseEther } from "@ethersproject/units";
+import { utils } from "ethers";
+import React, { useState } from "react";
 import { Transactor } from "../helpers";
 import { useGasPrice } from "../hooks/index.js";
 
 export default function Manage(props) {
-
-  const [ transferToAddresses, setTransferToAddresses ] = useState()
-  const [ pixelIdToTransfer, setPixelIdToTransfer ] = useState()
   const [ newEtherPrice, setNewEtherPrice ] = useState()
-
   const gasPrice = useGasPrice(props.targetNetwork, "fast");
   const tx = Transactor(props.wallet, gasPrice)
-  
 
   return (
     <div className="textPage">
