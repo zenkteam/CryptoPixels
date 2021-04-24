@@ -346,6 +346,8 @@ body{
   width: 22px;
   height: 22px;
   display: inline-block;
+  color: transparent;
+  overflow: hidden;
 }
 
 #twitter {
@@ -354,6 +356,8 @@ body{
   width: 22px;
   height: 22px;
   display: inline-block;
+  color: transparent;
+  overflow: hidden;
 }
 
 /*.ant-menu{

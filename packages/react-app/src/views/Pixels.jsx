@@ -17,7 +17,7 @@ export default function Pixels(props) {
     const [priceToBuyInDollar, setPriceToBuyInDollar] = useState(0);
     const [priceToBuyInEther, setPriceToBuyInEther] = useState(0);
     const gasPrice = useGasPrice(props.targetNetwork, "fast");
-    const apiLink = props.targetNetwork.name === 'localhost' ? 'http://cryptoapi.test/' : 'https://cryptopixels.org/';
+    // const apiLink = props.targetNetwork.name === 'localhost' ? 'http://cryptoapi.test/' : 'https://cryptopixels.org/';
 
     useEffect(() => {
         if(selection.length>0){

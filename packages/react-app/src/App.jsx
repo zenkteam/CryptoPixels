@@ -21,7 +21,7 @@ const targetNetwork = NETWORKS[network]; // <------- select your target frontend
 function App() {
   const [ soldPixels, setSoldPixels ] = useState([])
   const [ ownPixels, setOwnPixels ] = useState([])
-  const [ centerPieceOwner, setCenterPieceOwner ] = useState(false)
+  // const [ centerPieceOwner, setCenterPieceOwner ] = useState(false)
   const [ mainnetProvider, setMainnetProvider ] = useState()
   const [ dappProvider, setDappProvider ] = useState()
   const [ price, setPrice ] = useState(0)
@@ -73,9 +73,9 @@ function App() {
   async function getOwnPixels() {
     if(walletAddress && readWriteContractViaWallet){
       const ownPixels = await readWriteContractViaWallet.CryptoPixels.getMyPixels()
-      if(ownPixels.indexOf(40000) !== -1){
-        setCenterPieceOwner(true)
-      }
+      // if(ownPixels.indexOf(40000) !== -1){
+      //   setCenterPieceOwner(true)
+      // }
       setOwnPixels(Array.from(ownPixels))
     }
   }
@@ -115,15 +115,15 @@ function App() {
         </Link>
 
         <div className="headerLinks">
-          <a href="https://opensea.io/collection/cryptopixelsorg" title="Trade on OpenSea" rel="nofollow" target="_blank">Trade</a>
+          <a href="https://opensea.io/collection/cryptopixelsorg" title="Trade on OpenSea" rel="noopener nofollow noreferrer" target="_blank">Trade</a>
           &nbsp;|&nbsp;
           <Link to="/faq">FAQ</Link>
           &nbsp;|&nbsp;
           <Link to="/about">About</Link>
           &nbsp;|&nbsp;
-          <a href="https://twitter.com/CryptoPixelsOrg" title="Follow us for Updates and Drops" rel="nofollow" target="_blank" id="twitter"></a>
+          <a href="https://twitter.com/CryptoPixelsOrg" title="Follow us for Updates and Drops" rel="noopener nofollow noreferrer" target="_blank" id="twitter">Twitter</a>
           &nbsp;|&nbsp;
-          <a href="https://discord.gg/7SWWSTyJj4" title="Join our community and trade" rel="nofollow" target="_blank" id="discord"></a>
+          <a href="https://discord.gg/7SWWSTyJj4" title="Join our community and trade" rel="noopener nofollow noreferrer" target="_blank" id="discord">Discord</a>
         </div>
         
         <div className="Account">
