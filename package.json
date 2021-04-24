@@ -15,6 +15,7 @@
     "react-app:start": "yarn workspace cryptopixels start",
     "react-app:test": "yarn workspace cryptopixels test",
     "build": "REACT_APP_NETWORK=mainnet yarn workspace cryptopixels build --max-old-space-size=12288",
+    "scp": "scp -r ./packages/react-app/build/* ubuntu@3.66.139.9:/usr/share/nginx/frontend",
     "chain": "yarn workspace @scaffold-eth/hardhat chain",
     "fork": "yarn workspace @scaffold-eth/hardhat fork",
     "node": "yarn workspace @scaffold-eth/hardhat chain",
