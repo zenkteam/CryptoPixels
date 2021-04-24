@@ -26,13 +26,33 @@ import { useState, useEffect } from "react";
 */
 
 const loadContract = (contractName, signer) => {
+  let address, abi, bytecode;
+  
+  switch (process.env.REACT_APP_NETWORK) {
+    case 'mainnet':
+      address = require(`../contracts/mainnet/${contractName}.address.js`);
+      abi = require(`../contracts/mainnet/${contractName}.abi.js`);
+      bytecode = require(`../contracts/mainnet/${contractName}.address.js`);
+      break;
+    case 'rinkeby':
+      address = require(`../contracts/rinkeby/${contractName}.address.js`);
+      abi = require(`../contracts/rinkeby/${contractName}.abi.js`);
+      bytecode = require(`../contracts/rinkeby/${contractName}.address.js`);
+      break;
+    case 'localhost':
+    default:
+      address = require(`../contracts/${contractName}.address.js`);
+      abi = require(`../contracts/${contractName}.abi.js`);
+      bytecode = require(`../contracts/${contractName}.address.js`);
+  }
+  
   const newContract = new Contract(
-    require(`../contracts/${contractName}.address.js`),
-    require(`../contracts/${contractName}.abi.js`),
+    address,
+    abi,
     signer,
   );
   try {
-    newContract.bytecode = require(`../contracts/${contractName}.bytecode.js`);
+    newContract.bytecode = bytecode;
   } catch (e) {
     console.log(e);
   }
