@@ -105,6 +105,11 @@ export default function Pixels(props) {
         return new Promise((resolve) => setTimeout(resolve, delay))
     }
 
+    function resetSelection() {
+        setSelection([])
+        removeSelectedArea()
+    }
+
     function removeSelectedArea(){
         let selectedArea = document.getElementById('selectedArea')
           if(selectedArea){
@@ -292,7 +297,7 @@ export default function Pixels(props) {
                         </div>
                     }
 
-                    <div onClick={() => setSelection([])}>(Reset)</div>
+                    <div onClick={resetSelection}>(Reset)</div>
                 </div>
                 }
 
