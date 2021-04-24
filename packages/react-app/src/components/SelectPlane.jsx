@@ -232,13 +232,10 @@ export default function SelectPlane(props) {
     ]
     const speeds = ['animate__slow', 'animate__fast', 'animate__faster']
 
-    const el = document.getElementsByClassName('animate__animated')
-    for (let i = el.length - 1; i >= 0; i--) {
-      el[i].remove();
-    }
-
     // Generate random amount of effects
     let amount = 30
+    const wrap = document.createElement('div')
+    wrap.id = 'animate_wrap';
     while (amount > 0) {
       const r = ~~(Math.random() * 10000) + 1
       // Make sure it's not reserved, sold or selected already
@@ -254,10 +251,17 @@ export default function SelectPlane(props) {
         const color = aniColors[~~(x * amountColors)]
         el.style.setProperty('background-color', color)
         el.style.setProperty('border-color', color)
-        container.current.appendChild(el);
+        
+        wrap.appendChild(el);
         amount--;
       }
     }
+
+    // replace
+    const oldWrap = document.getElementById('animate_wrap')
+    if (oldWrap) oldWrap.remove()
+    container.current.appendChild(wrap);
+
     setChangeEffects(false)
   }, [changeEffects])
 
