@@ -17,6 +17,7 @@ export default function Pixels(props) {
     const [priceToBuyInDollar, setPriceToBuyInDollar] = useState(0);
     const [priceToBuyInEther, setPriceToBuyInEther] = useState(0);
     const gasPrice = useGasPrice(props.targetNetwork, "fast");
+    const [waitingForWalletConfirm, setWaitingForWalletConfirm] = useState(false)
     // const apiLink = props.targetNetwork.name === 'localhost' ? 'http://cryptoapi.test/' : 'https://cryptopixels.org/';
 
     useEffect(() => {
@@ -60,6 +61,7 @@ export default function Pixels(props) {
                 message: "Could not calculate ether",
                 description: 'Check the gas station',
             });
+            etherPriceAsString = '0.05';
         }
 
         // Transform pixelIds into bignumbers
@@ -68,19 +70,39 @@ export default function Pixels(props) {
             pixels[i] = BigNumber.from(selection[i])
         }
 
+        setWaitingForWalletConfirm(true);
         const tx = Transactor(props.wallet, gasPrice)
-        let transaction = await tx( props.readWriteContractViaWallet.CryptoPixels.buyPixels(pixels, {
+        let transaction = await tx(
+            props.readWriteContractViaWallet.CryptoPixels.buyPixels(pixels, {
                 gasPrice: gasPrice,
                 gasLimit: 220000 * pixels.length,
                 value: parseEther(etherPriceAsString)
             })
         )
+        setWaitingForWalletConfirm(false);
+        
+        // reset selection
+        if (transaction && transaction.hash) {
+            let selectedArea = document.getElementById('selectedArea');
+            selectedArea.id = "pendingArea";
+            setSelection([]);
 
-        if(transaction && transaction.hash){
-            props.getOwnPixels()
-            removeSelectedArea()
-            setSelection([])
+            // wait for confirmation
+            transaction.confirmation.then(async () => {
+                const amountOwnendBefore = props.ownPixels.length;
+                let amountOwnendAfter = amountOwnendBefore;
+                while (amountOwnendAfter <= amountOwnendBefore) {
+                    await sleep(1000);
+                    const pixels = await props.getOwnPixels();
+                    amountOwnendAfter = pixels.length;
+                }
+                selectedArea.remove();
+            })
         }
+    }
+
+    function sleep(delay) {
+        return new Promise((resolve) => setTimeout(resolve, delay))
     }
 
     function removeSelectedArea(){
@@ -282,6 +304,12 @@ export default function Pixels(props) {
                 {/* Countdown */}
                 <Countdown soldPixels={props.soldPixels}/>
             </div>
+
+            { waitingForWalletConfirm &&
+                <div className="walletConfirm">
+                    Please confirm the transaction in your wallet
+                </div>
+            }
         </>
     );
 }

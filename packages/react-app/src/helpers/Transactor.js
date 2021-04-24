@@ -9,12 +9,23 @@ import Notify from "bnc-notify";
 // it is basically just a wrapper around BlockNative's wonderful Notify.js
 // https://docs.blocknative.com/notify
 
+function defer() {
+  var deferred = {};
+  var promise = new Promise(function(resolve, reject) {
+      deferred.resolve = resolve;
+      deferred.reject  = reject;
+  });
+  deferred.promise = promise;
+  return deferred;
+}
+
 export default function Transactor(provider, gasPrice, etherscan) {
   if (typeof provider !== "undefined") {
     // eslint-disable-next-line consistent-return
     return async tx => {
       const signer = provider.getSigner();
       const network = await provider.getNetwork();
+      const confirmationDeferred = defer();
       console.log("network", network);
       const options = {
         dappId: BLOCKNATIVE_DAPPID, // GET YOUR OWN KEY AT https://account.blocknative.com
@@ -22,7 +33,15 @@ export default function Transactor(provider, gasPrice, etherscan) {
         networkId: network.chainId,
         // darkMode: Boolean, // (default: false)
         transactionHandler: txInformation => {
-          console.log("HANDLE TX", txInformation);
+          switch (txInformation.transaction.status) {
+            case "confirmed":
+              confirmationDeferred.resolve(txInformation.transaction);
+              break;
+            case "sent":
+            case "pending":
+            default:
+              console.log("HANDLE TX", txInformation.transaction);
+          }
         },
       };
       const notify = Notify(options);
@@ -69,8 +88,12 @@ export default function Transactor(provider, gasPrice, etherscan) {
             description: result.hash,
             placement: "bottomRight",
           });
+          setTimeout(() => {
+            confirmationDeferred.resolve();
+          }, 1000);
         }
 
+        result.confirmation = confirmationDeferred.promise;
         return result;
       } catch (e) {
         console.log(e);

@@ -73,10 +73,14 @@ function App() {
   async function getOwnPixels() {
     if(walletAddress && readWriteContractViaWallet){
       const ownPixels = await readWriteContractViaWallet.CryptoPixels.getMyPixels()
+      const ownPixelArray = Array.from(ownPixels)
       // if(ownPixels.indexOf(40000) !== -1){
       //   setCenterPieceOwner(true)
       // }
-      setOwnPixels(Array.from(ownPixels))
+      setOwnPixels(ownPixelArray)
+      return ownPixelArray;
+    } else {
+      return [];
     }
   }
   
