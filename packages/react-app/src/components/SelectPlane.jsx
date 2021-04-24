@@ -12,8 +12,7 @@ export default function SelectPlane(props) {
   let ds = useRef();
 
   const [selected, setSelected] = useState([])
-  const [selectedCryptoPixel, setSelectedCryptoPixel] = useState()
-  const [selectedCryptoPixelTitle, setSelectedCryptoPixelTitle] = useState()
+  // const [selectedCryptoPixel, setSelectedCryptoPixel] = useState(null)
   const [changeEffects, setChangeEffects] = useState(true)
   const [newArea, setNewArea] = useState();
   const effectsOn = true
@@ -49,45 +48,34 @@ export default function SelectPlane(props) {
         const amountRows = to.row - from.row + 1
         const amountColumns = to.column - from.column + 1
         const ids = [];
-        let count = 0;
+        const ownIds = [];
+        const soldIds = [];
         for (let i = 0; i < amountRows; ++i){
             for (let j = 0; j < amountColumns; ++j){
                 const id = from.id + (i*100) + j
                 if (isManipulatable(id)){
-                    ids[count] = id
-                    ++count
+                    ids.push(id);
+                } else if (props.ownPixels.indexOf(id) !== -1) {
+                    ownIds.push(id);
+                } else if (props.soldPixels.indexOf(id) !== -1) {
+                    soldIds.push(id);
                 }
             }
         }
 
-        // Check if it's just one id, that has already been sold but is not mine
-        // Display info-popup
-        // https://ant.design/components/popover/
-        if(ids.length === 1 && props.soldPixels.indexOf(ids[0]) !== -1){
-
-          // If not mine
-          if(props.ownPixels.indexOf(ids[0]) === -1) {
-            // console.log("THIS IS NOT MY PIXEL", ids[0])
-            // const content = (
-            //   <div>
-            //     <p>Content</p>
-            //     <p>Content</p>
-            //   </div>
-            // )
-          } else {
-          // If it's mine
-            // console.log("THIS IS MY PIXEL", ids[0])
-            // const content = (
-            //   <div>
-            //     <p>Content</p>
-            //     <p>Content</p>
-            //   </div>
-            // )
-          }
-
-          setSelectedCryptoPixel()
-          setSelectedCryptoPixelTitle()
-        }
+        // Check if it's just one id => display information
+        // if (ids.length === 1 && ownIds.length === 0 && soldIds.length === 0) {
+        //   const pixel = props.generatePixelData(ids[0])
+        //   setSelectedCryptoPixel(pixel);
+        // } else if (ids.length === 0 && ownIds.length === 1 && soldIds.length === 0) {
+        //   const pixel = props.generatePixelData(ownIds[0])
+        //   setSelectedCryptoPixel(pixel);
+        // } else if (ids.length === 0 && ownIds.length === 0 && soldIds.length === 1) {
+        //   const pixel = props.generatePixelData(soldIds[0])
+        //   setSelectedCryptoPixel(pixel);
+        // } else {
+        //   setSelectedCryptoPixel(null);
+        // }
 
         // Set selected pixels
         selectElements(ids)
@@ -360,15 +348,7 @@ export default function SelectPlane(props) {
             <div className="linked5"></div>
           </div>
         }
-
       </section>
-
-      { selectedCryptoPixel && 
-        <Popover 
-          content={selectedCryptoPixel} 
-          title={selectedCryptoPixelTitle}>
-        </Popover>
-      }
     </div>
   );
 }

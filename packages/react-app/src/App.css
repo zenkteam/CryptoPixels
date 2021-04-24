@@ -985,6 +985,15 @@ body{
   background: green;
 }
 
+/* .selectedPixel {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  margin: 2px;
+  animation: pump 400ms linear infinite;
+  background: white
+} */
+
 .connected {
   margin: 10px 0;
 }
