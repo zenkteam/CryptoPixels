@@ -19,18 +19,6 @@ export default function YourPixels(props) {
       url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
     },
     {
-      uid: '-2',
-      name: 'image.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-3',
-      name: 'image.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
       uid: '-4',
       name: 'image.png',
       status: 'done',
@@ -50,6 +38,46 @@ export default function YourPixels(props) {
     },
   ])
 
+  let loadImages = async () => {
+    //axios
+
+    /* Get from backend:
+    [
+      {
+        pixelId: 1,
+        url: 'http://',
+    ]*/
+  };
+
+  useEffect(()=>{
+    //ownCryptoPixels (startid, width, height)
+    const list = new Array(props.ownCryptoPixels.length)
+    const map = new Array(props.ownCryptoPixels.length)
+    const idList = new Array(props.ownCryptoPixels.length)
+    for(let i = 0; i < props.ownCryptoPixels.length; ++i){
+      list[i] = {
+        uid: props.ownCryptoPixels[i][0],
+        name: 'Your CryptoBlock #' + props.ownCryptoPixels[i][0],
+        status: 'done',
+        maxWidth: props.ownCryptoPixels[i][1],
+        maxHeight: props.ownCryptoPixels[i][2]
+      }
+
+      map[props.ownCryptoPixels[i][0]] = i
+      idList[i] = props.ownCryptoPixels[i][0]
+    }
+
+    const images = loadImages(idList)
+
+    images.then((loadedImages) => {
+      for(let i = 0; i < loadedImages.length; ++i){
+        list[map[loadedImages[i].pixelId]].url = loadedImages[i].url
+      }
+    })
+    
+    setFileList(list)
+  }, [])
+
   let handleCancel = () => {
     setPreviewVisible(false)
   };
@@ -67,10 +95,6 @@ export default function YourPixels(props) {
   let handleChange = ({ fileList }) => {
     setFileList(fileList)
   };
-
-  useEffect(()=>{
-    
-  })
 
   const uploadButton = (
     <div>
@@ -93,9 +117,11 @@ export default function YourPixels(props) {
           fileList={fileList}
           onPreview={handlePreview}
           onChange={handleChange}
+          maxCount={props.ownCryptoPixels.length}
         >
           {fileList.length >= props.ownPixels.length ? null : uploadButton}
         </Upload>
+
         <Modal
           visible={previewVisible}
           title={previewTitle}
