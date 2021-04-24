@@ -14,7 +14,7 @@
     "react-app:eject": "yarn workspace cryptopixels eject",
     "react-app:start": "yarn workspace cryptopixels start",
     "react-app:test": "yarn workspace cryptopixels test",
-    "build": "yarn workspace cryptopixels build --max-old-space-size=12288",
+    "build": "REACT_APP_NETWORK=mainnet yarn workspace cryptopixels build --max-old-space-size=12288",
     "chain": "yarn workspace @scaffold-eth/hardhat chain",
     "fork": "yarn workspace @scaffold-eth/hardhat fork",
     "node": "yarn workspace @scaffold-eth/hardhat chain",

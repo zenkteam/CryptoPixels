@@ -67,25 +67,26 @@ export default function SelectPlane(props) {
 
           // If not mine
           if(props.ownPixels.indexOf(ids[0]) === -1) {
-            console.log("THIS IS NOT MY PIXEL", ids[0])
-            const content = (
-              <div>
-                <p>Content</p>
-                <p>Content</p>
-              </div>
-            )
+            // console.log("THIS IS NOT MY PIXEL", ids[0])
+            // const content = (
+            //   <div>
+            //     <p>Content</p>
+            //     <p>Content</p>
+            //   </div>
+            // )
           } else {
           // If it's mine
-            console.log("THIS IS MY PIXEL", ids[0])
-            const content = (
-              <div>
-                <p>Content</p>
-                <p>Content</p>
-              </div>
-            )
+            // console.log("THIS IS MY PIXEL", ids[0])
+            // const content = (
+            //   <div>
+            //     <p>Content</p>
+            //     <p>Content</p>
+            //   </div>
+            // )
           }
 
           setSelectedCryptoPixel()
+          setSelectedCryptoPixelTitle()
         }
 
         // Set selected pixels
