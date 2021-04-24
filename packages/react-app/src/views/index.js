@@ -5,3 +5,4 @@ export { default as Imprint } from "./Imprint";
 export { default as Privacy } from "./Privacy";
 export { default as Trade } from "./Trade";
 export { default as Manage } from "./Manage";
+export { default as YourPixels } from "./YourPixels";

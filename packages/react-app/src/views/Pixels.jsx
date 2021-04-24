@@ -7,6 +7,7 @@ import { parseEther } from "@ethersproject/units";
 import { useGasPrice } from "../hooks/index.js";
 import Countdown from '../components/Countdown';
 import { notification } from "antd";
+import { Link} from "react-router-dom";
 
 export default function Pixels(props) {
     
@@ -31,19 +32,6 @@ export default function Pixels(props) {
     function onSelected(selection) {
         setMenuToggled(true)
         setSelection(selection)
-    }
-
-    function generatePixelData(id){
-        const column = id % 100 === 0 ? 100 : id % 100
-        const row = ~~((id - 1) / 100) + 1
-
-        return {
-            id: id,
-            column: column,
-            x: (column-1) * 10,
-            row: row,
-            y: (row-1) * 10,
-        };
     }
 
     async function buyPixel(){
@@ -90,16 +78,6 @@ export default function Pixels(props) {
           }
       }
 
-    function createPixel(id){
-        const pixel = generatePixelData(id)
-        let p = document.createElement('div')
-        p.className = 'p'
-        p.style.setProperty('left', pixel.x + 'px')
-        p.style.setProperty('top', pixel.y + 'px')
-        p.setAttribute('id', id)
-        return p
-      }
-
     // zomm Update from Plane
     function onZoomUpdate(z) {
         setZoom(z);
@@ -113,77 +91,10 @@ export default function Pixels(props) {
         setZoom(initialZoom * z);
     }
 
-    useEffect(() => {
-        const soldButNotMine = props.soldPixels.filter((i) => props.ownPixels.indexOf(i) === -1)
-        drawSoldAndOwnedAreas(soldButNotMine, 'sold')
-        drawSoldAndOwnedAreas(props.ownPixels, 'own')
-    }, [props.soldPixels, props.ownPixels])
-
-    function drawSoldAndOwnedAreas(ids, classType){
-        const boxes = document.getElementById('boxes')
-        // We start with the 2nd (i = 1)
-        if(ids.length > 2){
-            let adjacents = [[ids[0]]]
-            let stacked = []
-            
-            ids.sort()
-            let adjacentCount = 0
-            for(let i = 1; i < ids.length; ++i){
-                // If not adjacent, start new row
-                if(ids[i] !== ids[i - 1]+1){
-                    ++adjacentCount
-                }
-
-                // Create row
-                if(!adjacents[adjacentCount]){
-                    adjacents[adjacentCount] = []
-                }
-                
-                // Push id into row
-                adjacents[adjacentCount].push(ids[i])
-            }
-            
-            if(adjacents.length > 1){
-                let stackedCount = 0;
-                for(let j = 1; j < adjacents.length; ++j){
-                    if(!stacked[stackedCount]){
-                        // startId, width, rows
-                        stacked[stackedCount] = [adjacents[j-1][0], adjacents[j-1].length, 1]
-                    }
-                    // Check if two columns have the same length
-                    if(adjacents[j-1].length === adjacents[j].length
-                    && adjacents[j][0] === (adjacents[j-1][0] + 100)){
-                        // Check if adjacents are above
-                        ++stacked[stackedCount][2]
-                    } else {
-                        ++stackedCount 
-                    }
-                }
-            }
-
-            for(let i = 0; i < stacked.length; ++i) {
-                const el = document.getElementById('a' + stacked[i][0])
-                if(el){
-                    el.remove()
-                }
-                const p = createPixel(stacked[i][0])
-                p.classList.add(classType)
-                p.style.setProperty('width', stacked[i][1] * 10 + 'px')
-                p.style.setProperty('height', stacked[i][2] * 10 + 'px')
-                p.setAttribute('id', 'a' + stacked[i][0])
-                boxes.appendChild(p)
-            }
-        }else if (ids.length === 1){
-            const p = createPixel(ids[0])
-            p.classList.add(classType)
-            boxes.appendChild(p)
-        }
-      }
-
-      const [menuToggled, setMenuToggled] = useState(false);
-      function toggleMenu() {
-          setMenuToggled(!menuToggled);
-      }
+    const [menuToggled, setMenuToggled] = useState(false);
+    function toggleMenu() {
+        setMenuToggled(!menuToggled);
+    }
     
     return (
         <>
@@ -196,15 +107,15 @@ export default function Pixels(props) {
                     onZoomUpdate={value => onZoomUpdate(value)}
                     soldPixels={props.soldPixels}
                     ownPixels={props.ownPixels}
-                    generatePixelData={id => generatePixelData(id)}
-                    createPixel={id => createPixel(id)}
+                    generatePixelData={id => props.generatePixelData(id)}
+                    createPixel={id => props.createPixel(id)}
                     removeSelectedArea={removeSelectedArea}
                 ></SelectPlane>
             </div>
            
             <div id="Overlays">
                 {/* Menu */}
-                <div id="menu" className={menuToggled ? 'isToggled' : null } onClick={toggleMenu}>
+                <div id="menu" className={menuToggled ? 'isToggled' : null} onClick={toggleMenu}>
                     {!menuToggled &&
                         <>
                             <div className="close">
@@ -234,6 +145,15 @@ export default function Pixels(props) {
                         <>Info</>
                     }
                 </div>
+
+
+                {/* Menu */
+                    props.ownPixels &&
+                    <Link to="/yourpixels" id="yourPixelsMenu" className={"menu isToggled" + (menuToggled ? ' isHidden' : '')} >
+                        Your Pixels
+                    </Link>
+                }
+
 
                 {selection.length &&
                 <div className="buy">

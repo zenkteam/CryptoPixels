@@ -1,3 +1,4 @@
+import { id } from "@ethersproject/hash";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import { Fetcher, Route as URoute, Token, WETH } from "@uniswap/sdk";
 import WalletConnectProvider from "@walletconnect/web3-provider";
@@ -11,7 +12,7 @@ import "./App.css";
 import { Account } from "./components";
 import { INFURA_ID, NETWORKS } from "./constants";
 import { useContractLoader } from "./hooks";
-import { About, Faq, Imprint, Manage, Pixels, Privacy, Trade } from "./views";
+import { About, Faq, Imprint, Manage, Pixels, Privacy, Trade, YourPixels } from "./views";
 
 // Switching to "localhost", "mainnet" or "rinkeby" automatically changs the targetNetwork.rpcUrl
 // Define the the variable REACT_APP_NETWORK in your .env file
@@ -26,6 +27,7 @@ function App() {
   const [ dappProvider, setDappProvider ] = useState()
   const [ price, setPrice ] = useState(0)
   const [ wallet, setWallet ] = useState()
+  const [ ownCryptoPixels, setOwnCryptoPixels ] = useState([])
 
   // The UserProvider is your wallet
   // We need this for readContract | so that we can read from the blockchain even though no wallet is connected
@@ -88,6 +90,114 @@ function App() {
       soldPixels[i] = soldPixelList[i].toNumber()
     }
     setSoldPixels(soldPixels)
+  }
+
+  // Handle sold and own pixels
+  useEffect(() => {
+    const soldButNotMine = soldPixels.filter((i) => ownPixels.indexOf(i) === -1)
+    const soldCryptoPixels = calculateCryptoPixels(ownPixels)
+    drawSoldAndOwnedAreas(soldButNotMine, 'sold', soldCryptoPixels)
+
+    const ownCryptoPixels = calculateCryptoPixels(ownPixels)
+    setOwnCryptoPixels(ownCryptoPixels)
+    drawSoldAndOwnedAreas(ownPixels, 'own', ownCryptoPixels)
+  }, [soldPixels, ownPixels])
+
+  function createPixel(id){
+    const pixel = generatePixelData(id)
+    let p = document.createElement('div')
+    p.className = 'p'
+    p.style.setProperty('left', pixel.x + 'px')
+    p.style.setProperty('top', pixel.y + 'px')
+    p.setAttribute('id', id)
+    return p
+  }
+
+  function generatePixelData(id){
+    const column = id % 100 === 0 ? 100 : id % 100
+    const row = ~~((id - 1) / 100) + 1
+
+    return {
+        id: id,
+        column: column,
+        x: (column-1) * 10,
+        row: row,
+        y: (row-1) * 10,
+    };
+  }
+
+  // Draw sold and own pixels on the map
+  function drawSoldAndOwnedAreas(ids, classType, cryptoPixels){
+    const boxes = document.getElementById('boxes')
+
+    if(boxes){
+      // We start with the 2nd (i = 1)
+      if(ids.length > 2){
+        for(let i = 0; i < cryptoPixels.length; ++i) {
+            const el = document.getElementById('a' + cryptoPixels[i][0])
+            if(el){
+                el.remove()
+            }
+            const p = createPixel(cryptoPixels[i][0])
+            p.classList.add(classType)
+            p.style.setProperty('width', cryptoPixels[i][1] * 10 + 'px')
+            p.style.setProperty('height', cryptoPixels[i][2] * 10 + 'px')
+            p.setAttribute('id', 'a' + cryptoPixels[i][0])
+            boxes.appendChild(p)
+        }
+      }else if (ids.length === 1){
+        const p = createPixel(ids[0])
+        p.classList.add(classType)
+        boxes.appendChild(p)
+      }
+    }
+  }
+
+  // Calculate areas with edging pixels - we call them "cryptopixels"
+  function calculateCryptoPixels(ids){
+    if(ids.length < 2){
+      return [];
+    }
+
+    const adjacents = [[ids[0]]]
+    const stacked = []
+    
+    ids.sort()
+    let adjacentCount = 0
+    for(let i = 1; i < ids.length; ++i){
+        // If not adjacent, start new row
+        if(ids[i] !== ids[i - 1]+1){
+            ++adjacentCount
+        }
+
+        // Create row
+        if(!adjacents[adjacentCount]){
+            adjacents[adjacentCount] = []
+        }
+        
+        // Push id into row
+        adjacents[adjacentCount].push(ids[i])
+    }
+    
+    if(adjacents.length > 1){
+        let stackedCount = 0;
+        for(let j = 1; j < adjacents.length; ++j){
+            if(!stacked[stackedCount]){
+                // startId, width, rows
+                stacked[stackedCount] = [adjacents[j-1][0], adjacents[j-1].length, 1]
+            }
+            // Check if two columns have the same length
+            if(adjacents[j-1].length === adjacents[j].length
+            && adjacents[j][0] === (adjacents[j-1][0] + 100)){
+                // Check if adjacents are above
+                ++stacked[stackedCount][2]
+            } else {
+                ++stackedCount 
+            }
+        }
+    }
+
+    return stacked;
   }
 
   const loadWeb3Modal = useCallback(async () => {
@@ -157,6 +267,12 @@ function App() {
           <Route path="/faq">
             <Faq/>
           </Route>
+          <Route path="/yourpixels">
+            <YourPixels
+              ownPixels={ownPixels}
+              ownCryptoPixels={ownCryptoPixels}
+            />
+          </Route>
           <Route path="/about">
             <About/>
           </Route>
@@ -180,6 +296,8 @@ function App() {
               loadWeb3Modal={loadWeb3Modal}
               getOwnPixels={getOwnPixels}
               walletAddress={walletAddress}
+              generatePixelData={generatePixelData}
+              createPixel={createPixel}
             />
           </Route>
         </Switch>

@@ -200,9 +200,9 @@ body{
   MENU
 **/
 #menu {
-  position: fixed;
   top: 110px;
   left: 40px;
+  position: fixed;
   padding: 30px 30px;
   text-align: left;
   font-family: 'Roboto Slab', serif;
@@ -217,6 +217,28 @@ body{
   transition: all 800ms;
   overflow: hidden;
   cursor: pointer;
+}
+
+#yourPixelsMenu {
+  position: fixed;
+  top: 92px;
+  left: 140px;
+  margin-left: 0;
+  height: 80px;
+  width: 80px;
+  display: flex;
+  padding: 10px;
+  align-items: center;
+  opacity: 0.8;
+  font-family: 'Major Mono Display', monospace;
+  background: url('./assets/menu.png');
+  background-repeat: no-repeat;
+  background-size:cover;
+  color: #000;
+}
+
+.isHidden {
+  display: hidden;
 }
 
 #menu.isToggled {
@@ -311,6 +333,26 @@ body{
 .main_box:hover {
   cursor: pointer;
 }
+
+/**
+* Images
+*/
+/* tile uploaded pictures */
+.upload-list-inline .ant-upload-list-item {
+  float: left;
+  width: 200px;
+  margin-right: 8px;
+}
+
+.upload-list-inline [class*='-upload-list-rtl'] .ant-upload-list-item {
+  float: right;
+}
+
+.ant-upload-list-item a,
+.ant-upload-list-item-card-actions .anticon{
+  color:#fff;
+}
+
 
 /**
   HEADER
