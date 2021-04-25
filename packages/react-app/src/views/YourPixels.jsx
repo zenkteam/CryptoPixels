@@ -2,20 +2,18 @@ import { Button, Input } from "antd";
 import { utils } from "ethers";
 import React, { useEffect, useState } from "react";
 import { Transactor } from "../helpers";
-import { useGasPrice } from "../hooks/index.js";
 import { Upload, Modal } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { PlusOutlined } from '@ant-design/icons';
 
 export default function YourPixels(props) {
-  const [previewVisible, setPreviewVisible] = useState(false)
-  const [previewImage, setPreviewImage] = useState('')
-  const [previewTitle, setPreviewTitle] = useState('')
 
-  // status: done, uploading, error
-  // 
   const [fileList, setFileList] = useState([])
 
+  // https://ant.design/components/upload/#API
+  // https://github.com/nanxiaobei/antd-img-crop
+
+  // Generate File List
   useEffect(()=>{
     //ownCryptoPixels (startid, width, height)
     const list = new Array(props.ownCryptoPixels.length)
@@ -37,50 +35,27 @@ export default function YourPixels(props) {
         status: 'done',
         maxWidth: props.ownCryptoPixels[i][1],
         maxHeight: props.ownCryptoPixels[i][2],
-        url: imageUrl
+        thumbUrl: imageUrl
       }
     }
     console.log(list)
     setFileList(list)
 
-    /* Add additional information
-    let el = document.getElementsByClassName('.ant-upload-span')
-    for(let i = 0; i < el.length; ++i){
-      el.style.setProperty('content', "This is a fancy orange box.";')
-    }*/
   }, [])
 
-  let handleCancel = () => {
-    setPreviewVisible(false)
-  };
 
   let handlePreview = async file => {
-    let src = file.url;
-    if (!src) {
-      src = await new Promise(resolve => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-      });
-    }
-    const image = new Image();
-    image.src = src;
-    const imgWindow = window.open(src);
-    imgWindow.document.write(image.outerHTML)
-
-
-    /*
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-
-    setPreviewVisible(true)
-    setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1))
-    setPreviewImage(file.url || file.preview)*/
+    console.log("preview", file)
+    document.getElementById('testtest').click()
+    // Call crop form 
   };
 
-  let handleChange = ({ fileList }) => {
-    setFileList(fileList)
+  let handleChange = (info) => {
+    console.log("info", info.file)
+    
+    // Validate size
+
+
   };
 
   const uploadButton = (
@@ -90,56 +65,68 @@ export default function YourPixels(props) {
     </div>
   );
 
+  const CryptoPixelListItem = ({ originNode, file, fileList }) => {
+    const ref = React.useRef();
+    const index = fileList.indexOf(file);
+// {file.status === 'error' ? errorNode : originNode}
+//    const errorNode = <Tooltip title="Upload Error">{originNode.props.children}</Tooltip>;
+
+    // Render the whole file-list. Each file has restrictions which we can handle later in "handlePreview" and validate in "handleChange"
+    return (
+      <div class="ant-upload ant-upload-select ant-upload-select-picture-card" ref={ref}>
+        <span tabindex="0" class="ant-upload" role="button">
+          <input type="file" accept="image/*" style="display: none;"/> <img src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png" alt="image.png" class="ant-upload-list-item-image"></img>
+        </span>
+      </div>
+    );
+  };
+
+
   const upload = {
     action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
     listType: "picture",
     fileList: fileList,
+    className: 'avatar-uploader',
     onPreview: handlePreview,
     onChange: handleChange,
+    itemRender: (originNode, file, currFileList) => (
+      <CryptoPixelListItem
+        originNode={originNode}
+        file={file}
+        fileList={currFileList}
+      />
+    ),
     maxCount: props.ownCryptoPixels.length,
-    beforeUpload(file) {
-      console.log(file)
-      const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-          console.log(this.width);
-          console.log(this.height);
-          
-          
-        };
-
-      return new Promise(resolve => {
-        
-      });
+    beforeUpload(file, fileList) {
+      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+      if (!isJpgOrPng) {
+        //message.error('You can only upload JPG/PNG file!');
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isLt2M) {
+       // message.error('Image must smaller than 2MB!');
+      }
+      
+      // Validate file size metrics
+      console.log(file.width, file.height)
+    
+      return isJpgOrPng && isLt2M;
+  
     },
   }
 
   return (
     <div className="textPage">
-        <h2>Your Pixels</h2>
-        <div>
-          <h3>TRANSFER</h3>
-        </div>
+      <h2>Your Pixels</h2>
+      <div>
+        <h3>TRANSFER</h3>
+      </div>
 
       <>
-      <ImgCrop rotate>
-        <Upload {...upload}>
-          {fileList.length >= props.ownPixels.length ? null : uploadButton}
-        </Upload>
-      </ImgCrop>
-
-        <Modal
-          visible={previewVisible}
-          title={previewTitle}
-          footer={null}
-          onCancel={handleCancel}
-        >
-          <img alt="example" style={{ width: '100%' }} src={previewImage} />
-        </Modal>
+        <ImgCrop rotate id="testtest">
+            <Upload {...upload}></Upload>
+        </ImgCrop>
       </>
-
-        
-        
     </div>
   );
 }
