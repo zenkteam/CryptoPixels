@@ -26,7 +26,7 @@ const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 const defaultNetwork = process.env.REACT_APP_NETWORK || "localhost"; // localhost, mainnet, rinkeby
 const INFURA_ID = process.env.INFURA_ID;
 const RINKEBY_PRIVATE_KEY = process.env.RINKEBY_PRIVATE_KEY;
-const HARDHAT_MAINNET_PRIVATE_KEY = process.env.HARDHAT_MAINNET_PRIVATE_KEY;
+const HARDHAT_MAINNET_PRIVATE_KEY = process.env.HARDHAT_MAINNET_PRIVATE_KEY || process.env.RINKEBY_PRIVATE_KEY;
 
 function mnemonic() {
   try {

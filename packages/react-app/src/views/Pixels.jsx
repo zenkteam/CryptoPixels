@@ -18,6 +18,7 @@ export default function Pixels(props) {
     const [priceToBuyInDollar, setPriceToBuyInDollar] = useState(0);
     const [priceToBuyInEther, setPriceToBuyInEther] = useState(0);
     const gasPrice = useGasPrice(props.targetNetwork, "fast");
+    const [waitingForWalletConfirm, setWaitingForWalletConfirm] = useState(false)
     // const apiLink = props.targetNetwork.name === 'localhost' ? 'http://cryptoapi.test/' : 'https://cryptopixels.org/';
 
     useEffect(() => {
@@ -48,6 +49,7 @@ export default function Pixels(props) {
                 message: "Could not calculate ether",
                 description: 'Check the gas station',
             });
+            etherPriceAsString = '0.05';
         }
 
         // Transform pixelIds into bignumbers
@@ -56,19 +58,44 @@ export default function Pixels(props) {
             pixels[i] = BigNumber.from(selection[i])
         }
 
+        setWaitingForWalletConfirm(true);
         const tx = Transactor(props.wallet, gasPrice)
-        let transaction = await tx( props.readWriteContractViaWallet.CryptoPixels.buyPixels(pixels, {
+        let transaction = await tx(
+            props.readWriteContractViaWallet.CryptoPixels.buyPixels(pixels, {
                 gasPrice: gasPrice,
                 gasLimit: 220000 * pixels.length,
                 value: parseEther(etherPriceAsString)
             })
         )
+        setWaitingForWalletConfirm(false);
+        
+        // reset selection
+        if (transaction && transaction.hash) {
+            let selectedArea = document.getElementById('selectedArea');
+            selectedArea.id = "pendingArea";
+            setSelection([]);
 
-        if(transaction && transaction.hash){
-            props.getOwnPixels()
-            removeSelectedArea()
-            setSelection([])
+            // wait for confirmation
+            transaction.confirmation.then(async () => {
+                const amountOwnendBefore = props.ownPixels.length;
+                let amountOwnendAfter = amountOwnendBefore;
+                while (amountOwnendAfter <= amountOwnendBefore) {
+                    await sleep(1000);
+                    const pixels = await props.getOwnPixels();
+                    amountOwnendAfter = pixels.length;
+                }
+                selectedArea.remove();
+            })
         }
+    }
+
+    function sleep(delay) {
+        return new Promise((resolve) => setTimeout(resolve, delay))
+    }
+
+    function resetSelection() {
+        setSelection([])
+        removeSelectedArea()
     }
 
     function removeSelectedArea(){
@@ -98,7 +125,7 @@ export default function Pixels(props) {
     
     return (
         <>
-            <div className="Content" id="Content">
+            <div className="Content contentGlitch" id="Content">
 
                 <SelectPlane
                     selection={selection}
@@ -156,7 +183,7 @@ export default function Pixels(props) {
 
 
                 {selection.length &&
-                <div className="buy">
+                <div className="buy" style={selection.sort()[selection.length-1] > 5000 ? {'top':'150px','bottom':'auto'} : null}>
                     {props.wallet &&
                         <div>
                             <div id="priceETH">Price for {selection.length*100} pixels: ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
@@ -177,20 +204,19 @@ export default function Pixels(props) {
                     {!props.wallet &&
                         <div>
                             <p>You selected <b>{selection.length} pixelblocks</b> but you need to connect your wallet first.</p>
-                            <p>
-                                <Button
-                                key="loginbutton"
-                                size="large"
-                                id="menuConnect"
-                                onClick={props.loadWeb3Modal}
-                                >
-                                Connect
-                                </Button>
-                            </p>
+                            <div className="box-outer hoverme menuConnect">
+                                <div className="main_box" onClick={props.loadWeb3Modal}>
+                                    Connect
+                                    <div className="bar top"></div>
+                                    <div className="bar right delay"></div>
+                                    <div className="bar bottom delay"></div>
+                                    <div className="bar left"></div>
+                                </div>
+                            </div>
                         </div>
                     }
 
-                    <div onClick={() => setSelection([])}>(Reset)</div>
+                    <div onClick={resetSelection}>(Reset)</div>
                 </div>
                 }
 
@@ -202,6 +228,12 @@ export default function Pixels(props) {
                 {/* Countdown */}
                 <Countdown soldPixels={props.soldPixels}/>
             </div>
+
+            { waitingForWalletConfirm &&
+                <div className="walletConfirm">
+                    Please confirm the transaction in your wallet
+                </div>
+            }
         </>
     );
 }

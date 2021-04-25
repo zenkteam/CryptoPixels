@@ -13,6 +13,9 @@ body{
   position: relative;
   overflow: scroll;
   height: calc(100vh - 72px);
+}
+
+.contentGlitch{
   animation: glitch 4s linear infinite;
 }
 
@@ -48,30 +51,30 @@ body{
   padding-right: 20px;
 }
 
-#headerConnect,
-#menuConnect {
+#headerConnect {
   animation: pulse 2s ease-in-out 1s infinite;
   -webkit-animation: pulse 2s ease-in-out 1s infinite;
   transition: background-color,transform 200ms;
-  font-family: 'Major Mono Display', monospace !important;
-  font-weight: bold !important;
+  font-family: 'Major Mono Display', monospace;
   vertical-align: "top";
   margin-left: 8px;
   margin-top: 4px;
   border-radius: 0;
 }
 
-#headerConnect:hover,
-#menuConnect {
+#headerConnect:hover {
   background: #f58420;
   color: #fff;
   border-color: #fff;
 }
 
-#menuConnect:hover {
+.menuConnect {
+  font-family: 'Major Mono Display', monospace;
+  transition: transform 200ms;
+}
+.menuConnect:hover {
   transform: scale(1.2);
 }
-
 
 /**
 * PIXEL FIELD
@@ -122,8 +125,7 @@ body{
 #selectedArea {
   border: solid 2px transparent;
   position: absolute;
-  opacity: 0.95;
-  z-index: 100;
+  z-index: 120;
 }
 
 #selectedArea div {
@@ -132,6 +134,20 @@ body{
   height: 100%;
   width: 100%;
   animation: pulse 2s ease-in-out 1s infinite;
+}
+
+@keyframes pump_small {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.2);
+  }
+}
+#pendingArea {
+  position: absolute;
+  background: darkgreen;
+  animation: pump_small 400ms infinite;
 }
 
 #center {
@@ -194,6 +210,14 @@ body{
 
 #Overlays.hovering {
   opacity: 0.1;
+}
+
+#focusedWrap{
+  background-color: rgba(255,255,255,.45);
+  height: 100%;
+  width: 100%;
+  animation: pulse 4s ease-in-out 3s infinite;
+  z-index: 90;
 }
 
 /**
@@ -1027,10 +1051,33 @@ body{
   background: green;
 }
 
+/* .selectedPixel {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  margin: 2px;
+  animation: pump 400ms linear infinite;
+  background: white
+} */
+
 .connected {
   margin: 10px 0;
 }
 
 .ds-selector {
   display: none;
+}
+
+.walletConfirm {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0,0,0,.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 30px;
 }

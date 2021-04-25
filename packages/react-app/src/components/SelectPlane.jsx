@@ -12,19 +12,31 @@ export default function SelectPlane(props) {
   let ds = useRef();
 
   const [selected, setSelected] = useState([])
-  const [selectedCryptoPixel, setSelectedCryptoPixel] = useState()
-  const [selectedCryptoPixelTitle, setSelectedCryptoPixelTitle] = useState()
+  // const [selectedCryptoPixel, setSelectedCryptoPixel] = useState(null)
   const [changeEffects, setChangeEffects] = useState(true)
   const [newArea, setNewArea] = useState();
-  const effectsOn = true
+  const [effectsOn, setEffectsOn] = useState(true);
 
+  const initialAmountAnimations = 30
+  const [amountAnimations, setAmountAnimations] = useState(initialAmountAnimations);
 
   function selectElements(ids){
     if (typeof props.onSelected === 'function') {
       props.onSelected(ids);
+
+      // Turn off animations && create focus-layer
+      document.getElementById('Content').classList.remove('contentGlitch')
+      setAmountAnimations(initialAmountAnimations/2)
     }
     setSelected(ids)
   }
+
+  useEffect(()=>{
+    if(selected.length === 0){
+      document.getElementById('Content').classList.add('contentGlitch')
+      setAmountAnimations(initialAmountAnimations)
+    }
+  }, [selected])
 
   function isManipulatable(id){
     // not reserved and not sold
@@ -49,45 +61,34 @@ export default function SelectPlane(props) {
         const amountRows = to.row - from.row + 1
         const amountColumns = to.column - from.column + 1
         const ids = [];
-        let count = 0;
+        const ownIds = [];
+        const soldIds = [];
         for (let i = 0; i < amountRows; ++i){
             for (let j = 0; j < amountColumns; ++j){
                 const id = from.id + (i*100) + j
                 if (isManipulatable(id)){
-                    ids[count] = id
-                    ++count
+                    ids.push(id);
+                } else if (props.ownPixels.indexOf(id) !== -1) {
+                    ownIds.push(id);
+                } else if (props.soldPixels.indexOf(id) !== -1) {
+                    soldIds.push(id);
                 }
             }
         }
 
-        // Check if it's just one id, that has already been sold but is not mine
-        // Display info-popup
-        // https://ant.design/components/popover/
-        if(ids.length === 1 && props.soldPixels.indexOf(ids[0]) !== -1){
-
-          // If not mine
-          if(props.ownPixels.indexOf(ids[0]) === -1) {
-            // console.log("THIS IS NOT MY PIXEL", ids[0])
-            // const content = (
-            //   <div>
-            //     <p>Content</p>
-            //     <p>Content</p>
-            //   </div>
-            // )
-          } else {
-          // If it's mine
-            // console.log("THIS IS MY PIXEL", ids[0])
-            // const content = (
-            //   <div>
-            //     <p>Content</p>
-            //     <p>Content</p>
-            //   </div>
-            // )
-          }
-
-          setSelectedCryptoPixel()
-          setSelectedCryptoPixelTitle()
-        }
+        // Check if it's just one id => display information
+        // if (ids.length === 1 && ownIds.length === 0 && soldIds.length === 0) {
+        //   const pixel = props.generatePixelData(ids[0])
+        //   setSelectedCryptoPixel(pixel);
+        // } else if (ids.length === 0 && ownIds.length === 1 && soldIds.length === 0) {
+        //   const pixel = props.generatePixelData(ownIds[0])
+        //   setSelectedCryptoPixel(pixel);
+        // } else if (ids.length === 0 && ownIds.length === 0 && soldIds.length === 1) {
+        //   const pixel = props.generatePixelData(soldIds[0])
+        //   setSelectedCryptoPixel(pixel);
+        // } else {
+        //   setSelectedCryptoPixel(null);
+        // }
 
         // Set selected pixels
         selectElements(ids)
@@ -244,13 +245,10 @@ export default function SelectPlane(props) {
     ]
     const speeds = ['animate__slow', 'animate__fast', 'animate__faster']
 
-    const el = document.getElementsByClassName('animate__animated')
-    for (let i = el.length - 1; i >= 0; i--) {
-      el[i].remove();
-    }
-
     // Generate random amount of effects
-    let amount = 30
+    let amount = amountAnimations
+    const wrap = document.createElement('div')
+    wrap.id = 'animate_wrap';
     while (amount > 0) {
       const r = ~~(Math.random() * 10000) + 1
       // Make sure it's not reserved, sold or selected already
@@ -266,10 +264,17 @@ export default function SelectPlane(props) {
         const color = aniColors[~~(x * amountColors)]
         el.style.setProperty('background-color', color)
         el.style.setProperty('border-color', color)
-        container.current.appendChild(el);
+        
+        wrap.appendChild(el);
         amount--;
       }
     }
+
+    // replace
+    const oldWrap = document.getElementById('animate_wrap')
+    if (oldWrap) oldWrap.remove()
+    container.current.appendChild(wrap);
+
     setChangeEffects(false)
   }, [changeEffects])
 
@@ -360,15 +365,7 @@ export default function SelectPlane(props) {
             <div className="linked5"></div>
           </div>
         }
-
       </section>
-
-      { selectedCryptoPixel && 
-        <Popover 
-          content={selectedCryptoPixel} 
-          title={selectedCryptoPixelTitle}>
-        </Popover>
-      }
     </div>
   );
 }
