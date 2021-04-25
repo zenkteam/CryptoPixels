@@ -30,8 +30,8 @@ export default function YourPixels(props) {
 
       list[i] = {
         uid: props.ownCryptoPixels[i][0],
-        name: 'CryptoBlock starting at #' + props.ownCryptoPixels[i][0] + ' | Allowed image-size: ' 
-              +props.ownCryptoPixels[i][1]+'px width x '+props.ownCryptoPixels[i][2]+'px height',
+        name: 'CryptoBlock starting at #' + props.ownCryptoPixels[i][0] + 
+              ' | Allowed image-size: ' +props.ownCryptoPixels[i][1] + 'px width x '+props.ownCryptoPixels[i][2]+'px height',
         status: 'done',
         maxWidth: props.ownCryptoPixels[i][1],
         maxHeight: props.ownCryptoPixels[i][2],
@@ -46,7 +46,6 @@ export default function YourPixels(props) {
 
   let handlePreview = async file => {
     console.log("preview", file)
-    document.getElementById('testtest').click()
     // Call crop form 
   };
 
@@ -65,11 +64,18 @@ export default function YourPixels(props) {
     </div>
   );
 
+  
+  // Rundown:
+  // Render custom list item which displays an image as upload button
+  // I guess image crop catches the click event and opens up cropping
+  // handlePreview and handleChange should then validate the file sizes
+  // Upload
+
   const CryptoPixelListItem = ({ originNode, file, fileList }) => {
     const ref = React.useRef();
     const index = fileList.indexOf(file);
-// {file.status === 'error' ? errorNode : originNode}
-//    const errorNode = <Tooltip title="Upload Error">{originNode.props.children}</Tooltip>;
+    // {file.status === 'error' ? errorNode : originNode}
+    //    const errorNode = <Tooltip title="Upload Error">{originNode.props.children}</Tooltip>;
 
     // Render the whole file-list. Each file has restrictions which we can handle later in "handlePreview" and validate in "handleChange"
     return (
@@ -123,7 +129,7 @@ export default function YourPixels(props) {
       </div>
 
       <>
-        <ImgCrop rotate id="testtest">
+        <ImgCrop rotate>
             <Upload {...upload}></Upload>
         </ImgCrop>
       </>
