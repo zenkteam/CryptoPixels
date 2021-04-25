@@ -15,9 +15,9 @@ body{
   height: calc(100vh - 72px);
 }
 
-.contentGlitch{
+/* .contentGlitch{
   animation: glitch 4s linear infinite;
-}
+} */
 
 /**
 * HEADER
