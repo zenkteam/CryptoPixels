@@ -15,6 +15,7 @@ export default function Pixels(props) {
     const [zoom, setZoom] = useState('auto');
     const [initialZoom, setInitialZoom] = useState();
     const [selection, setSelection] = useState([]);
+    const [selectedPixelRanges, setSelectedPixelRanges] = useState([]);
     const [priceToBuyInDollar, setPriceToBuyInDollar] = useState(0);
     const [priceToBuyInEther, setPriceToBuyInEther] = useState(0);
     const gasPrice = useGasPrice(props.targetNetwork, "fast");
@@ -23,6 +24,7 @@ export default function Pixels(props) {
 
     useEffect(() => {
         if(selection.length>0){
+            generatePixelRanges()
             const priceInDollar = selection.length * pricePerPixelBlockInDollar
             const priceInEther = props.price ? (priceInDollar / props.price).toFixed(2) : 0
             setPriceToBuyInDollar(priceInDollar)
@@ -30,6 +32,19 @@ export default function Pixels(props) {
         }
     },[props.price, selection])
     
+    function generatePixelRanges(){
+        const areas = props.calculateCryptoPixels(selection)
+        const pixelRanges = []
+        if(areas.length > 0){
+            for(let i = 0; i < areas.length; ++i){
+                pixelRanges.push(<div className='pixelRange' key={i}><b>{areas[i][3][0]}</b> - <b>{areas[i][3][1]}</b></div>)
+            }
+        }else{
+            pixelRanges.push(<div className='pixelRange'><b>{selection[0]}</b></div>) 
+        }            
+        setSelectedPixelRanges(pixelRanges)
+    }
+
     function onSelected(selection) {
         setMenuToggled(true)
         setSelection(selection)
@@ -173,24 +188,16 @@ export default function Pixels(props) {
                     }
                 </div>
 
-
-                {/* Menu */
-                    props.ownPixels &&
-                    <Link to="/yourpixels" id="yourPixelsMenu" className={"menu isToggled" + (menuToggled ? ' isHidden' : '')} >
-                        Your Pixels
-                    </Link>
-                }
-
-
                 {selection.length &&
                 <div className="buy" style={selection.sort()[selection.length-1] > 5000 ? {'top':'150px','bottom':'auto'} : null}>
                     {props.wallet &&
                         <div>
-                            <div id="priceETH">Price for {selection.length*100} pixels: ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
-                         
+                            <h3>Selected Pixelblocks(s):</h3>
+                            <div>{selectedPixelRanges}</div>
                             <div className="box-outer hoverme" id="buyPixels">
                                 <div className="main_box" onClick={buyPixel}>
                                     Buy and own {selection.length*100} pixels ({selection.length} blocks)
+                                    <br /><small>Price: ETH {priceToBuyInEther} (${priceToBuyInDollar})</small>
                                     <div className="bar top"></div>
                                     <div className="bar right delay"></div>
                                     <div className="bar bottom delay"></div>
@@ -203,9 +210,11 @@ export default function Pixels(props) {
                     
                     {!props.wallet &&
                         <div>
+                            <h3>Selected Pixelblocks(s):</h3>
+                            <div>{selectedPixelRanges}</div>
                             <p>You selected <b>{selection.length} pixelblocks</b> but you need to connect your wallet first.</p>
                             <div className="box-outer hoverme menuConnect">
-                                <div className="main_box" onClick={props.loadWeb3Modal}>
+                                <div className="main_box" onClick={props.loadWeb3Modal}>             
                                     Connect
                                     <div className="bar top"></div>
                                     <div className="bar right delay"></div>

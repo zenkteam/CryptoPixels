@@ -29,6 +29,9 @@ function App() {
   const [ wallet, setWallet ] = useState()
   const [ ownCryptoPixels, setOwnCryptoPixels ] = useState([])
 
+  const assetsUrl = network === 'localhost' ? 'cryptoapi.test/' : 'https://cryptopixels.org/'
+  const assetsUri = assetsUrl + 'uploads/'
+
   // The UserProvider is your wallet
   // We need this for readContract | so that we can read from the blockchain even though no wallet is connected
   const readContract = useContractLoader(dappProvider)
@@ -113,6 +116,7 @@ function App() {
     p.className = 'p'
     p.style.setProperty('left', pixel.x + 'px')
     p.style.setProperty('top', pixel.y + 'px')
+    p.style.setProperty('background-image', 'url(' + assetsUri + id + '.png)') 
     p.setAttribute('id', id)
     return p
   }
@@ -165,13 +169,15 @@ function App() {
 
     const adjacents = [[ids[0]]]
     const stacked = []
+    const idRanges = []
     
     ids.sort()
     let adjacentCount = 0
     for(let i = 1; i < ids.length; ++i){
         // If not adjacent, start new row
         if(ids[i] !== ids[i - 1]+1){
-            ++adjacentCount
+          idRanges[adjacentCount] = [adjacents[adjacentCount][0], adjacents[adjacentCount][ adjacents[adjacentCount].length-1 ]]
+          ++adjacentCount
         }
 
         // Create row
@@ -188,7 +194,7 @@ function App() {
         for(let j = 1; j < adjacents.length; ++j){
             if(!stacked[stackedCount]){
                 // startId, width, rows
-                stacked[stackedCount] = [adjacents[j-1][0], adjacents[j-1].length, 1]
+                stacked[stackedCount] = [adjacents[j-1][0], adjacents[j-1].length, 1, idRanges[j-1]]
             }
             // Check if two columns have the same length
             if(adjacents[j-1].length === adjacents[j].length
@@ -231,6 +237,12 @@ function App() {
         <div className="headerLinks">
           <a href="https://opensea.io/collection/cryptopixelsorg" title="Trade on OpenSea" rel="noopener nofollow noreferrer" target="_blank">Trade</a>
           &nbsp;|&nbsp;
+          {ownPixels.length > 0 &&
+            <>
+              <Link to="/yourpixels">Upload</Link>
+              &nbsp;|&nbsp;
+            </>
+          }
           <Link to="/faq">FAQ</Link>
           &nbsp;|&nbsp;
           <Link to="/about">About</Link>
@@ -276,6 +288,7 @@ function App() {
               ownPixels={ownPixels}
               ownCryptoPixels={ownCryptoPixels}
               network={network}
+              assetsUri={assetsUri}
             />
           </Route>
           <Route path="/about">
@@ -303,6 +316,7 @@ function App() {
               walletAddress={walletAddress}
               generatePixelData={generatePixelData}
               createPixel={createPixel}
+              calculateCryptoPixels={calculateCryptoPixels}
             />
           </Route>
         </Switch>

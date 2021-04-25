@@ -212,14 +212,6 @@ body{
   opacity: 0.1;
 }
 
-#focusedWrap{
-  background-color: rgba(255,255,255,.45);
-  height: 100%;
-  width: 100%;
-  animation: pulse 4s ease-in-out 3s infinite;
-  z-index: 90;
-}
-
 /**
   MENU
 **/
@@ -249,12 +241,12 @@ body{
   left: 140px;
   margin-left: 0;
   height: 80px;
-  width: 80px;
+  width: 70px;
   display: flex;
   padding: 10px;
   align-items: center;
   opacity: 0.8;
-  font-family: 'Major Mono Display', monospace;
+  font-family: 'Roboto Slab', serif;
   background: url('./assets/menu.png');
   background-repeat: no-repeat;
   background-size:cover;
@@ -275,7 +267,7 @@ body{
   padding: 10px;
   align-items: center;
   opacity: 0.8;
-  font-family: 'Major Mono Display', monospace;
+  font-family: 'Roboto Slab', monospace;
 }
 
 .close {
@@ -372,10 +364,12 @@ body{
   float: right;
 }
 
+.ant-upload, 
 .ant-upload-list-item a,
 .ant-upload-list-item-card-actions .anticon{
-  color:#fff;
+  color:#fff !important;
 }
+
 
 
 /**
@@ -864,11 +858,11 @@ body{
 	overflow: hidden;
 	margin: 10px auto;
 	width: 290px;
-	height: 50px;
+	height: 71px;
 }
 .main_box {
 	width: 290px;
-	height: 50px;
+	height: 71px;
 	position: relative;
 	background: #f58420;
 	border: 5px solid white;

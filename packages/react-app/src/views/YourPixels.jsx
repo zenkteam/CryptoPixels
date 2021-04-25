@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Transactor } from "../helpers";
 import { useGasPrice } from "../hooks/index.js";
 import { Upload, Modal } from 'antd';
+import ImgCrop from 'antd-img-crop';
 import { PlusOutlined } from '@ant-design/icons';
 
 export default function YourPixels(props) {
@@ -15,24 +16,30 @@ export default function YourPixels(props) {
   // 
   const [fileList, setFileList] = useState([])
 
-  const assetsUrl = props.network === 'localhost' ? 'cryptoapi.test/' : 'https://cryptopixels.org/'
-  const assetsUri = assetsUrl + 'static/media/images/'
-
   useEffect(()=>{
     //ownCryptoPixels (startid, width, height)
     const list = new Array(props.ownCryptoPixels.length)
-    const idList = new Array(props.ownCryptoPixels.length)
     for(let i = 0; i < props.ownCryptoPixels.length; ++i){
+
+      // Check if image exists or show QR code
+      const imageUrl = props.assetsUri + props.ownCryptoPixels[i][0] + '.png'
+      fetch(imageUrl, { method: 'HEAD' })
+      .then(res => {
+          if (!res.ok) {
+            imageUrl = props.assetsUri + 'pixels/' + props.ownCryptoPixels[i][0] + '.png'
+          }
+      }).catch(err => console.log('Error:', err));
+
       list[i] = {
         uid: props.ownCryptoPixels[i][0],
         name: 'Your CryptoBlock #' + props.ownCryptoPixels[i][0],
         status: 'done',
         maxWidth: props.ownCryptoPixels[i][1],
         maxHeight: props.ownCryptoPixels[i][2],
-        url: assetsUri + props.ownCryptoPixels[i][0] + '.png'
+        url: imageUrl
       }
     }
-    
+    console.log(list)
     setFileList(list)
   }, [])
 
@@ -41,13 +48,28 @@ export default function YourPixels(props) {
   };
 
   let handlePreview = async file => {
+    let src = file.url;
+    if (!src) {
+      src = await new Promise(resolve => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj);
+        reader.onload = () => resolve(reader.result);
+      });
+    }
+    const image = new Image();
+    image.src = src;
+    const imgWindow = window.open(src);
+    imgWindow.document.write(image.outerHTML)
+
+
+    /*
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
 
     setPreviewVisible(true)
     setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1))
-    setPreviewImage(file.url || file.preview)
+    setPreviewImage(file.url || file.preview)*/
   };
 
   let handleChange = ({ fileList }) => {
@@ -61,6 +83,37 @@ export default function YourPixels(props) {
     </div>
   );
 
+  const upload = {
+    action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
+    listType: "picture",
+    fileList: fileList,
+    onPreview: handlePreview,
+    onChange: handleChange,
+    maxCount: props.ownCryptoPixels.length,
+    beforeUpload(file) {
+      return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          const img = document.createElement('img');
+          img.src = reader.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            ctx.fillStyle = 'red';
+            ctx.textBaseline = 'middle';
+            ctx.font = '33px Arial';
+            ctx.fillText('Ant Design', 20, 20);
+            canvas.toBlob(resolve);
+          };
+        };
+      });
+    },
+  }
+
   return (
     <div className="textPage">
         <h2>Your Pixels</h2>
@@ -69,16 +122,11 @@ export default function YourPixels(props) {
         </div>
 
       <>
-        <Upload
-          action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-          listType="picture"
-          fileList={fileList}
-          onPreview={handlePreview}
-          onChange={handleChange}
-          maxCount={props.ownCryptoPixels.length}
-        >
+      <ImgCrop rotate>
+        <Upload {...upload}>
           {fileList.length >= props.ownPixels.length ? null : uploadButton}
         </Upload>
+      </ImgCrop>
 
         <Modal
           visible={previewVisible}
