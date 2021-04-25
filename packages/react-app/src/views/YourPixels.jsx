@@ -28,7 +28,7 @@ export default function YourPixels(props) {
         name: 'Your CryptoBlock #' + props.ownCryptoPixels[i][0],
         status: 'done',
         maxWidth: props.ownCryptoPixels[i][1],
-        maxHeight: props.ownCryptoPixels[i][2]
+        maxHeight: props.ownCryptoPixels[i][2],
         url: assetsUri + props.ownCryptoPixels[i][0] + '.png'
       }
     }
