@@ -11,48 +11,16 @@ export default function YourPixels(props) {
   const [previewImage, setPreviewImage] = useState('')
   const [previewTitle, setPreviewTitle] = useState('')
 
-  const [fileList, setFileList] = useState([
-    {
-      uid: '-1',
-      name: 'image.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-4',
-      name: 'image.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-xxx',
-      percent: 50,
-      name: 'image.png',
-      status: 'uploading',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-5',
-      name: 'image.png',
-      status: 'error',
-    },
-  ])
+  // status: done, uploading, error
+  // 
+  const [fileList, setFileList] = useState([])
 
-  let loadImages = async () => {
-    //axios
-
-    /* Get from backend:
-    [
-      {
-        pixelId: 1,
-        url: 'http://',
-    ]*/
-  };
+  const assetsUrl = props.network === 'localhost' ? 'cryptoapi.test/' : 'https://cryptopixels.org/'
+  const assetsUri = assetsUrl + 'static/media/images/'
 
   useEffect(()=>{
     //ownCryptoPixels (startid, width, height)
     const list = new Array(props.ownCryptoPixels.length)
-    const map = new Array(props.ownCryptoPixels.length)
     const idList = new Array(props.ownCryptoPixels.length)
     for(let i = 0; i < props.ownCryptoPixels.length; ++i){
       list[i] = {
@@ -61,19 +29,9 @@ export default function YourPixels(props) {
         status: 'done',
         maxWidth: props.ownCryptoPixels[i][1],
         maxHeight: props.ownCryptoPixels[i][2]
+        url: assetsUri + props.ownCryptoPixels[i][0] + '.png'
       }
-
-      map[props.ownCryptoPixels[i][0]] = i
-      idList[i] = props.ownCryptoPixels[i][0]
     }
-
-    const images = loadImages(idList)
-
-    images.then((loadedImages) => {
-      for(let i = 0; i < loadedImages.length; ++i){
-        list[map[loadedImages[i].pixelId]].url = loadedImages[i].url
-      }
-    })
     
     setFileList(list)
   }, [])

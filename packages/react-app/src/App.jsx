@@ -275,6 +275,7 @@ function App() {
             <YourPixels
               ownPixels={ownPixels}
               ownCryptoPixels={ownCryptoPixels}
+              network={network}
             />
           </Route>
           <Route path="/about">
