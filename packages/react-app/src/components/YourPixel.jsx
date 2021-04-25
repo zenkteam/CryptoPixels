@@ -59,10 +59,10 @@ export default function YourPixel(props) {
   return (
     <div key={props.cryptoPixel[0]} className="cryptoPixel">
       { (props.cryptoPixel[1] > 1 || props.cryptoPixel[2] > 1) && (
-        <p>Area from Pixel-ID {props.cryptoPixel[3][0]} to Pixel-ID { props.cryptoPixel[3][1] + (props.cryptoPixel[2] - 1) * 100}</p>
+        <div className="cryptoPixelHeader">Area from Pixel-ID {props.cryptoPixel[3][0]} to Pixel-ID { props.cryptoPixel[3][1] + (props.cryptoPixel[2] - 1) * 100}</div>
       )}
       { (props.cryptoPixel[1] === 1 && props.cryptoPixel[2] === 1) && (
-        <p>Pixel-ID {props.cryptoPixel[3][0]}</p>
+        <div className="cryptoPixelHeader">Pixel-ID {props.cryptoPixel[3][0]}</div>
       )}
 
       <div className="cryptoPixelContent">
@@ -92,7 +92,7 @@ export default function YourPixel(props) {
           beforeUpload={beforeUpload}
           onChange={handleChange}
         >
-          {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : (
+          {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: props.cryptoPixel[1] * 10, height: props.cryptoPixel[2] * 10 }} /> : (
             <div>
               {loading ? <LoadingOutlined /> : <PlusOutlined />}
               <div style={{ marginTop: 8 }}>Upload</div>

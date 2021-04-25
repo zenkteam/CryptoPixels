@@ -71,6 +71,8 @@ body{
 .menuConnect {
   font-family: 'Major Mono Display', monospace;
   transition: transform 200ms;
+  font-size: 22px;
+  line-height: 40px;
 }
 .menuConnect:hover {
   transform: scale(1.2);
@@ -1069,7 +1071,13 @@ body{
   border: 1px solid #6f6c6c;
   background-color: rgba(255,255,255,.04);
   color: rgba(255,255,255,.85);
-  padding: 12px 16px;
+  
+  margin-bottom: 20px;
+}
+
+.cryptoPixelHeader {
+  background-color: rgba(255,255,255,.1);
+  padding: 5px 10px;
 }
 
 .cryptoPixelContent {
@@ -1077,6 +1085,7 @@ body{
   align-items: center;
   justify-content: space-between;
   text-align: left;
+  padding: 16px;
 }
 
 .cryptoPixelAreaWrapper {
@@ -1091,6 +1100,9 @@ body{
     border: 1px solid #6f6c6c;
 }
 
+.ant-upload.ant-upload-select-picture-card {
+  margin: 0;
+}
 .ant-upload-picture-card-wrapper {
   width: initial;
   color: black;

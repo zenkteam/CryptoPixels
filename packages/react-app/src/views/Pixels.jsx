@@ -41,7 +41,7 @@ export default function Pixels(props) {
                 pixelRanges.push(<div className='pixelRange' key={i}><b className="rangeFrom">{areas[i][3][0]}</b> <TableOutlined/> <b className="rangeTo">{areas[i][3][1] + areas[i][2] * 100}</b></div>)
             }
         }else{
-            pixelRanges.push(<div className='pixelRange'><b>{selection[0]}</b></div>) 
+            pixelRanges.push(<div className='pixelRange' key="add"><b>{selection[0]}</b></div>) 
         }            
         setSelectedPixelRanges(pixelRanges)
     }
@@ -193,7 +193,7 @@ export default function Pixels(props) {
                 <div className="buy" style={selection.sort()[selection.length-1] > 5000 ? {'top':'150px','bottom':'auto'} : null}>
                     {props.wallet &&
                         <div>
-                            <h3>Selected Pixelblocks(s):</h3>
+                            <h3>Selected Pixelblock{selectedPixelRanges.length > 1 && 's'}:</h3>
                             <div>{selectedPixelRanges}</div>
                             <div className="box-outer hoverme" id="buyPixels">
                                 <div className="main_box" onClick={buyPixel}>
@@ -211,7 +211,7 @@ export default function Pixels(props) {
                     
                     {!props.wallet &&
                         <div>
-                            <h3>Selected Pixelblocks(s):</h3>
+                            <h3>Selected Pixelblock{selectedPixelRanges.length > 1 && 's'}:</h3>
                             <div>{selectedPixelRanges}</div>
                             <p>You selected <b>{selection.length} pixelblocks</b> but you need to connect your wallet first.</p>
                             <div className="box-outer hoverme menuConnect">

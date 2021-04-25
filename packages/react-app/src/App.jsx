@@ -20,6 +20,8 @@ const network = process.env.REACT_APP_NETWORK || 'localhost'
 const targetNetwork = NETWORKS[network]; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 function App() {
+  const assetsUri = process.env.REACT_APP_UPLOADED_URI || 'http://localhost:8888/uploads/'
+  
   const [ soldPixels, setSoldPixels ] = useState([])
   const [ ownPixels, setOwnPixels ] = useState([])
   // const [ centerPieceOwner, setCenterPieceOwner ] = useState(false)
@@ -28,10 +30,7 @@ function App() {
   const [ price, setPrice ] = useState(0)
   const [ wallet, setWallet ] = useState()
   const [ ownCryptoPixels, setOwnCryptoPixels ] = useState([])
-
-  const assetsUrl = network === 'localhost' ? 'cryptoapi.test/' : 'https://cryptopixels.org/'
-  const assetsUri = assetsUrl + 'uploads/'
-
+  
   // The UserProvider is your wallet
   // We need this for readContract | so that we can read from the blockchain even though no wallet is connected
   const readContract = useContractLoader(dappProvider)
@@ -102,7 +101,7 @@ function App() {
   // Handle sold and own pixels
   useEffect(() => {
     const soldButNotMine = soldPixels.filter((i) => ownPixels.indexOf(i) === -1)
-    const soldCryptoPixels = calculateCryptoPixels(ownPixels)
+    const soldCryptoPixels = calculateCryptoPixels(soldButNotMine)
     drawSoldAndOwnedAreas(soldButNotMine, 'sold', soldCryptoPixels)
 
     const ownCryptoPixels = calculateCryptoPixels(ownPixels)
@@ -116,7 +115,6 @@ function App() {
     p.className = 'p'
     p.style.setProperty('left', pixel.x + 'px')
     p.style.setProperty('top', pixel.y + 'px')
-    p.style.setProperty('background-image', 'url(' + assetsUri + id + '.png)') 
     p.setAttribute('id', id)
     return p
   }
@@ -151,6 +149,7 @@ function App() {
             p.style.setProperty('width', cryptoPixels[i][1] * 10 + 'px')
             p.style.setProperty('height', cryptoPixels[i][2] * 10 + 'px')
             p.setAttribute('id', 'a' + cryptoPixels[i][0])
+            p.style.setProperty('background-image', 'url(' + assetsUri + cryptoPixels[i][0] + '.png)') 
             boxes.appendChild(p)
         }
       }else if (ids.length === 1){
