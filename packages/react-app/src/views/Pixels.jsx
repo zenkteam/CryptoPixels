@@ -8,6 +8,7 @@ import { useGasPrice } from "../hooks/index.js";
 import Countdown from '../components/Countdown';
 import { notification } from "antd";
 import { Link} from "react-router-dom";
+import { TableOutlined } from '@ant-design/icons';
 
 export default function Pixels(props) {
     
@@ -37,7 +38,7 @@ export default function Pixels(props) {
         const pixelRanges = []
         if(areas.length > 0){
             for(let i = 0; i < areas.length; ++i){
-                pixelRanges.push(<div className='pixelRange' key={i}><b>{areas[i][3][0]}</b> - <b>{areas[i][3][1]}</b></div>)
+                pixelRanges.push(<div className='pixelRange' key={i}><b className="rangeFrom">{areas[i][3][0]}</b> <TableOutlined/> <b className="rangeTo">{areas[i][3][1] + areas[i][2] * 100}</b></div>)
             }
         }else{
             pixelRanges.push(<div className='pixelRange'><b>{selection[0]}</b></div>) 
