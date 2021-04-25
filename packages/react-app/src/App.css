@@ -13,6 +13,9 @@ body{
   position: relative;
   overflow: scroll;
   height: calc(100vh - 72px);
+}
+
+.contentGlitch{
   animation: glitch 4s linear infinite;
 }
 
@@ -122,7 +125,7 @@ body{
 #selectedArea {
   border: solid 2px transparent;
   position: absolute;
-  z-index: 100;
+  z-index: 120;
 }
 
 #selectedArea div {
@@ -207,6 +210,14 @@ body{
 
 #Overlays.hovering {
   opacity: 0.1;
+}
+
+#focusedWrap{
+  background-color: rgba(255,255,255,.45);
+  height: 100%;
+  width: 100%;
+  animation: pulse 4s ease-in-out 3s infinite;
+  z-index: 90;
 }
 
 /**

@@ -15,15 +15,28 @@ export default function SelectPlane(props) {
   // const [selectedCryptoPixel, setSelectedCryptoPixel] = useState(null)
   const [changeEffects, setChangeEffects] = useState(true)
   const [newArea, setNewArea] = useState();
-  const effectsOn = true
+  const [effectsOn, setEffectsOn] = useState(true);
 
+  const initialAmountAnimations = 30
+  const [amountAnimations, setAmountAnimations] = useState(initialAmountAnimations);
 
   function selectElements(ids){
     if (typeof props.onSelected === 'function') {
       props.onSelected(ids);
+
+      // Turn off animations && create focus-layer
+      document.getElementById('Content').classList.remove('contentGlitch')
+      setAmountAnimations(initialAmountAnimations/2)
     }
     setSelected(ids)
   }
+
+  useEffect(()=>{
+    if(selected.length === 0){
+      document.getElementById('Content').classList.add('contentGlitch')
+      setAmountAnimations(initialAmountAnimations)
+    }
+  }, [selected])
 
   function isManipulatable(id){
     // not reserved and not sold
@@ -233,7 +246,7 @@ export default function SelectPlane(props) {
     const speeds = ['animate__slow', 'animate__fast', 'animate__faster']
 
     // Generate random amount of effects
-    let amount = 30
+    let amount = amountAnimations
     const wrap = document.createElement('div')
     wrap.id = 'animate_wrap';
     while (amount > 0) {

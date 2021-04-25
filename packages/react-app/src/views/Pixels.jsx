@@ -214,7 +214,7 @@ export default function Pixels(props) {
     
     return (
         <>
-            <div className="Content" id="Content">
+            <div className="Content contentGlitch" id="Content">
 
                 <SelectPlane
                     selection={selection}
@@ -263,7 +263,7 @@ export default function Pixels(props) {
                 </div>
 
                 {selection.length &&
-                <div className="buy">
+                <div className="buy" style={selection.sort()[selection.length-1] > 5000 ? {'top':'150px','bottom':'auto'} : null}>
                     {props.wallet &&
                         <div>
                             <div id="priceETH">Price for {selection.length*100} pixels: ETH {priceToBuyInEther} (${priceToBuyInDollar})</div>
