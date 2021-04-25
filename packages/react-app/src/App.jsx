@@ -20,8 +20,6 @@ const network = process.env.REACT_APP_NETWORK || 'localhost'
 const targetNetwork = NETWORKS[network]; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 function App() {
-  const assetsUri = process.env.REACT_APP_UPLOADED_URI || 'http://localhost:8888/uploads/'
-  
   const [ soldPixels, setSoldPixels ] = useState([])
   const [ ownPixels, setOwnPixels ] = useState([])
   // const [ centerPieceOwner, setCenterPieceOwner ] = useState(false)
@@ -29,6 +27,7 @@ function App() {
   const [ dappProvider, setDappProvider ] = useState()
   const [ price, setPrice ] = useState(0)
   const [ wallet, setWallet ] = useState()
+  const [ soldButNotMineCryptoPixels, setSoldButNotMineCryptoPixels] = useState([])
   const [ ownCryptoPixels, setOwnCryptoPixels ] = useState([])
   
   // The UserProvider is your wallet
@@ -102,11 +101,11 @@ function App() {
   useEffect(() => {
     const soldButNotMine = soldPixels.filter((i) => ownPixels.indexOf(i) === -1)
     const soldCryptoPixels = calculateCryptoPixels(soldButNotMine)
-    drawSoldAndOwnedAreas(soldButNotMine, 'sold', soldCryptoPixels)
+    setSoldButNotMineCryptoPixels(soldCryptoPixels)
 
     const ownCryptoPixels = calculateCryptoPixels(ownPixels)
     setOwnCryptoPixels(ownCryptoPixels)
-    drawSoldAndOwnedAreas(ownPixels, 'own', ownCryptoPixels)
+
   }, [soldPixels, ownPixels])
 
   function createPixel(id){
@@ -130,34 +129,6 @@ function App() {
         row: row,
         y: (row-1) * 10,
     };
-  }
-
-  // Draw sold and own pixels on the map
-  function drawSoldAndOwnedAreas(ids, classType, cryptoPixels){
-    const boxes = document.getElementById('boxes')
-
-    if(boxes){
-      // We start with the 2nd (i = 1)
-      if(ids.length > 2){
-        for(let i = 0; i < cryptoPixels.length; ++i) {
-            const el = document.getElementById('a' + cryptoPixels[i][0])
-            if(el){
-                el.remove()
-            }
-            const p = createPixel(cryptoPixels[i][0])
-            p.classList.add(classType)
-            p.style.setProperty('width', cryptoPixels[i][1] * 10 + 'px')
-            p.style.setProperty('height', cryptoPixels[i][2] * 10 + 'px')
-            p.setAttribute('id', 'a' + cryptoPixels[i][0])
-            p.style.setProperty('background-image', 'url(' + assetsUri + cryptoPixels[i][0] + '.png)') 
-            boxes.appendChild(p)
-        }
-      }else if (ids.length === 1){
-        const p = createPixel(ids[0])
-        p.classList.add(classType)
-        boxes.appendChild(p)
-      }
-    }
   }
 
   // Calculate areas with edging pixels - we call them "cryptopixels"
@@ -274,7 +245,7 @@ function App() {
       </div>
 
         <Switch>
-          <Route path="/trade">
+          <Route on path="/trade">
             <Trade/>
           </Route>
           <Route path="/manage">
@@ -295,7 +266,6 @@ function App() {
               ownPixels={ownPixels}
               ownCryptoPixels={ownCryptoPixels}
               network={network}
-              assetsUri={assetsUri}
             />
           </Route>
           <Route path="/about">
@@ -324,6 +294,8 @@ function App() {
               generatePixelData={generatePixelData}
               createPixel={createPixel}
               calculateCryptoPixels={calculateCryptoPixels}
+              soldButNotMineCryptoPixels={soldButNotMineCryptoPixels}
+              ownCryptoPixels={ownCryptoPixels}
             />
           </Route>
         </Switch>

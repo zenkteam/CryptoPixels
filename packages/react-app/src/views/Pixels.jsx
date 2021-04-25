@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { SelectPlane } from "../components";
-import { Button } from "antd";
 import { Transactor } from "../helpers";
 import { BigNumber } from "ethers";
 import { parseEther } from "@ethersproject/units";
 import { useGasPrice } from "../hooks/index.js";
 import Countdown from '../components/Countdown';
 import { notification } from "antd";
-import { Link} from "react-router-dom";
 import { TableOutlined } from '@ant-design/icons';
 
 export default function Pixels(props) {
-    
+
+    const assetsUri = process.env.REACT_APP_UPLOADED_URI || 'http://localhost:8888/uploads/'
     const pricePerPixelBlockInDollar = 100
     const [zoom, setZoom] = useState('auto');
     const [initialZoom, setInitialZoom] = useState();
@@ -137,6 +136,39 @@ export default function Pixels(props) {
     const [menuToggled, setMenuToggled] = useState(false);
     function toggleMenu() {
         setMenuToggled(!menuToggled);
+    }
+
+    useEffect(() => {
+        drawSoldAndOwnedAreas('sold', props.soldButNotMineCryptoPixels)
+        drawSoldAndOwnedAreas('own', props.ownCryptoPixels)
+    }, [props.ownCryptoPixels])
+
+    // Draw sold and own pixels on the map
+    function drawSoldAndOwnedAreas(classType, cryptoPixels){
+        const boxes = document.getElementById('boxes')
+
+        if(boxes){
+            // We start with the 2nd (i = 1)
+            if(cryptoPixels.length > 2){
+                for(let i = 0; i < cryptoPixels.length; ++i) {
+                    const el = document.getElementById('a' + cryptoPixels[i][0])
+                    if(el){
+                        el.remove()
+                    }
+                    const p = props.createPixel(cryptoPixels[i][0])
+                    p.classList.add(classType)
+                    p.style.setProperty('width', cryptoPixels[i][1] * 10 + 'px')
+                    p.style.setProperty('height', cryptoPixels[i][2] * 10 + 'px')
+                    p.setAttribute('id', 'a' + cryptoPixels[i][0])
+                    p.style.setProperty('background-image', 'url(' + assetsUri + cryptoPixels[i][0] + '.png)') 
+                    boxes.appendChild(p)
+                }
+            }else if (cryptoPixels.length === 1){
+                const p = props.createPixel(cryptoPixels[0][0])
+                p.classList.add(classType)
+                boxes.appendChild(p)
+            }
+        }
     }
     
     return (
