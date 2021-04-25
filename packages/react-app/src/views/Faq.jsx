@@ -8,7 +8,7 @@ export default function Faq() {
     {
       id: 1,
       question: "What is Cryptopixels?",
-      answer: "Cryptopixels is a NFT based Grid of 1 Million Pixels. When you buy Cryptopixels NFTs you actually own a dedicated area on cryptopixels.org There you can upload images with a hyperlink, for example to promote your artist page. The price for 1 Pixel is $1. Cryptopixel NFTs are sold in 10x10 Pixel Block (100 Pixels = 1NFT). When 960,000 Pixels have been sold an auction for the last 10,000 Pixels (Center Piece) starts. After the auction ends, all NFTs are revealed.",
+      answer: "Cryptopixels is a NFT based Grid of 1 Million Pixels. When you buy Cryptopixels NFTs you actually own a dedicated area on cryptopixels.org There you can upload images with a hyperlink, for example to promote your artist page. The price for 1 Pixel is $1. Cryptopixel NFTs are sold in 10x10 Pixel Blocks (100 Pixels = 1NFT). When 960,000 Pixels have been sold an auction for the last 40,000 Pixels (Center Piece) starts.",
     },
     {
       id: 2,
@@ -18,7 +18,7 @@ export default function Faq() {
     {
       id: 3,
       question: "What is the maximum amount I can buy?",
-      answer: "There is no maximum amount of pixels you can buy, as long as they are not already sold.",
+      answer: "There is no maximum amount of pixels you can buy, as long as they are not already sold. For bigger orders (40 Blocks or more) you have to place multiple smaller orders.",
     },
     {
       id: 4,
@@ -33,12 +33,17 @@ export default function Faq() {
     {
       id: 6,
       question: "Where can I buy Cryptopixels?",
-      answer: "You can buy Cryptopixels directly on Cryptopixels.org.",
+      answer: "You can buy Cryptopixels directly on Cryptopixels.org or from resellers on the secondary market e.g. Opensea.io",
     },
     {
       id: 7,
       question: "How do I upload an image after I bought the Pixels?",
-      answer: "After you bought the NFT which represents your Pixels, you open CryptoPixels.org and sign in with Metamask or another Wallet of your Choice. Cryptopixels.org then detects your dedicated area and lets you upload your image after the initial sale has ended.",
+      answer: "After you bought the NFT which represents your Pixels, you open CryptoPixels.org and sign in with Metamask or another Wallet of your Choice. Cryptopixels.org then detects your dedicated area and lets you upload your image.",
+    },
+    {
+      id: '7.5',
+      question: "How can I buy Cryptopixels?",
+      answer: "1. Download Metamask or another Ethereum Browser Wallet 2. Transfer Ethereum to your Browser Wallet 3. Click 'Connect' on Cryptopixels.org 4. Select your Pixelblocks 5. Click 'Buy and Own XXX Pixels (X Blocks)' 6. Confirm Transaction in your Wallet."
     },
     {
       id: 8,
@@ -48,7 +53,7 @@ export default function Faq() {
     {
       id: 9,
       question: "Can I sell my NFT?",
-      answer: "Of course. After you bought yourself an NFT you can resel it as you like on all platforms that support NFT integration, including CryptoPixsels.org itself.",
+      answer: "Of course. After you bought yourself an NFT you can resel it as you like on all platforms that support NFT integration.",
     },
     {
       id: 10,
@@ -57,7 +62,7 @@ export default function Faq() {
     },
     {
       id: 11,
-      question: "Do you I have to upload an image after I bought the NFT?",
+      question: "Do I have to upload an image after I bought the NFT?",
       answer: "No, but of course we encourage you to do it. As you also get to choose a hyperlink that guides people who click on your image to your desired destination.",
     },
     {
@@ -83,7 +88,7 @@ export default function Faq() {
     {
       id: 16,
       question: "Why should I buy a pixel block and what can I do with it?",
-      answer: "15 years ago we wrote internet history with the milliondollarpage. Today, we're celebrating a new era of interconnectedness, technology and the blockchain-age. To celebrate this, we want to create a living piece of art that is constantly evolving.",
+      answer: "It's a colllectible that has a function. It allows your to place an image on cryptopixels.org and send people clicking it to your desired location. It's possible that CryptoPixels NFTs can increase in value over time which would allow you to resell it for a higher price than what you bought it for.",
     },
     {
       id: 17,
@@ -95,6 +100,16 @@ export default function Faq() {
       question: "Where are the images stored?",
       answer: "All images are stored on an IFPS - the standard for NFT based blockchain projects. On top we're pinning IPFS hosted files on Arweave to make them permanent.",
     },
+    {
+      id: 19,
+      question: "Why are my gas fees so high?",
+      answer: "There are gas fees and costs for minting the NFT. These can be higher or lower depending on the network usage. Try reloading the website or reconnecting to the site for updated fees."
+    },
+    {
+      id: 20,
+      question: "I want to buy a very big block, but gas fees are too low. What do I do?",
+      answer: "If you want to buy 40 blocks or more at once split your order into multiple smaller ones.",
+    }
   ];
 
   return (

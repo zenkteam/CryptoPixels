@@ -172,9 +172,9 @@ export default function Pixels(props) {
                             
                             <div>Rundown:</div>
                             <div>
-                                Once 9600 Pixelblocks have been sold the the last Centerpiece of 400 Pixelblocks will be auctioned for 2 Weeks.
-                                After the auction closes Pixelblocks can be replaced with images.
-                                You can resell your blocks on our marketplace anytime.
+                                After you have bought a Pixelblock you own a unique CryptoPixel NFT & can upload your image. 
+                                Once 9600 Pixelblocks have been sold the last Centerpiece of 400 Pixelblocks will be auctioned for 2 Weeks. 
+                                You can resell your blocks on the secondary market anytime.
                             </div>
 
                             { props.walletAddress &&
