@@ -112,7 +112,7 @@ body{
 .ds-selector{
   background-color: #f58420 !important;
   opacity: 0.8;
-  border:solid 2px #181818 !important;
+  border:solid 2px #f58420 !important;
   z-index:3 !important
 }
 
