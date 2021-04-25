@@ -196,13 +196,21 @@ function App() {
                 // startId, width, rows
                 stacked[stackedCount] = [adjacents[j-1][0], adjacents[j-1].length, 1, idRanges[j-1]]
             }
-            // Check if two columns have the same length
-            if(adjacents[j-1].length === adjacents[j].length
-            && adjacents[j][0] === (adjacents[j-1][0] + 100)){
-                // Check if adjacents are above
-                ++stacked[stackedCount][2]
-            } else {
-                ++stackedCount 
+
+            // check if adjacent has the same size as previously stacked one
+            let found = false;
+            for (let s = 0; !found && s <= stackedCount; ++s) {
+              if (
+                stacked[s][1] === adjacents[j].length &&
+                (stacked[s][0] + stacked[s][2] * 100) === adjacents[j][0]
+              ) {
+                ++stacked[s][2]
+                found = true
+              }
+            }
+
+            if (!found) {
+              ++stackedCount
             }
         }
     }
