@@ -360,35 +360,6 @@ body{
   cursor: pointer;
 }
 
-/**
-* Images
-*/
-/* tile uploaded pictures */
-.upload-list-inline .ant-upload-list-item {
-  float: left;
-  width: 200px;
-  margin-right: 8px;
-  
-}
-
-.upload-list-inline .ant-upload-list-item::after {
-  background-color: #FFBA10;
-  border-color: black;
-  border-style: dotted;
-  content: attr(data-c)
-}
-
-.upload-list-inline [class*='-upload-list-rtl'] .ant-upload-list-item {
-  float: right;
-}
-
-.ant-upload, 
-.ant-upload-list-item a,
-.ant-upload-list-item-card-actions .anticon{
-  color:#fff !important;
-}
-
-
 
 /**
   HEADER
@@ -1093,3 +1064,35 @@ body{
   color: white;
   font-size: 30px;
 }
+
+.cryptoPixel {
+  border: 1px solid #6f6c6c;
+  background-color: rgba(255,255,255,.04);
+  color: rgba(255,255,255,.85);
+  padding: 12px 16px;
+}
+
+.cryptoPixelContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.cryptoPixelAreaWrapper {
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cryptoPixelArea {
+    background: url('./assets/block.png') repeat;
+    background-size: 10px;
+    border: 1px solid #6f6c6c;
+}
+
+.ant-upload-picture-card-wrapper {
+  width: initial;
+  color: black;
+}
+
