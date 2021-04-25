@@ -32,7 +32,8 @@ export default function YourPixels(props) {
 
       list[i] = {
         uid: props.ownCryptoPixels[i][0],
-        name: 'Your CryptoBlock #' + props.ownCryptoPixels[i][0],
+        name: 'CryptoBlock starting at #' + props.ownCryptoPixels[i][0] + ' | Allowed image-size: ' 
+              +props.ownCryptoPixels[i][1]+'px width x '+props.ownCryptoPixels[i][2]+'px height',
         status: 'done',
         maxWidth: props.ownCryptoPixels[i][1],
         maxHeight: props.ownCryptoPixels[i][2],
@@ -41,6 +42,12 @@ export default function YourPixels(props) {
     }
     console.log(list)
     setFileList(list)
+
+    /* Add additional information
+    let el = document.getElementsByClassName('.ant-upload-span')
+    for(let i = 0; i < el.length; ++i){
+      el.style.setProperty('content', "This is a fancy orange box.";')
+    }*/
   }, [])
 
   let handleCancel = () => {
@@ -91,25 +98,18 @@ export default function YourPixels(props) {
     onChange: handleChange,
     maxCount: props.ownCryptoPixels.length,
     beforeUpload(file) {
-      return new Promise(resolve => {
-        const reader = new FileReader();
+      console.log(file)
+      const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => {
-          const img = document.createElement('img');
-          img.src = reader.result;
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.naturalWidth;
-            canvas.height = img.naturalHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-            ctx.fillStyle = 'red';
-            ctx.textBaseline = 'middle';
-            ctx.font = '33px Arial';
-            ctx.fillText('Ant Design', 20, 20);
-            canvas.toBlob(resolve);
-          };
+          console.log(this.width);
+          console.log(this.height);
+          
+          
         };
+
+      return new Promise(resolve => {
+        
       });
     },
   }

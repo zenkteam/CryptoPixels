@@ -358,6 +358,14 @@ body{
   float: left;
   width: 200px;
   margin-right: 8px;
+  
+}
+
+.upload-list-inline .ant-upload-list-item::after {
+  background-color: #FFBA10;
+  border-color: black;
+  border-style: dotted;
+  content: attr(data-c)
 }
 
 .upload-list-inline [class*='-upload-list-rtl'] .ant-upload-list-item {
