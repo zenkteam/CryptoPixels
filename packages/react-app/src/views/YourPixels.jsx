@@ -54,7 +54,6 @@ export default function YourPixels(props) {
     
     // Validate size
 
-
   };
 
   const uploadButton = (

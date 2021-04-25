@@ -212,6 +212,16 @@ body{
   opacity: 0.1;
 }
 
+.pixelRange .anticon-table{
+  font-size:20px
+}
+.rangeFrom{
+  vertical-align: 15px;
+}
+.rangeTo{
+  vertical-align: -15px;
+}
+
 /**
   MENU
 **/
