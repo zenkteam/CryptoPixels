@@ -1145,18 +1145,24 @@ body{
   border-color: orange;
 }
 
+.cryptoPixelLink .ant-btn[disabled] {
+  color: gray;
+  border-color: gray;
+}
+
 .pixelDetails {
   position: absolute;
   height: 120px;
   width: 300px;
   margin-left: -150px;
-  margin-top: -130px;
-  z-index: 200;
+  left: 50%;
+  z-index: 330;
   padding: 10px;
-  background: rgba(255,255,255,.9);
+  background: white;
 }
 .pixelDetails .details {
   text-align: left;
   overflow: hidden;
   display: block;
+  white-space: nowrap;
 }

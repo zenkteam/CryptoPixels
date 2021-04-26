@@ -90,10 +90,27 @@ export default function Pixels(props) {
 
             // wait for confirmation
             transaction.confirmation.then(async () => {
+                // save in backend
+                const uploadUri = (process.env.REACT_APP_API_URL || '') + 'pixels'
+                for (const pixel of selection) {
+                    fetch(uploadUri, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                          pixel_id: pixel,
+                          pixel_to_id: pixel,
+                          owner: props.walletAddress
+                        })
+                      }).catch(() => {})
+                }
+
+                // update client
                 const amountOwnendBefore = props.ownPixels.length;
                 let amountOwnendAfter = amountOwnendBefore;
                 while (amountOwnendAfter <= amountOwnendBefore) {
-                    await sleep(1000);
+                    await sleep(2000);
                     const pixels = await props.getOwnPixels();
                     amountOwnendAfter = pixels.length;
                 }

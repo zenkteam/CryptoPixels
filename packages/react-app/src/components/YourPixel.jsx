@@ -27,7 +27,7 @@ export default function YourPixel(props) {
   
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState();
-  const [link, setLink] = useState('');
+  const [link, setLink] = useState('https://');
   const [linkValid, setLinkValid] = useState(false);
 
   function handleChange(info) {

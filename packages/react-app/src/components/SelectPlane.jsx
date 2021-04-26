@@ -355,22 +355,12 @@ export default function SelectPlane(props) {
   window.clickPixel = function(id) {
     props.soldButNotMineCryptoPixels.map((pixel) => {
       if (pixel.pixel_id === id) {
-        const gen = generatePixelData(pixel.pixel_id)
-        setSelectedBlock({
-          pixel: pixel,
-          top: gen.y,
-          left: gen.x + pixel.width_px / 2,
-        })
+        setSelectedBlock(pixel)
       }
     })
     props.ownCryptoPixels.map((pixel) => {
       if (pixel.pixel_id === id) {
-        const gen = generatePixelData(pixel.pixel_id)
-        setSelectedBlock({
-          pixel: pixel,
-          top: gen.y,
-          left: gen.x + pixel.width_px / 2,
-        })
+        setSelectedBlock(pixel)
       }
     })
   }
@@ -384,7 +374,7 @@ export default function SelectPlane(props) {
 
     if (selectedBlock) {
       // enable
-      let el = document.getElementById('a' + selectedBlock.pixel.pixel_id);
+      let el = document.getElementById('a' + selectedBlock.pixel_id);
       el.classList.add('blockSelected');
     }
   }, [selectedBlock])
@@ -476,19 +466,21 @@ export default function SelectPlane(props) {
           </div>
         }
 
-        { selectedBlock &&
-          <div className="pixelDetails" style={{ top: selectedBlock.top, left: selectedBlock.left }}>
-            <div className='pixelRange' key={selectedBlock.pixel.pixel_id}><b className="rangeFrom">{selectedBlock.pixel.pixel_id}</b> <TableOutlined/> <b className="rangeTo">{selectedBlock.pixel.pixel_to_id}</b></div>
+      </section>
+
+      { selectedBlock &&
+          <div className="pixelDetails" style={selectedBlock.pixel_id > 5000 ? {top: 180} : { bottom: 180}}>
+            <div className='pixelRange' key={selectedBlock.pixel_id}><b className="rangeFrom">{selectedBlock.pixel_id}</b> <TableOutlined/> <b className="rangeTo">{selectedBlock.pixel_to_id}</b></div>
             
             <table className="details">
               <tbody>
                 <tr>
                   <td>owner:</td>
                   <td>
-                    { selectedBlock.pixel.owner &&
-                      <a traget="_blank" rel="noopener roreferrer" href="https://etherscan.io/address/{selectedBlock.pixel.owner}">{selectedBlock.pixel.owner}</a>
+                    { selectedBlock.owner &&
+                      <a traget="_blank" rel="noopener roreferrer" href="https://etherscan.io/address/{selectedBlock.owner}">{selectedBlock.owner}</a>
                     }
-                    { !selectedBlock.pixel.owner &&
+                    { !selectedBlock.owner &&
                       <>??</>
                     }
                   </td>
@@ -496,10 +488,10 @@ export default function SelectPlane(props) {
                 <tr>
                   <td>link:</td>
                   <td>
-                    { selectedBlock.pixel.link &&
-                      <a target="_blank" rel="noopener noreferrer" href={selectedBlock.pixel.link}>{selectedBlock.pixel.link}</a>
+                    { selectedBlock.link &&
+                      <a target="_blank" rel="noopener noreferrer" href={selectedBlock.link}>{selectedBlock.link}</a>
                     }
-                    { !selectedBlock.pixel.link &&
+                    { !selectedBlock.link &&
                       <>-</>
                     }
                   </td>
@@ -510,7 +502,6 @@ export default function SelectPlane(props) {
   
           </div>
         }
-      </section>
     </div>
   );
 }

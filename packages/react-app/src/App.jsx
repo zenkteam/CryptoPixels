@@ -193,8 +193,6 @@ function App() {
         matchingPixel.owner = pixel.owner;
         matchingPixel.link = pixel.link;
         matchingPixel.image = pixel.image;
-      } else {
-        soldCryptoPixels.push(pixel)
       }
     }
     setSoldButNotMineCryptoPixels(soldCryptoPixels)
@@ -210,8 +208,6 @@ function App() {
         matchingPixel.owner = pixel.owner;
         matchingPixel.link = pixel.link;
         matchingPixel.image = pixel.image;
-      } else {
-        ownCryptoPixels.push(pixel)
       }
     }
     setOwnCryptoPixels(ownCryptoPixels)

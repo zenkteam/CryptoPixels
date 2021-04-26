@@ -7,7 +7,7 @@ export default function About() {
       <h2>About</h2>
 
       <div className="textBlock">
-        <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/x2_ForTGv_g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/p1M83vLxxgQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
 
       <div className="textBlock" style={{marginTop:'30px'}}>
