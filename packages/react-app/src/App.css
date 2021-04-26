@@ -34,6 +34,25 @@ body{
   color: #f58420;
 }
 
+.ant-page-header-heading-sub-title {
+  animation: typing 3s steps(52), blink .5s step-end infinite alternate;
+  overflow: hidden;
+  border-right: 3px solid;
+  width: 52ch;
+}
+
+@keyframes typing {
+  from {
+    width: 0
+  }
+}
+    
+@keyframes blink {
+  50% {
+    border-color: transparent
+  }
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -162,6 +181,11 @@ body{
   background: url('./assets/block.png') repeat;
   background-size: 10px;
 }
+
+#center:hover{
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>🚀</text></svg>"), auto;
+}
+
 .flip-box {
   background-color: transparent;
   width: 200px;
@@ -1170,6 +1194,7 @@ body{
   z-index: 330;
   padding: 10px;
   background: white;
+  filter: drop-shadow(2px 4px 8px #585858);
 }
 .pixelDetails .details {
   margin-top:10px;
