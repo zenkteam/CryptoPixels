@@ -14,15 +14,15 @@ class PixelsController extends Controller
 
     public function create(Request $request) {
         $validatedData = $request->validate([
-            'id' => 'required|int|min:1|max:10000',
-            'to' => 'int|min:1|max:10000',
+            'pixel_id' => 'required|int|min:1|max:10000',
+            'pixel_to_id' => 'required|int|min:1|max:10000',
             'owner' => 'string',
             'image' => 'image|mimes:png|max:2048',
             'link' => 'url',
         ]);
 
-        $pixelId = (int) $request->id;
-        $pixelToId = (int) $request->to;
+        $pixelId = (int) $request->pixel_id;
+        $pixelToId = (int) $request->pixel_to_id;
 
         $owner = $request->owner;
         $imageName = null;
@@ -40,11 +40,12 @@ class PixelsController extends Controller
         if ($pixel) $pixel->delete();
         $newPixel = Pixel::create([
             'pixel_id' => $pixelId,
-            'pixel_to_id' => $pixelToId ?: $pixelId,
+            'pixel_to_id' => $pixelToId,
             'owner' => $owner ?: ($pixel ? $pixel->owner : null), // ToDo: fill after verification
             'image' => $imageName ?: ($pixel ? $pixel->image : null),
             'link' => $link ?: ($pixel ? $pixel->link : null),
         ]);
 
+        return $newPixel;
     }
 }

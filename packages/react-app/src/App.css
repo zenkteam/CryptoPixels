@@ -1108,3 +1108,30 @@ body{
   color: black;
 }
 
+.cryptoPixelLink {
+  padding: 16px;
+}
+
+.cryptoPixelLink input {
+  border: 1px solid #6f6c6c;
+  background-color: rgba(255,255,255,.1);
+  margin: 0 16px;
+  padding: 4px 12px;
+}
+
+.cryptoPixelLink .ant-btn {
+  background-color: rgba(255,255,255,.1);
+  color: white;
+}
+
+.cryptoPixelLink .ant-btn[disabled] {
+  color: gray;
+  border-color: gray;
+}
+
+.cryptoPixelLink .ant-btn:hover,
+.cryptoPixelLink .ant-btn:focus {
+  color: orange;
+  background-color: rgba(255,255,255,.1);
+  border-color: orange;
+}
