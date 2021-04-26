@@ -75,6 +75,7 @@ function App() {
   
   // Calculate areas with edging pixels - we call them "cryptopixels"
   function calculateCryptoPixels(ids){
+
     // handle border cases
     if (ids.length === 0) {
       return [];
@@ -98,7 +99,7 @@ function App() {
     const idRanges = []
     
     let adjacentCount = 0
-    for(let i = 1; i < ids.length; ++i){
+    for(let i = 1; i <= ids.length; ++i){
         // If not adjacent, start new row
         if(ids[i] !== ids[i - 1]+1){
           idRanges[adjacentCount] = [adjacents[adjacentCount][0], adjacents[adjacentCount][ adjacents[adjacentCount].length-1 ]]
@@ -113,30 +114,34 @@ function App() {
         // Push id into row
         adjacents[adjacentCount].push(ids[i])
     }
-    
+
     if(adjacents.length > 1){
         let stackedCount = 0;
-        for(let j = 1; j < adjacents.length; ++j){
+        for(let j = 1; j <= adjacents.length; ++j){
+          let found = false;
+          if(adjacents[j-1][0]){
             if(!stacked[stackedCount]){
-                // startId, width, rows
-                stacked[stackedCount] = [adjacents[j-1][0], adjacents[j-1].length, 1, idRanges[j-1]]
+              // startId, width, rows
+              stacked[stackedCount] = [adjacents[j-1][0], adjacents[j-1].length, 1, idRanges[j-1]]
             }
 
             // check if adjacent has the same size as previously stacked one
-            let found = false;
-            for (let s = 0; !found && s <= stackedCount; ++s) {
-              if (
-                stacked[s][1] === adjacents[j].length &&
-                (stacked[s][0] + stacked[s][2] * 100) === adjacents[j][0]
-              ) {
-                ++stacked[s][2]
-                found = true
+            if(adjacents[j-1].length > 1){
+              for (let s = 0; !found && s <= stackedCount; ++s) {
+                if (
+                  stacked[s][1] === adjacents[j].length &&
+                  (stacked[s][0] + stacked[s][2] * 100) === adjacents[j][0]
+                ) {
+                  ++stacked[s][2]
+                  found = true
+                }
               }
             }
+          }
 
-            if (!found) {
-              ++stackedCount
-            }
+          if (!found) {
+            ++stackedCount
+          }
         }
     }
 
@@ -198,6 +203,7 @@ function App() {
 
     const soldButNotMine = soldPixels.filter((i) => ownPixels.indexOf(i) === -1)
     const soldCryptoPixels = calculateCryptoPixels(soldButNotMine)
+
     // extend with api pixels
     for (const pixel of soldButNotMineApiPixels) {
       const matchingPixel = soldCryptoPixels.find((sold) => sold.pixel_id === pixel.pixel_id);
