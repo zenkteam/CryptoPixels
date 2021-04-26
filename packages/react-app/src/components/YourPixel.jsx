@@ -29,18 +29,18 @@ export default function YourPixel(props) {
   const [imageUrl, setImageUrl] = useState();
   
   // check if image exists
-  useEffect(() => {
-    const imageUrl = assetsUri + props.cryptoPixel[0] + '.png'
-    fetch(imageUrl, { method: 'HEAD' })
-      .then(res => {
-        if (res.ok) {
-          setImageUrl(imageUrl);
-        }
-      })
-      .catch(() => {
-        // ignore
-      })
-  }, [])
+  // useEffect(() => {
+  //   const imageUrl = assetsUri + props.cryptoPixel[0] + '.png'
+  //   fetch(imageUrl, { method: 'HEAD' })
+  //     .then(res => {
+  //       if (res.ok) {
+  //         setImageUrl(imageUrl);
+  //       }
+  //     })
+  //     .catch(() => {
+  //       // ignore
+  //     })
+  // }, [])
 
   function handleChange(info) {
     if (info.file.status === 'uploading') {

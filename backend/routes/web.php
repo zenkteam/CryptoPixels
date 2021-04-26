@@ -2,10 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MetaController;
-use App\Http\Controllers\ImagesController;
+use App\Http\Controllers\PixelsController;
 
+// public pixel information
 Route::get('pixel/{id}', MetaController::class.'@getPixel');
-Route::post('images', ImagesController::class.'@upload');
+
+// pixel details
+Route::get('pixels', PixelsController::class.'@all');
+Route::post('pixels', PixelsController::class.'@create');
 
 Route::get('/', function () {
     exit("Pepe? Is it you?");

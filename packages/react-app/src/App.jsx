@@ -200,6 +200,15 @@ function App() {
     }
   }, [loadWeb3Modal]);
 
+
+  useEffect(() => {
+    fetch(process.env.REACT_APP_API_URL + 'pixels')
+      .then(res => res.json())
+      .then((pixels) => {
+        console.log('pixels', pixels);
+      });
+  }, []);
+
   return (
     <div className="App">
       <BrowserRouter>
