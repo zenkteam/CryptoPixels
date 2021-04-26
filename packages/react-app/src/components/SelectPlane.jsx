@@ -478,7 +478,7 @@ export default function SelectPlane(props) {
                   <td>owner:</td>
                   <td>
                     { selectedBlock.owner &&
-                      <a traget="_blank" rel="noopener roreferrer" href="https://etherscan.io/address/{selectedBlock.owner}">{selectedBlock.owner}</a>
+                      <a traget="_blank" rel="noopener roreferrer" href={'https://etherscan.io/address/' + selectedBlock.owner}>{selectedBlock.owner}</a>
                     }
                     { !selectedBlock.owner &&
                       <>??</>
@@ -489,7 +489,7 @@ export default function SelectPlane(props) {
                   <td>link:</td>
                   <td>
                     { selectedBlock.link &&
-                      <a target="_blank" rel="noopener noreferrer" href={selectedBlock.link}>{selectedBlock.link}</a>
+                      <a target="_blank" rel="noopener noreferrer" href={selectedBlock.link}>{prettyUrl(selectedBlock.link)}</a>
                     }
                     { !selectedBlock.link &&
                       <>-</>
@@ -504,4 +504,14 @@ export default function SelectPlane(props) {
         }
     </div>
   );
+}
+
+function prettyUrl(url){
+  const getLocation = function(href) {
+    const l = document.createElement('a');
+    l.href = href;
+    return l;
+  };
+  const l = getLocation(url);
+  return l.hostname.replace('www.','') + l.pathname
 }

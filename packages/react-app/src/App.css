@@ -1164,7 +1164,7 @@ body{
 .pixelDetails {
   position: absolute;
   height: 120px;
-  width: 300px;
+  width: 350px;
   margin-left: -150px;
   left: 50%;
   z-index: 330;
@@ -1172,8 +1172,10 @@ body{
   background: white;
 }
 .pixelDetails .details {
+  margin-top:10px;
   text-align: left;
   overflow: hidden;
   display: block;
   white-space: nowrap;
+  font-size:12px;
 }
