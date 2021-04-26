@@ -378,6 +378,7 @@ body{
   border:none;
   cursor: pointer;
   z-index: 200; /* on top of selected area */
+  background-size: contain;
 }
 
 .sold:hover,
