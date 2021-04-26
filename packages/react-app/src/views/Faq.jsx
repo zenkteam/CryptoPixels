@@ -114,6 +114,7 @@ export default function Faq() {
 
   return (
     <div className="textPage">
+      <div className="textPageContent">
         <h2>FAQ</h2>
 
         <Collapse className="faq" accordion defaultActiveKey={['1']}>
@@ -123,6 +124,7 @@ export default function Faq() {
             </Panel>
           ))}
         </Collapse>
+      </div>
     </div>
   );
 }

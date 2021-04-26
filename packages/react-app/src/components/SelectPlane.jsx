@@ -353,12 +353,12 @@ export default function SelectPlane(props) {
 
 
   window.clickPixel = function(id) {
-    props.soldButNotMineCryptoPixels.map((pixel) => {
+    props.soldButNotMineCryptoPixels.forEach((pixel) => {
       if (pixel.pixel_id === id) {
         setSelectedBlock(pixel)
       }
     })
-    props.ownCryptoPixels.map((pixel) => {
+    props.ownCryptoPixels.forEach((pixel) => {
       if (pixel.pixel_id === id) {
         setSelectedBlock(pixel)
       }

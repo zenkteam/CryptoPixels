@@ -1,4 +1,3 @@
-import { id } from "@ethersproject/hash";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import { Fetcher, Route as URoute, Token, WETH } from "@uniswap/sdk";
 import WalletConnectProvider from "@walletconnect/web3-provider";

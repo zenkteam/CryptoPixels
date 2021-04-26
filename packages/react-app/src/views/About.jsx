@@ -4,10 +4,11 @@ export default function About() {
 
   return (
     <div className="textPage">
+    <div className="textPageContent">
       <h2>About</h2>
 
       <div className="textBlock">
-        <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/p1M83vLxxgQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <iframe width="726" height="410" style={{maxWidth: '100%'}} src="https://www.youtube-nocookie.com/embed/p1M83vLxxgQ" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
       </div>
 
       <div className="textBlock" style={{marginTop:'30px'}}>
@@ -27,6 +28,7 @@ export default function About() {
 
         <p>Oskar's current channel is about trying new business ideas. He'll use the money to try risikier things and to be able to make a living as a creator.</p>
       </div>
+    </div>
     </div>
   );
 }
