@@ -9,8 +9,6 @@ import { notification } from "antd";
 import { TableOutlined } from '@ant-design/icons';
 
 export default function Pixels(props) {
-
-    const assetsUri = process.env.REACT_APP_UPLOADED_URI || 'http://localhost:8888/uploads/'
     const pricePerPixelBlockInDollar = 100
     const [zoom, setZoom] = useState('auto');
     const [initialZoom, setInitialZoom] = useState();
@@ -137,75 +135,10 @@ export default function Pixels(props) {
     function toggleMenu() {
         setMenuToggled(!menuToggled);
     }
-
-    useEffect(() => {
-        drawSoldAndOwnedAreas('sold', props.soldButNotMineCryptoPixels)
-        drawSoldAndOwnedAreas('own', props.ownCryptoPixels)
-    }, [props.ownCryptoPixels])
-
-    // Draw sold and own pixels on the map
-    function drawSoldAndOwnedAreas(classType, cryptoPixels){
-        const boxes = document.getElementById('boxes')
-        if (!boxes) {
-            return;
-        }
-
-        for (const pixel of cryptoPixels) {
-            // get or create element
-            let el = document.getElementById('a' + pixel.pixel_id);
-            const exists = !!el;
-            if (!exists) {
-                el = createPixel(pixel.pixel_id)
-            }
-
-            el.classList.add(classType)
-            el.style.setProperty('width', pixel.width_px + 'px')
-            el.style.setProperty('height', pixel.height_px + 'px')
-            el.setAttribute('id', 'a' + pixel.pixel_id)
-            if (pixel.image) {
-                el.style.setProperty('background-image', `url(${assetsUri}${pixel.image})`) 
-            }
-            if (pixel.owner) {
-                el.setAttribute('data-owner', pixel.owner)
-            }
-            if (pixel.link) {
-                el.setAttribute('data-link', pixel.link)
-            }
-
-            // add to dom, if not done already
-            if (!exists) {
-                boxes.appendChild(el);
-            }
-        }
-    }
-
-    function createPixel(id){
-        const pixel = generatePixelData(id)
-        let p = document.createElement('div')
-        p.className = 'p'
-        p.style.setProperty('left', pixel.x + 'px')
-        p.style.setProperty('top', pixel.y + 'px')
-        p.setAttribute('id', id)
-        return p
-      }
-    
-    function generatePixelData(id){
-        const column = id % 100 === 0 ? 100 : id % 100
-        const row = ~~((id - 1) / 100) + 1
-    
-        return {
-            id: id,
-            column: column,
-            x: (column-1) * 10,
-            row: row,
-            y: (row-1) * 10,
-        };
-      }
     
     return (
         <>
             <div className="Content contentGlitch" id="Content">
-
                 <SelectPlane
                     selection={selection}
                     zoom={zoom}
@@ -213,8 +146,8 @@ export default function Pixels(props) {
                     onZoomUpdate={value => onZoomUpdate(value)}
                     soldPixels={props.soldPixels}
                     ownPixels={props.ownPixels}
-                    generatePixelData={id => generatePixelData(id)}
-                    createPixel={id => createPixel(id)}
+                    soldButNotMineCryptoPixels={props.soldButNotMineCryptoPixels}
+                    ownCryptoPixels={props.ownCryptoPixels}
                     removeSelectedArea={removeSelectedArea}
                 ></SelectPlane>
             </div>

@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import DragSelect from "dragselect";
-import { Popover } from "antd";
+import { TableOutlined } from '@ant-design/icons';
 
 export default function SelectPlane(props) {
   const headerHeight = 120;
   const initialSize = 1000; // Overall pixel-matrix dimension
+  const assetsUri = process.env.REACT_APP_UPLOADED_URI || 'http://localhost:8888/uploads/'
 
   let container = useRef();
   let overlays = useRef();
@@ -16,6 +17,7 @@ export default function SelectPlane(props) {
   const [changeEffects, setChangeEffects] = useState(true)
   const [newArea, setNewArea] = useState();
   const [effectsOn, setEffectsOn] = useState(true);
+  const [selectedBlock, setSelectedBlock] = useState(null);
 
   const initialAmountAnimations = 30
   const [amountAnimations, setAmountAnimations] = useState(initialAmountAnimations);
@@ -78,13 +80,13 @@ export default function SelectPlane(props) {
 
         // Check if it's just one id => display information
         // if (ids.length === 1 && ownIds.length === 0 && soldIds.length === 0) {
-        //   const pixel = props.generatePixelData(ids[0])
+        //   const pixel = generatePixelData(ids[0])
         //   setSelectedCryptoPixel(pixel);
         // } else if (ids.length === 0 && ownIds.length === 1 && soldIds.length === 0) {
-        //   const pixel = props.generatePixelData(ownIds[0])
+        //   const pixel = generatePixelData(ownIds[0])
         //   setSelectedCryptoPixel(pixel);
         // } else if (ids.length === 0 && ownIds.length === 0 && soldIds.length === 1) {
-        //   const pixel = props.generatePixelData(soldIds[0])
+        //   const pixel = generatePixelData(soldIds[0])
         //   setSelectedCryptoPixel(pixel);
         // } else {
         //   setSelectedCryptoPixel(null);
@@ -95,6 +97,9 @@ export default function SelectPlane(props) {
 
         // Remove existing overlay
         props.removeSelectedArea()
+
+        // Reset selected Block
+        setSelectedBlock(null)
 
         // Create new overlay
         const overlay = document.createElement('div')
@@ -253,7 +258,7 @@ export default function SelectPlane(props) {
       const r = ~~(Math.random() * 10000) + 1
       // Make sure it's not reserved, sold or selected already
       if (isManipulatable(r) && selected.indexOf(r) === -1) {
-        const el = props.createPixel(r)
+        const el = createPixel(r)
         const x = Math.random()
         el.classList.add(
           'animate__animated',
@@ -329,7 +334,7 @@ export default function SelectPlane(props) {
   if (hash.startsWith('#CryptoPixel-')) {
       const num = parseInt(hash.substr(13));
       if (!isReserved(num) && (!linkedPixel || linkedPixel.id !== num)) {
-        const pixel = props.generatePixelData(num)
+        const pixel = generatePixelData(num)
         setLinkedPixel(pixel);
       }
   }
@@ -340,6 +345,111 @@ export default function SelectPlane(props) {
       setLinkedPixel(null);
     }
   }, [selected])
+
+  useEffect(() => {
+      drawSoldAndOwnedAreas('sold', props.soldButNotMineCryptoPixels)
+      drawSoldAndOwnedAreas('own', props.ownCryptoPixels)
+  }, [props.soldButNotMineCryptoPixels, props.ownCryptoPixels])
+
+
+  window.clickPixel = function(id) {
+    props.soldButNotMineCryptoPixels.map((pixel) => {
+      if (pixel.pixel_id === id) {
+        const gen = generatePixelData(pixel.pixel_id)
+        setSelectedBlock({
+          pixel: pixel,
+          top: gen.y,
+          left: gen.x + pixel.width_px / 2,
+        })
+      }
+    })
+    props.ownCryptoPixels.map((pixel) => {
+      if (pixel.pixel_id === id) {
+        const gen = generatePixelData(pixel.pixel_id)
+        setSelectedBlock({
+          pixel: pixel,
+          top: gen.y,
+          left: gen.x + pixel.width_px / 2,
+        })
+      }
+    })
+  }
+
+  useEffect(() => {
+    // disable
+    let els = document.getElementsByClassName('blockSelected');
+    for (const el of els) {
+      el.classList.remove('blockSelected')
+    }
+
+    if (selectedBlock) {
+      // enable
+      let el = document.getElementById('a' + selectedBlock.pixel.pixel_id);
+      el.classList.add('blockSelected');
+    }
+  }, [selectedBlock])
+
+  // Draw sold and own pixels on the map
+  function drawSoldAndOwnedAreas(classType, cryptoPixels){
+      const boxes = document.getElementById('boxes')
+      if (!boxes) {
+          return;
+      }
+
+      for (const pixel of cryptoPixels) {
+          // get or create element
+          let el = document.getElementById('a' + pixel.pixel_id);
+          const exists = !!el;
+          if (!exists) {
+              el = createPixel(pixel.pixel_id)
+          }
+
+          el.classList.add(classType)
+          el.style.setProperty('width', pixel.width_px + 'px')
+          el.style.setProperty('height', pixel.height_px + 'px')
+          el.setAttribute('id', 'a' + pixel.pixel_id)
+          if (pixel.image) {
+              el.style.setProperty('background-image', `url(${assetsUri}${pixel.image})`) 
+          }
+          if (pixel.owner) {
+              el.setAttribute('data-owner', pixel.owner)
+          }
+          if (pixel.link) {
+              el.setAttribute('data-link', pixel.link)
+          }
+          el.setAttribute('onClick', `window.clickPixel(${pixel.pixel_id})`)
+
+          // add to dom, if not done already
+          if (!exists) {
+              boxes.appendChild(el);
+          }
+      }
+
+      
+  }
+
+  function createPixel(id){
+      const pixel = generatePixelData(id)
+      let p = document.createElement('div')
+      p.className = 'p'
+      p.style.setProperty('left', pixel.x + 'px')
+      p.style.setProperty('top', pixel.y + 'px')
+      p.setAttribute('id', id)
+      return p
+    }
+
+  function generatePixelData(id){
+    const column = id % 100 === 0 ? 100 : id % 100
+    const row = ~~((id - 1) / 100) + 1
+
+    return {
+        id: id,
+        column: column,
+        x: (column-1) * 10,
+        row: row,
+        y: (row-1) * 10,
+    };
+  }
 
   return (
     <div>
@@ -363,6 +473,41 @@ export default function SelectPlane(props) {
             <div className="linked3"></div>
             <div className="linked4"></div>
             <div className="linked5"></div>
+          </div>
+        }
+
+        { selectedBlock &&
+          <div className="pixelDetails" style={{ top: selectedBlock.top, left: selectedBlock.left }}>
+            <div className='pixelRange' key={selectedBlock.pixel.pixel_id}><b className="rangeFrom">{selectedBlock.pixel.pixel_id}</b> <TableOutlined/> <b className="rangeTo">{selectedBlock.pixel.pixel_to_id}</b></div>
+            
+            <table className="details">
+              <tbody>
+                <tr>
+                  <td>owner:</td>
+                  <td>
+                    { selectedBlock.pixel.owner &&
+                      <a traget="_blank" rel="noopener roreferrer" href="https://etherscan.io/address/{selectedBlock.pixel.owner}">{selectedBlock.pixel.owner}</a>
+                    }
+                    { !selectedBlock.pixel.owner &&
+                      <>??</>
+                    }
+                  </td>
+                </tr>
+                <tr>
+                  <td>link:</td>
+                  <td>
+                    { selectedBlock.pixel.link &&
+                      <a target="_blank" rel="noopener noreferrer" href={selectedBlock.pixel.link}>{selectedBlock.pixel.link}</a>
+                    }
+                    { !selectedBlock.pixel.link &&
+                      <>-</>
+                    }
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+  
           </div>
         }
       </section>
