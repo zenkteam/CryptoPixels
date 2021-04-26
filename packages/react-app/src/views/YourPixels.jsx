@@ -8,7 +8,12 @@ export default function YourPixels(props) {
       <h2>Your Pixels</h2>
 
       { props.ownCryptoPixels.map((cryptoPixel) => (
-        <YourPixel key={cryptoPixel[0]} cryptoPixel={cryptoPixel} />
+        <YourPixel
+          key={cryptoPixel.pixel_id}
+          cryptoPixel={cryptoPixel}
+          walletAddress={props.walletAddress}
+          getApiPixels={props.getApiPixels}
+        />
       ))}
     </div>
   );

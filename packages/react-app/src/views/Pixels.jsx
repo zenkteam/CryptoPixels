@@ -36,8 +36,8 @@ export default function Pixels(props) {
         const areas = props.calculateCryptoPixels(selection)
         const pixelRanges = []
         if(areas.length > 0){
-            for(let i = 0; i < areas.length; ++i){
-                pixelRanges.push(<div className='pixelRange' key={i}><b className="rangeFrom">{areas[i][3][0]}</b> <TableOutlined/> <b className="rangeTo">{areas[i][3][1] + areas[i][2] * 100}</b></div>)
+            for (const area of areas) {
+                pixelRanges.push(<div className='pixelRange' key={area.pixel_id}><b className="rangeFrom">{area.pixel_id}</b> <TableOutlined/> <b className="rangeTo">{area.pixel_to_id}</b></div>)
             }
         }else{
             pixelRanges.push(<div className='pixelRange' key="add"><b>{selection[0]}</b></div>) 
@@ -146,30 +146,61 @@ export default function Pixels(props) {
     // Draw sold and own pixels on the map
     function drawSoldAndOwnedAreas(classType, cryptoPixels){
         const boxes = document.getElementById('boxes')
+        if (!boxes) {
+            return;
+        }
 
-        if(boxes){
-            // We start with the 2nd (i = 1)
-            if(cryptoPixels.length > 2){
-                for(let i = 0; i < cryptoPixels.length; ++i) {
-                    const el = document.getElementById('a' + cryptoPixels[i][0])
-                    if(el){
-                        el.remove()
-                    }
-                    const p = props.createPixel(cryptoPixels[i][0])
-                    p.classList.add(classType)
-                    p.style.setProperty('width', cryptoPixels[i][1] * 10 + 'px')
-                    p.style.setProperty('height', cryptoPixels[i][2] * 10 + 'px')
-                    p.setAttribute('id', 'a' + cryptoPixels[i][0])
-                    p.style.setProperty('background-image', 'url(' + assetsUri + cryptoPixels[i][0] + '.png)') 
-                    boxes.appendChild(p)
-                }
-            }else if (cryptoPixels.length === 1){
-                const p = props.createPixel(cryptoPixels[0][0])
-                p.classList.add(classType)
-                boxes.appendChild(p)
+        for (const pixel of cryptoPixels) {
+            // get or create element
+            let el = document.getElementById('a' + pixel.pixel_id);
+            const exists = !!el;
+            if (!exists) {
+                el = createPixel(pixel.pixel_id)
+            }
+
+            el.classList.add(classType)
+            el.style.setProperty('width', pixel.width_px + 'px')
+            el.style.setProperty('height', pixel.height_px + 'px')
+            el.setAttribute('id', 'a' + pixel.pixel_id)
+            if (pixel.image) {
+                el.style.setProperty('background-image', `url(${assetsUri}${pixel.image})`) 
+            }
+            if (pixel.owner) {
+                el.setAttribute('data-owner', pixel.owner)
+            }
+            if (pixel.link) {
+                el.setAttribute('data-link', pixel.link)
+            }
+
+            // add to dom, if not done already
+            if (!exists) {
+                boxes.appendChild(el);
             }
         }
     }
+
+    function createPixel(id){
+        const pixel = generatePixelData(id)
+        let p = document.createElement('div')
+        p.className = 'p'
+        p.style.setProperty('left', pixel.x + 'px')
+        p.style.setProperty('top', pixel.y + 'px')
+        p.setAttribute('id', id)
+        return p
+      }
+    
+    function generatePixelData(id){
+        const column = id % 100 === 0 ? 100 : id % 100
+        const row = ~~((id - 1) / 100) + 1
+    
+        return {
+            id: id,
+            column: column,
+            x: (column-1) * 10,
+            row: row,
+            y: (row-1) * 10,
+        };
+      }
     
     return (
         <>
@@ -182,8 +213,8 @@ export default function Pixels(props) {
                     onZoomUpdate={value => onZoomUpdate(value)}
                     soldPixels={props.soldPixels}
                     ownPixels={props.ownPixels}
-                    generatePixelData={id => props.generatePixelData(id)}
-                    createPixel={id => props.createPixel(id)}
+                    generatePixelData={id => generatePixelData(id)}
+                    createPixel={id => createPixel(id)}
                     removeSelectedArea={removeSelectedArea}
                 ></SelectPlane>
             </div>

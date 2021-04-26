@@ -22,7 +22,7 @@ const targetNetwork = NETWORKS[network]; // <------- select your target frontend
 function App() {
   const [ soldPixels, setSoldPixels ] = useState([])
   const [ ownPixels, setOwnPixels ] = useState([])
-  // const [ centerPieceOwner, setCenterPieceOwner ] = useState(false)
+  const [ apiPixels, setApiPixels ] = useState([])
   const [ mainnetProvider, setMainnetProvider ] = useState()
   const [ dappProvider, setDappProvider ] = useState()
   const [ price, setPrice ] = useState(0)
@@ -37,49 +37,11 @@ function App() {
   const walletAddress = useUserAddress(wallet)
   const readWriteContractViaWallet = useContractLoader(wallet)
 
-  // Called once during first time render
-  useEffect(() => {
-    const mainnetProvider = new JsonRpcProvider(targetNetwork.rpcUrl);
-    const dappProvider = new JsonRpcProvider(network === 'localhost' ? 'http://localhost:8545' : targetNetwork.rpcUrl)
-
-    const fetchPrice = async () => {
-      const DAI = new Token(
-          mainnetProvider._network ? mainnetProvider._network.chainId : 1,
-          "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-          18,
-      );
-      const pair = await Fetcher.fetchPairData(DAI, WETH[DAI.chainId], mainnetProvider.chainId);
-      const route = new URoute([pair], WETH[DAI.chainId]);
-      const price = parseFloat(route.midPrice.toSignificant(6));
-      setPrice(price)
-    }
-    fetchPrice()
-
-    setDappProvider(dappProvider)
-    setMainnetProvider(mainnetProvider)
-  }, [])
-
-  // Called one time once read/write contract is available
-  useEffect(()=>{
-    if(ownPixels.length === 0 && readWriteContractViaWallet){
-      getOwnPixels()
-    }
-  }, [readWriteContractViaWallet]);
-
-  useEffect(()=>{
-    if(soldPixels.length === 0 && readContract){
-      getSoldPixels()
-    }
-  }, [readContract]);
-  
   // Request OwnPixels from contract | Seems like we need a 
   async function getOwnPixels() {
     if(walletAddress && readWriteContractViaWallet){
       const ownPixels = await readWriteContractViaWallet.CryptoPixels.getMyPixels()
       const ownPixelArray = Array.from(ownPixels)
-      // if(ownPixels.indexOf(40000) !== -1){
-      //   setCenterPieceOwner(true)
-      // }
       setOwnPixels(ownPixelArray)
       return ownPixelArray;
     } else {
@@ -97,40 +59,21 @@ function App() {
     setSoldPixels(soldPixels)
   }
 
-  // Handle sold and own pixels
-  useEffect(() => {
-    const soldButNotMine = soldPixels.filter((i) => ownPixels.indexOf(i) === -1)
-    const soldCryptoPixels = calculateCryptoPixels(soldButNotMine)
-    setSoldButNotMineCryptoPixels(soldCryptoPixels)
-
-    const ownCryptoPixels = calculateCryptoPixels(ownPixels)
-    setOwnCryptoPixels(ownCryptoPixels)
-
-  }, [soldPixels, ownPixels])
-
-  function createPixel(id){
-    const pixel = generatePixelData(id)
-    let p = document.createElement('div')
-    p.className = 'p'
-    p.style.setProperty('left', pixel.x + 'px')
-    p.style.setProperty('top', pixel.y + 'px')
-    p.setAttribute('id', id)
-    return p
+  async function getApiPixels() {
+    return fetch(process.env.REACT_APP_API_URL + 'pixels')
+      .then(res => res.json())
+      .then(pixels => pixels.map((pixel) => {
+        pixel.pixel_id = parseInt(pixel.pixel_id);
+        pixel.pixel_to_id = parseInt(pixel.pixel_to_id);
+        pixel.width = pixel.pixel_to_id % 100 - pixel.pixel_id % 100 + 1;
+        pixel.width_px = pixel.width * 10;
+        pixel.height = Math.floor(pixel.pixel_to_id / 100) - Math.floor(pixel.pixel_id / 100) + 1; // TODO handle last col
+        pixel.height_px = pixel.height * 10;
+        return pixel;
+      }))
+      .then(setApiPixels);
   }
-
-  function generatePixelData(id){
-    const column = id % 100 === 0 ? 100 : id % 100
-    const row = ~~((id - 1) / 100) + 1
-
-    return {
-        id: id,
-        column: column,
-        x: (column-1) * 10,
-        row: row,
-        y: (row-1) * 10,
-    };
-  }
-
+  
   // Calculate areas with edging pixels - we call them "cryptopixels"
   function calculateCryptoPixels(ids){
     if(ids.length < 2){
@@ -185,8 +128,94 @@ function App() {
         }
     }
 
-    return stacked;
+    return stacked.map((stack) => {
+      return {
+        pixel_id: stack[3][0],
+        pixel_to_id: stack[3][1] + (stack[2] - 1) * 100,
+        width: stack[1],
+        width_px: stack[1] * 10,
+        height: stack[2],
+        height_px: stack[2] * 10,
+      }
+    })
   }
+
+  // Called once during first time render
+  useEffect(() => {
+    const mainnetProvider = new JsonRpcProvider(targetNetwork.rpcUrl);
+    const dappProvider = new JsonRpcProvider(network === 'localhost' ? 'http://localhost:8545' : targetNetwork.rpcUrl)
+
+    const fetchPrice = async () => {
+      const DAI = new Token(
+          mainnetProvider._network ? mainnetProvider._network.chainId : 1,
+          "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          18,
+      );
+      const pair = await Fetcher.fetchPairData(DAI, WETH[DAI.chainId], mainnetProvider.chainId);
+      const route = new URoute([pair], WETH[DAI.chainId]);
+      const price = parseFloat(route.midPrice.toSignificant(6));
+      setPrice(price)
+    }
+    fetchPrice()
+
+    setDappProvider(dappProvider)
+    setMainnetProvider(mainnetProvider)
+  }, [])
+
+  // Called one time once read/write contract is available
+  useEffect(()=>{
+    if(ownPixels.length === 0 && readWriteContractViaWallet){
+      getOwnPixels()
+    }
+  }, [readWriteContractViaWallet]);
+
+  useEffect(()=>{
+    if(soldPixels.length === 0 && readContract){
+      getSoldPixels()
+    }
+  }, [readContract]);
+  
+  useEffect(() => {
+    getApiPixels();
+  }, []);
+
+  // Merge Pixel Information
+  useEffect(() => {
+    const soldButNotMineApiPixels = apiPixels.filter((pixel) => pixel.owner !== walletAddress);
+    const ownApiPixels = apiPixels.filter((pixel) => pixel.owner === walletAddress);
+
+    const soldButNotMine = soldPixels.filter((i) => ownPixels.indexOf(i) === -1)
+    const soldCryptoPixels = calculateCryptoPixels(soldButNotMine)
+    // extend with api pixels
+    for (const pixel of soldButNotMineApiPixels) {
+      const matchingPixel = soldCryptoPixels.find((sold) => sold.pixel_id === pixel.pixel_id);
+      if (matchingPixel) {
+        matchingPixel.owner = pixel.owner;
+        matchingPixel.link = pixel.link;
+        matchingPixel.image = pixel.image;
+      } else {
+        soldCryptoPixels.push(pixel)
+      }
+    }
+    setSoldButNotMineCryptoPixels(soldCryptoPixels)
+
+    const ownCryptoPixels = calculateCryptoPixels(ownPixels)
+    for (let i = 0; i < ownCryptoPixels.length; i++) {
+      ownCryptoPixels[i].owner = walletAddress;
+    }
+    // extend with api pixels
+    for (const pixel of ownApiPixels) {
+      const matchingPixel = ownCryptoPixels.find((own) => own.pixel_id === pixel.pixel_id);
+      if (matchingPixel) {
+        matchingPixel.owner = pixel.owner;
+        matchingPixel.link = pixel.link;
+        matchingPixel.image = pixel.image;
+      } else {
+        ownCryptoPixels.push(pixel)
+      }
+    }
+    setOwnCryptoPixels(ownCryptoPixels)
+  }, [soldPixels, ownPixels, apiPixels])
 
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
@@ -199,15 +228,6 @@ function App() {
       loadWeb3Modal();
     }
   }, [loadWeb3Modal]);
-
-
-  useEffect(() => {
-    fetch(process.env.REACT_APP_API_URL + 'pixels')
-      .then(res => res.json())
-      .then((pixels) => {
-        console.log('pixels', pixels);
-      });
-  }, []);
 
   return (
     <div className="App">
@@ -275,6 +295,8 @@ function App() {
               ownPixels={ownPixels}
               ownCryptoPixels={ownCryptoPixels}
               network={network}
+              walletAddress={walletAddress}
+              getApiPixels={getApiPixels}
             />
           </Route>
           <Route path="/about">
@@ -300,8 +322,6 @@ function App() {
               loadWeb3Modal={loadWeb3Modal}
               getOwnPixels={getOwnPixels}
               walletAddress={walletAddress}
-              generatePixelData={generatePixelData}
-              createPixel={createPixel}
               calculateCryptoPixels={calculateCryptoPixels}
               soldButNotMineCryptoPixels={soldButNotMineCryptoPixels}
               ownCryptoPixels={ownCryptoPixels}

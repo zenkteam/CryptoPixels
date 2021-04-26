@@ -17,7 +17,7 @@ class Pixel extends Model
     protected $fillable = [
         'pixel_id',
         'pixel_to_id',
-        'owener',
+        'owner',
         'link',
         'image',
     ];
