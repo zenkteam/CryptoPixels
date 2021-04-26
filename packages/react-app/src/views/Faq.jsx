@@ -53,7 +53,7 @@ export default function Faq() {
     {
       id: 9,
       question: "Can I sell my NFT?",
-      answer: "Of course. After you bought yourself an NFT you can resel it as you like on all platforms that support NFT integration.",
+      answer: "Of course. After you bought yourself an NFT you can resell it as you like on all platforms that support NFT integration.",
     },
     {
       id: 10,

@@ -76,15 +76,28 @@ function App() {
   
   // Calculate areas with edging pixels - we call them "cryptopixels"
   function calculateCryptoPixels(ids){
-    if(ids.length < 2){
+    // handle border cases
+    if (ids.length === 0) {
       return [];
+    } else if (ids.length === 1) {
+      return [{
+        pixel_id: ids[0],
+        pixel_to_id: ids[0],
+        width: 1,
+        width_px: 10,
+        height: 1,
+        height_px: 10,
+      }];
     }
+
+    ids.sort((a, b) => {
+      return a - b;
+    })
 
     const adjacents = [[ids[0]]]
     const stacked = []
     const idRanges = []
     
-    ids.sort()
     let adjacentCount = 0
     for(let i = 1; i < ids.length; ++i){
         // If not adjacent, start new row
