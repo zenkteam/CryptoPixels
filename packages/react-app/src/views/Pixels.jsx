@@ -7,6 +7,7 @@ import { parseEther } from "@ethersproject/units";
 import { useGasPrice } from "../hooks/index.js";
 import Countdown from '../components/Countdown';
 import { notification } from "antd";
+import axios from 'axios';
 
 export default function Pixels(props) {
     
@@ -211,11 +212,31 @@ export default function Pixels(props) {
       function toggleMenu() {
           setMenuToggled(!menuToggled);
       }
+
+      const testVerify = async () => {
+          // Get Signature
+          let signer, accounts
+          if (props.wallet && typeof props.wallet.listAccounts === "function") {
+            accounts = await props.wallet.listAccounts();
+          }
+
+          if (accounts && accounts.length > 0) {
+            signer = props.wallet.getSigner();
+          } else {
+            signer = props.wallet;
+          }
+
+          let sig = await signer.signMessage('test')
+          const response = await axios.post(`http://cryptoapi.test/test`, {sig: sig});
+        const todoItems = response.data;
+      
+        console.log(sig)
+          // Make request
+      }
     
     return (
         <>
             <div className="Content contentGlitch" id="Content">
-
                 <SelectPlane
                     selection={selection}
                     zoom={zoom}
@@ -248,6 +269,8 @@ export default function Pixels(props) {
                                 Once 9600 Pixelblocks have been sold the the last Centerpiece of 400 Pixelblocks will be auctioned for 2 Weeks.
                                 After the auction closes Pixelblocks can be replaced with images.
                                 You can resell your blocks on our marketplace anytime.
+
+                                <button onClick={testVerify}>Verify</button>
                             </div>
 
                             { props.walletAddress &&
