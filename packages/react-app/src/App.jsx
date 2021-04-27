@@ -116,7 +116,7 @@ function App() {
           }
         }
     }
-    
+
     adjacents.sort(function(a, b){
       // ASC  -> a.length - b.length
       // DESC -> b.length - a.length
@@ -166,7 +166,6 @@ function App() {
           }
         }
     }
-    console.log(stacked)
 
     return stacked.map((stack) => {
       return {
