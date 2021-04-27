@@ -96,7 +96,7 @@ function App() {
 
     const adjacents = [[ids[0]]]
     const stacked = []
-    const idRanges = []
+    let idRanges = []
     
     let adjacentCount = 0
     for(let i = 1; i <= ids.length; ++i){
@@ -105,36 +105,58 @@ function App() {
           idRanges[adjacentCount] = [adjacents[adjacentCount][0], adjacents[adjacentCount][ adjacents[adjacentCount].length-1 ]]
           ++adjacentCount
         }
-
-        // Create row
-        if(!adjacents[adjacentCount]){
-            adjacents[adjacentCount] = []
-        }
         
         // Push id into row
-        adjacents[adjacentCount].push(ids[i])
+        if(ids[i]){
+          // Create row
+          if(!adjacents[adjacentCount]){
+            adjacents[adjacentCount] = [ids[i]]
+          }else{
+            adjacents[adjacentCount].push(ids[i])
+          }
+        }
     }
+    
+    adjacents.sort(function(a, b){
+      // ASC  -> a.length - b.length
+      // DESC -> b.length - a.length
+      return a.length - b.length
+    });
 
+    const newIdRanges = new Array(idRanges.length)
+    let count = 0;
+    for(let i = 0; i < adjacents.length; ++i){
+      for(let j = 0; j < idRanges.length; ++j){
+        if(adjacents[i][0] === idRanges[j][0]){
+          newIdRanges[count] = idRanges[j]
+          ++count
+        }
+      }
+    }
+    idRanges = newIdRanges
+
+    // Are there any?
     if(adjacents.length > 1){
         let stackedCount = 0;
-        for(let j = 1; j <= adjacents.length; ++j){
+        // Go through all adjacents and compare it with the last one
+        for(let j = 1; j < adjacents.length; ++j){
           let found = false;
-          if(adjacents[j-1][0]){
-            if(!stacked[stackedCount]){
-              // startId, width, rows
-              stacked[stackedCount] = [adjacents[j-1][0], adjacents[j-1].length, 1, idRanges[j-1]]
-            }
+          // Create first stacked entry-
+          if(!stacked[stackedCount]){
+            // startId, width, rows
+            // Start with the first 
+            stacked[stackedCount] = [adjacents[j-1][0], adjacents[j-1].length, 1, idRanges[j-1]]
+          }
 
-            // check if adjacent has the same size as previously stacked one
-            if(adjacents[j-1].length > 1){
-              for (let s = 0; !found && s <= stackedCount; ++s) {
-                if (
-                  stacked[s][1] === adjacents[j].length &&
-                  (stacked[s][0] + stacked[s][2] * 100) === adjacents[j][0]
-                ) {
-                  ++stacked[s][2]
-                  found = true
-                }
+          // check if adjacent has the same size as previously stacked one
+          if(adjacents[j-1].length > 1){
+            for (let s = 0; !found && s <= stackedCount; ++s) {
+              if (
+                stacked[s][1] === adjacents[j].length &&
+                (stacked[s][0] + stacked[s][2] * 100) === adjacents[j][0]
+              ) {
+                ++stacked[s][2]
+                found = true
               }
             }
           }
@@ -144,6 +166,7 @@ function App() {
           }
         }
     }
+    console.log(stacked)
 
     return stacked.map((stack) => {
       return {
